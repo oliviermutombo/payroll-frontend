@@ -1,0 +1,47 @@
+<div class="row">
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+        <div class="card">
+            <div class="alert" *ngIf="error">{{error}}</div>
+            <div class="alert" *ngIf="success">{{success}}</div>
+            <div class="card-header">
+                <form [formGroup]="rForm" (ngSubmit)="!updateMode ? addPayrollPeriod(rForm.value) : updatePayrollPeriod(rForm.value)">
+                    <div>
+                        <h3 class="mb-0" *ngIf="!updateMode">Add payroll Period</h3>
+                        <h3 class="mb-0" *ngIf="updateMode">Update payroll Period</h3>
+                        <hr/>
+						<div class="form-group">
+                            <label>Period</label>
+                            <input type="date" class="form-control" formControlName="period">
+                            <span class="text-danger" *ngIf="!rForm.controls['period'].valid && rForm.controls['period'].touched" placeholder="Must be 1st day of the month">{{ formErrors.period }}</span>
+                        </div>
+                        <div><input type="submit" class="btn btn-primary btn-sm" value="Save" [disabled]="!rForm.valid"></div>
+                    </div>
+                </form>
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="show-list" (change) ="showHideList($event.target.checked)" />
+                    <label class="custom-control-label" for="show-list">Show all periods</label>
+                </div>
+            </div>
+            <div class="card-body" *ngIf="showList">
+                <div class="table-responsive" *ngIf="payrollPeriods?.length > 0">
+                    <span>
+                        <table class="table table-striped table-bordered second" style="width:100%">
+                            <tr>
+                                <th>Payroll Period</th>
+                                <!--<th>Update</th>-->
+                                <th>Delete (This will also delete equivalent payrolls)</th>
+                            </tr>
+                            <tr *ngFor="let p of payrollPeriods">
+                                <!--<td>{{p.period}}</td>-->
+                                <td>{{monthYear(p.period)}}</td>
+                                <!--<td><button class="btn btn-primary btn-xs" (click)="payrollPeriodEdit(p.id)" >Update</button></td>-->
+                                <td><button class="btn btn-danger btn-xs" (click)="deletePayrollPeriod(p.id)" >Delete</button></td>
+                            </tr>
+                        </table>
+                    </span>
+                </div>
+                <div class="alert" *ngIf="payrollPeriods?.length <= 0">Nothing to show</div>
+            </div>
+        </div>
+    </div>
+</div>

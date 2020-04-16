@@ -1,0 +1,217 @@
+
+<html>
+<div *ngIf="!userService.getToken()">
+    <app-login></app-login>
+</div>
+<div *ngIf="userService.getToken()">
+    <head lang="en">
+        <meta charset="UTF-8">
+        <title>HR Payroll System</title>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <style>
+            .col {
+                float: left;
+                width: 50%;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="dashboard-main-wrapper">
+            <div class="dashboard-header">
+                <nav class="navbar navbar-expand-lg bg-white fixed-top">
+                    <a class="navbar-brand" href="index.html"><img class="logo-img" src="../assets/images/logo.png" alt="logo"></a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse " id="navbarSupportedContent">
+                        <ul class="navbar-nav ml-auto navbar-right-top">
+                            <!--<li class="nav-item">
+                                <div id="custom-search" class="top-search-bar">
+                                    <input class="form-control" type="text" placeholder="Search..">
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown notification">
+                                <a class="nav-link nav-icons" href="#" id="navbarDropdownMenuLink1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-fw fa-bell"></i> <span class="indicator"></span></a>
+                                <ul class="dropdown-menu dropdown-menu-right notification-dropdown">
+                                    <li>
+                                        <div class="notification-title"> Notification</div>
+                                        <div class="notification-list">
+                                            <div class="list-group">
+                                                <a href="#" class="list-group-item list-group-item-action active">
+                                                    <div class="notification-info">
+                                                        <div class="notification-list-user-img"><img src="assets/images/avatar-2.jpg" alt="" class="user-avatar-md rounded-circle"></div>
+                                                        <div class="notification-list-user-block"><span class="notification-list-user-name">Jeremy Rakestraw</span>accepted your invitation to join the team.
+                                                            <div class="notification-date">2 min ago</div>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                                <a href="#" class="list-group-item list-group-item-action">
+                                                    <div class="notification-info">
+                                                        <div class="notification-list-user-img"><img src="assets/images/avatar-3.jpg" alt="" class="user-avatar-md rounded-circle"></div>
+                                                        <div class="notification-list-user-block"><span class="notification-list-user-name">John Abraham </span>is now following you
+                                                            <div class="notification-date">2 days ago</div>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                                <a href="#" class="list-group-item list-group-item-action">
+                                                    <div class="notification-info">
+                                                        <div class="notification-list-user-img"><img src="assets/images/avatar-4.jpg" alt="" class="user-avatar-md rounded-circle"></div>
+                                                        <div class="notification-list-user-block"><span class="notification-list-user-name">Monaan Pechi</span> is watching your main repository
+                                                            <div class="notification-date">2 min ago</div>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                                <a href="#" class="list-group-item list-group-item-action">
+                                                    <div class="notification-info">
+                                                        <div class="notification-list-user-img"><img src="assets/images/avatar-5.jpg" alt="" class="user-avatar-md rounded-circle"></div>
+                                                        <div class="notification-list-user-block"><span class="notification-list-user-name">Jessica Caruso</span>accepted your invitation to join the team.
+                                                            <div class="notification-date">2 min ago</div>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="list-footer"> <a href="#">View all notifications</a></div>
+                                    </li>
+                                </ul>
+                            </li>-->
+                            <li class="nav-item dropdown nav-user">
+                                <a class="nav-link nav-user-img" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="assets/images/avatar-user.png" alt="" class="user-avatar-md rounded-circle"></a>
+                                <div class="dropdown-menu dropdown-menu-right nav-user-dropdown" aria-labelledby="navbarDropdownMenuLink2">
+                                    <div class="nav-user-info">
+                                        <h5 class="mb-0 text-white nav-user-name">{{ userService.currentUserValue.name }}</h5>
+                                        <span class="status"></span><span class="ml-2">{{ userService.currentUserValue.role }}</span>
+                                    </div>
+                                    <a class="dropdown-item" href="#"><i class="fas fa-user mr-2"></i>Account</a>
+                                    <a class="dropdown-item" href="#"><i class="fas fa-cog mr-2"></i>Setting</a>
+                                    <a class="dropdown-item" (click)="logout()"><i class="fas fa-power-off mr-2"></i>Logout</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+            <div class="nav-left-sidebar sidebar-dark">
+                <div class="menu-list">
+                    <nav class="navbar navbar-expand-lg navbar-light">
+                        <a class="d-xl-none d-lg-none" href="#">Dashboard</a>
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarNav">
+                            <ul class="navbar-nav flex-column">
+                                <li class="nav-divider">
+                                    Menu
+                                </li>
+                                <li class="nav-item " *ngIf="hasRole('systemAdmin')">
+                                    <a class="nav-link active" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-1" aria-controls="submenu-1"><i class="fa fa-fw fa-unlock-alt"></i>System administration<span class="badge badge-success">6</span></a>
+                                    <div id="submenu-1" class="collapse submenu">
+                                        <ul class="nav flex-column">
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="/user_list">Manage user accounts</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="/employee_list">View employees</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="nav-item " *ngIf="hasRole('employeeAdmin')">
+                                    <a class="nav-link active" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-2" aria-controls="submenu-2"><i class="fa fa-fw fa-unlock-alt"></i>Employees administration<span class="badge badge-success">6</span></a>
+                                    <div id="submenu-2" class="collapse submenu">
+                                        <ul class="nav flex-column">
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="/manage_employee">Add employee</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="/employee_list">View employees</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="/department">Departments</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="/position">Positions</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="nav-item " *ngIf="hasRole('payrollAdmin')">
+                                    <a class="nav-link active" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-3" aria-controls="submenu-3"><i class="fa fa-fw fa-unlock-alt"></i>Payroll Administration<span class="badge badge-success">6</span></a>
+                                    <div id="submenu-3" class="collapse submenu">
+                                        <ul class="nav flex-column">
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="/salary">Pay grades</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="/costcentre">Cost centres</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="/deduction">Deductions</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="/payrollperiod">Payroll periods</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="/payroll">Run payroll</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="nav-item" *ngIf="hasRole('employee')">
+                                    <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-4" aria-controls="submenu-4"><i class="fa fa-fw fa-user"></i>Employee tools</a>
+                                    <div id="submenu-4" class="collapse submenu">
+                                        <ul class="nav flex-column">
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="/payslip">View payslips</a>
+                                            </li>
+                                            <!--<li class="nav-item">
+                                                <a class="nav-link" href="#">Update personal details</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="#">Leave balance</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="#">Book leave</a>
+                                            </li>-->
+                                        </ul>
+                                    </div>
+                                </li>
+                                <!--<li class="nav-divider">
+                                    More
+                                </li>
+                                <li class="nav-item">
+                                    <div>
+                                        <ul class="nav flex-column">
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="#">Log a call</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="#">Change password</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" (click)="logout()">Log out</a>
+                                            </li>
+                                            
+                                        </ul>
+                                    </div>
+                                </li>-->
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+            <div class="dashboard-wrapper">
+                <div class="dashboard-ecommerce">
+                    <div class="container-fluid dashboard-content "> <!--angular view-->
+                        <router-outlet></router-outlet>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</div>
+</html>

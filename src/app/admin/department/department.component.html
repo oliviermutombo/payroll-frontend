@@ -1,0 +1,70 @@
+<div class="row">
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+        <div class="card">
+            <div class="alert" *ngIf="error">{{error}}</div>
+            <div class="alert" *ngIf="success">{{success}}</div>
+            <div class="card-header">
+                <form [formGroup]="rForm" (ngSubmit)="!updateMode ? addDepartment(rForm.value) : updateDepartment(rForm.value)">
+                    <div>
+                        <h3 class="mb-0" *ngIf="!updateMode">Add department</h3>
+                        <h3 class="mb-0" *ngIf="updateMode">Update department</h3>
+                        <hr/>
+						<div class="form-group">
+                            <label>Department name</label>
+                            <input type="text" class="form-control" formControlName="name">
+                            <span class="text-danger" *ngIf="!rForm.controls['name'].valid && rForm.controls['name'].touched">{{ formErrors.name }}</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Cost centre</label>
+                            <!--
+                            <input type="text" class="form-control" formControlName="costcentre">
+                            <span class="text-danger" *ngIf="!rForm.controls['costcentre'].valid && rForm.controls['costcentre'].touched">{{ formErrors.costcentre }}</span>
+                            -->
+                            <select class="form-control" formControlName="costcentre" placeholder="Cost centre">
+                                <option value=null disabled selected hidden>Choose cost centre</option>
+                                <option [ngValue]="c.id" *ngFor="let c of costcentres">  
+                                   {{c.name}}
+                                </option>
+                            </select>
+                          <span class="text-danger" *ngIf="!rForm.controls['costcentre'].valid && rForm.controls['costcentre'].touched">{{ formErrors.costcentre }}</span>     
+                        </div>
+                        <div class="form-group">
+                            <label>Head of deparment</label>
+                            <input type="text" class="form-control" formControlName="hod">
+                            <span class="text-danger" *ngIf="!rForm.controls['hod'].valid && rForm.controls['hod'].touched">{{ formErrors.hod }}</span>
+                        </div>
+                        <div><input type="submit" class="btn btn-primary btn-sm" value="Save" [disabled]="!rForm.valid"></div>
+                    </div>
+                </form>
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="show-list" (change) ="showHideList($event.target.checked)" />
+                    <label class="custom-control-label" for="show-list">Show all departments</label>
+                </div>
+            </div>
+            <div class="card-body" *ngIf="showList">
+                <div class="table-responsive" *ngIf="departments?.length > 0">
+                    <span>
+                        <table class="table table-striped table-bordered second" style="width:100%">
+                            <tr>
+                                <th>Department name</th>
+                                <th>Cost centre</th>
+                                <th>Head Of Department</th>
+                                <th>Update</th>
+                                <th>Delete</th>
+                            </tr>
+                            <tr *ngFor="let d of departments">
+                                <td>{{d.name}}</td>
+                                <!--<td>{{d.costcentre}}</td>-->
+                                <td>{{d.costcentre.name}}</td>
+                                <td>{{d.hod}}</td>
+                                <td><button class="btn btn-primary btn-xs" (click)="departmentEdit(d.id)" >Update</button></td>
+                                <td><button class="btn btn-danger btn-xs" (click)="deleteDepartment(d.id)" >Delete</button></td>
+                            </tr>
+                        </table>
+                    </span>
+                </div>
+                <div class="alert" *ngIf="departments?.length <= 0">Nothing to show</div>
+            </div>
+        </div>
+    </div>
+</div>

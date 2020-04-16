@@ -1,0 +1,77 @@
+<div class="row">
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+        <div class="card">
+            <div class="alert" *ngIf="error">{{error}}</div>
+            <div class="alert" *ngIf="success">{{success}}</div>
+            <div class="card-header">
+                <form [formGroup]="rForm" (ngSubmit)="!updateMode ? addDeduction(rForm.value) : updateDeduction(rForm.value)">
+                    <div>
+                        <h3 class="mb-0" *ngIf="!updateMode">Add Deduction details</h3>
+                        <h3 class="mb-0" *ngIf="updateMode">Update details</h3>
+                        <hr/>
+						<div class="form-group">
+                            <label>Employee</label>
+                            <select class="form-control" formControlName="employee" (change)="changeEmployee($event)" placeholder="Employee" >
+                                <option value=null disabled selected hidden>Choose employee</option>
+                                <option [value]="e.id" *ngFor="let e of employees">  
+                                    {{e.firstname}} {{e.surname}}
+                                </option>
+                            </select>
+                        </div>
+						<div class="form-group">
+                            <label>Annual salary</label>
+                            <input type="text" class="form-control" formControlName="annual" placeholder="Auto populated" readonly>
+                            <span class="text-danger" *ngIf="!rForm.controls['annual'].valid && rForm.controls['annual'].touched">{{ formErrors.annual }}</span>
+                        </div>
+						<div class="form-group">
+                            <label>Monthly salary</label>
+                            <input type="text" class="form-control" formControlName="monthly" placeholder="Auto populated" readonly>
+                            <span class="text-danger" *ngIf="!rForm.controls['monthly'].valid && rForm.controls['monthly'].touched">{{ formErrors.monthly }}</span>
+                        </div>
+						<div class="form-group">
+                            <label>Monthly tax</label>
+                            <input type="text" class="form-control" formControlName="tax" placeholder="Auto populated" readonly>
+                            <span class="text-danger" *ngIf="!rForm.controls['tax'].valid && rForm.controls['tax'].touched">{{ formErrors.tax }}</span>
+                        </div>
+						<div class="form-group">
+                            <label>Medical aid</label>
+                            <input type="text" class="form-control" formControlName="medicalaid">
+                            <span class="text-danger" *ngIf="!rForm.controls['medicalaid'].valid && rForm.controls['medicalaid'].touched">{{ formErrors.medicalaid }}</span>
+                        </div>
+						<div class="form-group">
+                            <label>Retirement fund</label>
+                            <input type="text" class="form-control" formControlName="retirement">
+                            <span class="text-danger" *ngIf="!rForm.controls['retirement'].valid && rForm.controls['retirement'].touched">{{ formErrors.retirement }}</span>
+                        </div>
+                        <div><input type="submit" class="btn btn-primary btn-sm" value="Save" [disabled]="!rForm.valid"></div>
+                    </div>
+                </form>
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="show-list" (change) ="showHideList($event.target.checked)" />
+                    <label class="custom-control-label" for="show-list">Show all deductions</label>
+                </div>
+            </div>
+            <div class="card-body" *ngIf="showList">
+                <div class="table-responsive" *ngIf="deductions?.length > 0">
+                    <span>
+                        <table class="table table-striped table-bordered second" style="width:100%">
+                            <tr>
+                                <th>Employee</th>
+                                <th>Monthly salary</th>
+                                <th>Update</th>
+                                <th>Delete</th>
+                            </tr>
+                            <tr *ngFor="let d of deductions">
+                                <td>{{d.employee.firstname}}</td>
+                                <td>{{d.monthly}}</td>
+                                <td><button class="btn btn-primary btn-xs" (click)="deductionEdit(d.id)" >Update</button></td>
+                                <td><button class="btn btn-danger btn-xs" (click)="deleteDeduction(d.id)" >Delete</button></td>
+                            </tr>
+                        </table>
+                    </span>
+                </div>
+                <div class="alert" *ngIf="deductions?.length <= 0">Nothing to show</div>
+            </div>
+        </div>
+    </div>
+</div>

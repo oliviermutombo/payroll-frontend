@@ -1,0 +1,34 @@
+<div class="card">
+    <div class="alert" *ngIf="error">{{error}}</div>
+    <div class="alert" *ngIf="success">{{success}}</div>
+    <div class="card-header">
+        <div>
+            <h3 class="mb-0">Employees</h3>
+        </div>
+    </div>
+    <div class="card-body" *ngIf="showList">
+    <!--<div class="card-body">-->
+        <div class="table-responsive" *ngIf="employees?.length > 0">
+            <span>
+                <table class="table table-striped table-bordered second" style="width:100%">
+                    <tr>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email address</th>
+                        <th>View details</th>
+                        <th>Update</th>
+                    </tr>
+                    <tr *ngFor="let e of employees">
+                        <td>{{e.firstname}}</td>
+                        <td>{{e.surname}}</td>
+                        <td>{{e.emailaddress}}</td>
+                        <!--<td><button class="btn btn-primary btn-xs">View details</button></td>-->
+                        <td><button class="btn btn-primary btn-xs" routerLink="/employee_details/{{e.id}}">View details</button></td>
+                        <td><button class="btn btn-primary btn-xs" routerLink="/manage_employee/{{e.id}}" >Edit</button></td>
+                    </tr>
+                </table>
+            </span>
+        </div>
+    </div>
+    <div class="alert" *ngIf="employees?.length <= 0">Nothing to show</div>
+</div>

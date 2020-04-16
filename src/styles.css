@@ -1,0 +1,22 @@
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.error {
+    background-color: red;
+    color: white;    
+    font-weight: bold;
+}
+.error button {
+    background-color:orangered;
+    color: white;
+    font-weight: bold;
+}
+.success {
+    background-color:rgb(72, 176, 75);
+    color: white;
+    font-weight: bold; 
+}
+.success button {
+    background-color:rgb(255,59,128);
+    color: white;
+    font-weight: bold;
+}

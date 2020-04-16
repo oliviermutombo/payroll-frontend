@@ -1,0 +1,97 @@
+<div class="row">
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+        <div class="card" *ngIf="hasRole('systemAdmin')">
+            <h5 class="card-header">System Administration</h5>
+            <div class="card-body">
+                <div class="media">
+                    <div class="media-body">
+                        <p>Brief description on what a system administrator can do...</p>
+                    </div>
+                </div>
+                <div>
+                    <ul>
+                        <li>
+                            <a class="nav-link" href="/user_list">Manage user accounts</a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="/employee_list">View employees</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="card" *ngIf="hasRole('employeeAdmin')">
+            <h5 class="card-header">Employee Administration</h5>
+            <div class="card-body">
+                <div class="media">
+                    <div class="media-body">
+                        <p>Brief description on what an employee administrator can do...</p>
+                    </div>
+                </div>
+                <div>
+                    <ul>
+                        <li>
+                            <a class="nav-link" href="/manage_employee">Add employee</a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="/employee_list">View employees</a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="/department">Manage departments</a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="/position">Manage positions</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="card" *ngIf="hasRole('payrollAdmin')">
+            <h5 class="card-header">Payroll Administration</h5>
+            <div class="card-body">
+                <div class="media">
+                    <div class="media-body">
+                        <p>Brief description on what a payroll administrator can do...</p>
+                    </div>
+                </div>
+                <div>
+                    <ul>
+                        <li>
+                            <a class="nav-link" href="/salary">Manage pay grades</a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="/costcentre">Manage cost centres</a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="/deduction">Manage deductions</a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="/payrollperiod">Manage payroll periods</a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="/payroll">Run payroll</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="card" *ngIf="hasRole('employee')">
+            <h5 class="card-header">Employee tools</h5>
+            <div class="card-body">
+                <div class="media">
+                    <div class="media-body">
+                        <p>Brief description on what an employee can do...</p>
+                    </div>
+                </div>
+                <div>
+                    <ul>
+                        <li>
+                            <a class="nav-link" href="/payslip">View payslips</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,263 @@
+<div class="row">
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+        <div class="page-header">
+            <h2 class="pageheader-title">Online payslip</h2>
+            <div class="page-breadcrumb">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <form [formGroup]="rForm">
+                            <div class="form-group">                         
+                                <select class="form-control" formControlName="payrollPeriod" (change)="changePeriod($event)">
+                                    <option value=null disabled selected hidden>Choose period</option>
+                                    <option [value]="p.id" *ngFor="let p of payrollPeriods">  
+                                        {{monthYear(p.period)}}
+                                    </option>
+                                </select>
+                            </div>
+                        </form>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ============================================================== -->
+<!-- end pageheader  -->
+<!-- ============================================================== -->
+<div class="row" *ngIf="payslip && deduction">
+    <div class="offset-xl-2 col-xl-8 col-lg-12 col-md-12 col-sm-12 col-12">
+        <div class="card">
+            <div class="card-header p-4">
+                    <img class="logo-img" src="../../../assets/images/logo.png" alt="logo">
+                <div class="float-right"> <h3 class="mb-0">PAYSLIP</h3>
+                {{ monthYear(payslip.period.period) }}</div>
+            </div>
+            <div class="table-responsive-sm">
+                <table class="table table-clear">
+                    <tr><td>
+                        <h3 class="text-dark mb-1"> {{payslip.employee.firstname }} {{payslip.employee.surname}} </h3>
+                    </td></tr>
+                    <tr>
+                        <td>
+                            <table class="table table-clear">
+                                <tbody>
+                                    <tr>
+                                        <td class="left">
+                                            <strong class="text-dark">Employee number</strong>
+                                        </td>
+                                        <td class="right">{{ payslip.employee.empcode }}</td>
+                                        <td class="left">
+                                            <strong class="text-dark">Residential address</strong>
+                                        </td>
+                                        <td class="right">{{ payslip.employee.address1 }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="left">
+                                            <strong class="text-dark">{{ idOrPassport().name }}</strong>
+                                        </td>
+                                        <td class="right">{{ idOrPassport().value }}</td>
+                                        <td class="left">
+                                            <strong class="text-dark"></strong>
+                                        </td>
+                                        <td class="right">{{ payslip.employee.address2 }} {{ payslip.employee.postalcode }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="left">
+                                            <strong class="text-dark">D.O.B</strong>
+                                        </td>
+                                        <td class="right">{{ payslip.employee.dob }}</td>
+                                        <td class="left">
+                                            <strong class="text-dark">Country</strong>
+                                        </td>
+                                        <td class="right">{{ payslip.employee.country }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="left">
+                                            <strong class="text-dark">Date engaged</strong>
+                                        </td>
+                                        <td class="right">{{ payslip.employee.hiredate }}</td>
+                                        <td class="left">
+                                            <strong class="text-dark">Email address</strong>
+                                        </td>
+                                        <td class="right">{{ payslip.employee.emailaddress }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="left">
+                                            <strong class="text-dark">Position</strong>
+                                        </td>
+                                        <td class="right">{{ payslip.employee.position.name }}</td>
+                                        <td class="left">
+                                            <strong class="text-dark">Phone number</strong>
+                                        </td>
+                                        <td class="right">{{ payslip.employee.phonenumber }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive-sm">
+                    <table class="table table-clear">
+                        <tr>
+                            <td>
+                                <table class="table table-clear">
+                                    <tbody>
+                                        <tr>
+                                            <td class="left">
+                                                <strong class="text-dark">Department</strong>
+                                            </td>
+                                            <td class="right">{{payslip.employee.department.name}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="left">
+                                                <strong class="text-dark">Cost centre</strong>
+                                            </td>
+                                            <td class="right">{{payslip.employee.department.costcentre.name}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="left">
+                                                <strong class="text-dark">Tax number</strong>
+                                            </td>
+                                            <td class="right">{{payslip.employee.taxnumber}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="left">
+                                                <strong class="text-dark">Annual CTC</strong>
+                                            </td>
+                                            <td class="right">R{{deduction.annual}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="left">
+                                                <strong class="text-dark">Monthly Gross</strong>
+                                            </td>
+                                            <td class="right">R{{deduction.monthly}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td>
+                                <table class="table table-clear">
+                                    <tbody>
+                                        <tr>
+                                            <td class="left">
+                                                <strong class="text-dark">Deductions</strong>
+                                            </td>
+                                            <td class="left">
+                                                <strong class="text-dark">Amount</strong>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="left">Tax</td>
+                                            <td class="right">R{{ deduction.tax }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="left">Medical aid</td>
+                                            <td class="right">R{{ deduction.medicalaid }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="left">Retirement fund</td>
+                                            <td class="right">R{{ deduction.retirement }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="right">
+                                                <strong class="text-dark">Total deductions</strong>
+                                            </td>
+                                            <td class="right">
+                                                <strong class="text-dark">R{{getTotalDeductions()}}</strong>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        <br>
+                        <tr>
+                            <table class="table table-clear">
+                                <tbody>
+                                    <tr><h5>Banking details</h5></tr>
+                                    <tr>
+                                        <td class="left">
+                                            <strong class="text-dark">Bank name</strong>
+                                        </td>
+                                        <td class="right">{{payslip.employee.bankname}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="left">
+                                            <strong class="text-dark">Bank account</strong>
+                                        </td>
+                                        <td class="right">{{payslip.employee.bankaccount}}</td>
+                                    </tr>
+                                    <tr *ngIf="payslip.employee.bankbranch">
+                                        <td class="left">
+                                            <strong class="text-dark">Branch</strong>
+                                        </td>
+                                        <td class="right">{{payslip.employee.bankbranch}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-lg-4 col-sm-5 ml-auto">
+                    <table class="table table-clear">
+                        <tbody>
+                            <tr>
+                                <td class="left">
+                                    <strong class="text-dark">Pay date</strong>
+                                </td>
+                                <td class="right">{{ payslip.payday }}</td>
+                            </tr>
+                            <tr>
+                                <td class="left">
+                                    <strong class="text-dark">NET</strong>
+                                </td>
+                                <td class="right">
+                                    <strong class="text-dark">R{{ payslip.net }}</strong>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!--
+                <div class="table-responsive-sm">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Deductions</th>
+                                <th class="right">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="left">Tax</td>
+                                <td class="right">R{{ deduction.tax }}</td>
+                            </tr>
+                            <tr>
+                                <td class="left">Medical aid</td>
+                                <td class="right">R{{ deduction.medicalaid }}</td>
+                            </tr>
+                            <tr>
+                                <td class="left">Retirement fund</td>
+                                <td class="right">R{{ deduction.retirement }}</td>
+                            </tr>
+                            <tr>
+                                <td class="right">
+                                    <strong class="text-dark">Total deductions</strong>
+                                </td>
+                                <td class="right">
+                                    <strong class="text-dark">R{{getTotalDeductions()}}</strong>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                -->
+            </div>
+            <div class="card-footer bg-white">
+                <p class="mb-0">Generated with HR Payroll</p>
+            </div>
+        </div>
+    </div>
+</div>

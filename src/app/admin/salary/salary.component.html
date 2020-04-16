@@ -1,0 +1,51 @@
+<div class="row">
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+        <div class="card">
+            <div class="alert" *ngIf="error">{{error}}</div>
+            <div class="alert" *ngIf="success">{{success}}</div>
+            <div class="card-header">
+                <form [formGroup]="rForm" (ngSubmit)="!updateMode ? addSalary(rForm.value) : updateSalary(rForm.value)">
+                    <div>
+                        <h3 class="mb-0" *ngIf="!updateMode">Add grade</h3>
+                        <h3 class="mb-0" *ngIf="updateMode">Update grade</h3>
+                        <hr/>
+						<div class="form-group">
+                            <label>Pay grade</label>
+                            <input type="text" class="form-control" formControlName="paygrade"><span class="text-danger" *ngIf="!rForm.controls['paygrade'].valid && rForm.controls['paygrade'].touched">{{ requiredAlert }}</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Basic pay</label>
+                            <input type="text" class="form-control" formControlName="basicpay"><span class="text-danger" *ngIf="!rForm.controls['basicpay'].valid && rForm.controls['basicpay'].touched">Numbers only. Format # or #.#</span>
+                        </div>
+                        <div><input type="submit" class="btn btn-primary btn-sm" value="Save" [disabled]="!rForm.valid"></div>
+                    </div>
+                </form>
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="show-list" (change) ="showHideList($event.target.checked)" />
+                    <label class="custom-control-label" for="show-list">Show available grades</label>
+                </div>
+            </div>
+            <div class="card-body" *ngIf="showList">
+                <div class="table-responsive" *ngIf="salaries?.length > 0">
+                    <span>
+                        <table class="table table-striped table-bordered second" style="width:100%">
+                            <tr>
+                                <th>Pay grade</th>
+                                <th>Basic pay</th>
+                                <th>Update</th>
+                                <th>Delete</th>
+                            </tr>
+                            <tr *ngFor="let s of salaries">
+                                <td>{{s.paygrade}}</td>
+                                <td>{{s.basicpay}}</td>
+                                <td><button class="btn btn-primary btn-xs" (click)="salaryEdit(s.id)" >Update</button></td>
+                                <td><button class="btn btn-danger btn-xs" (click)="deleteSalary(s.id)" >Delete</button></td>
+                            </tr>
+                        </table>
+                    </span>
+                </div>
+                <div class="alert" *ngIf="salaries?.length <= 0">Nothing to show</div>
+            </div>
+        </div>
+    </div>
+</div>

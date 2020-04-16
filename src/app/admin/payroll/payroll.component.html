@@ -1,0 +1,32 @@
+<div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+            <div class="card">
+                <div class="alert" *ngIf="error">{{error}}</div>
+                <div class="alert" *ngIf="success">{{success}}</div>
+                <div class="card-header">
+                    <form [formGroup]="rForm" (ngSubmit)="runPayroll(rForm.value)">
+                        <div>
+                            <h3 class="mb-0">Run payroll</h3>
+                            <hr/>
+                            <div class="form-group">
+                                <label>Period</label>
+                                <select class="form-control" formControlName="payrollPeriod" placeholder="Cost centre">
+                                    <option value=null disabled selected hidden>Choose period</option>
+                                    <option [ngValue]="p.id" *ngFor="let p of payrollPeriods">  
+                                        {{monthYear(p.period)}}
+                                    </option>
+                                </select>
+                              <span class="text-danger" *ngIf="!rForm.controls['payrollPeriod'].valid && rForm.controls['payrollPeriod'].touched">{{ formErrors.payrollPeriod }}</span>     
+                            </div>
+                            <div class="form-group">
+                                <label>Pay day</label>
+                                <input type="date" class="form-control" formControlName="payday">
+                                <span class="text-danger" *ngIf="!rForm.controls['payday'].valid && rForm.controls['payday'].touched">{{ formErrors.payday }}</span>
+                            </div>
+                            <div><input type="submit" class="btn btn-primary btn-sm" value="Run" [disabled]="!rForm.valid"></div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>

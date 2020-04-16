@@ -1,0 +1,155 @@
+<!--<employee-details></employee-details>-->
+<div class="row">
+   <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+      <div class="card">
+         <div class="alert" *ngIf="error">{{error}}</div>
+         <div class="alert" *ngIf="success">{{success}}</div>
+         <div class="card-header">
+            <div>
+               <h3 class="mb-0" *ngIf="!updateMode">Add Employee</h3>
+               <h3 class="mb-0" *ngIf="updateMode">Update Employee</h3>
+            </div>
+         </div>
+         <div class="card-body">
+            <form [formGroup]="rForm" (ngSubmit)="!updateMode ? addEmployee(rForm.value) : updateEmployee(rForm.value)">
+               <div class="form-row">
+                  <div class="form-group col-md-6">
+                     <label>First Name</label>
+                     <input type="text" class="form-control" formControlName="firstname" placeholder="First Name">
+                     <span class="text-danger" *ngIf="!rForm.controls['firstname'].valid && rForm.controls['firstname'].touched">{{ formErrors.firstname }}</span>
+                  </div>
+                  <div class="form-group col-md-6">
+                     <label>Surname</label>
+                     <input type="text" class="form-control" formControlName="surname" placeholder="Surname">
+                     <span class="text-danger" *ngIf="!rForm.controls['surname'].valid && rForm.controls['surname'].touched">{{ formErrors.surname }}</span>
+                  </div>
+               </div>
+               <div class="form-row">
+                  <div class="form-group col-md-6">
+                     <label>Date of birth</label>
+                     <input type="date" class="form-control" formControlName="dob">
+                     <span class="text-danger" *ngIf="!rForm.controls['dob'].valid && rForm.controls['dob'].touched">{{ formErrors.dob }}</span>
+                  </div>
+                  <div class="form-group col-md-6">
+                     <label>ID Number</label>
+                     <input type="text" class="form-control" formControlName="idnumber" placeholder="ID Number">
+                     <span class="text-danger" *ngIf="!rForm.controls['idnumber'].valid && rForm.controls['idnumber'].touched">{{ formErrors.idnumber }}</span>
+                  </div>
+               </div>
+               <div class="form-row">
+                  <div class="form-group col-md-6">
+                     <label>Passport Number</label>
+                     <input type="text" class="form-control" formControlName="passportno" placeholder="If applicable">
+                     <span class="text-danger" *ngIf="!rForm.controls['passportno'].valid && rForm.controls['passportno'].touched">{{ formErrors.passportno }}</span>
+                  </div>
+                  <div class="form-group col-md-6">
+                     <label>Email address</label>
+                     <input type="email" class="form-control" formControlName="emailaddress" placeholder="email@example.com">
+                     <span class="text-danger" *ngIf="!rForm.controls['emailaddress'].valid && rForm.controls['emailaddress'].touched">{{ formErrors.emailaddress }}</span>
+                  </div>
+               </div>
+               <div class="form-row">
+                  <div class="form-group col-md-6">
+                     <label>Pay grade</label>
+                     <select class="form-control" formControlName="paygrade" placeholder="Pay grade">
+                           <option value=null disabled selected hidden>Choose Pay grade</option>
+                           <option [ngValue]="s.id" *ngFor="let s of salaries">  
+                              {{s.paygrade}} (Basic pay: R{{s.basicpay}})
+                           </option>
+                     </select>
+                     <span class="text-danger" *ngIf="!rForm.controls['paygrade'].valid && rForm.controls['paygrade'].touched">{{ formErrors.paygrade }}</span>
+                  </div>
+                  <div class="form-group col-md-6">
+                     <label>Basic pay</label>
+                     <input type="text" class="form-control" formControlName="basicpay" placeholder="Overrides pay grade">
+                     <span class="text-danger" *ngIf="!rForm.controls['basicpay'].valid && rForm.controls['basicpay'].touched">{{ formErrors.basicpay }}</span>
+                  </div>
+               </div>
+               <div class="form-row">
+                  <div class="form-group col-md-6">
+                     <label>Department</label>
+                     <select class="form-control" formControlName="department" placeholder="Department">
+                           <option value=null disabled selected hidden>Choose department</option>
+                           <option [ngValue]="d.id" *ngFor="let d of departments">  
+                              {{d.name}}
+                           </option>
+                     </select>
+                     <span class="text-danger" *ngIf="!rForm.controls['department'].valid && rForm.controls['department'].touched">{{ formErrors.department }}</span>
+                  </div>
+                  <div class="form-group col-md-6">
+                     <label>Position</label>
+                     <select class="form-control" formControlName="position" placeholder="Position">
+                        <option value=null disabled selected hidden>Choose position</option>
+                        <option [ngValue]="p.id" *ngFor="let p of positions">  
+                           {{p.name}}
+                        </option>
+                     </select>
+                     <span class="text-danger" *ngIf="!rForm.controls['position'].valid && rForm.controls['position'].touched">{{ formErrors.position }}</span>
+                  </div>
+               </div>
+               <div class="form-row">
+                  <div class="form-group col-md-6">
+                     <label>Tax number</label>
+                     <input type="text" class="form-control" formControlName="taxnumber" placeholder="Tax number">
+                     <span class="text-danger" *ngIf="!rForm.controls['taxnumber'].valid && rForm.controls['taxnumber'].touched">{{ formErrors.taxnumber }}</span>
+                  </div>
+                  <div class="form-group col-md-6">
+                     <label>Hire date</label>
+                     <input type="date" class="form-control" formControlName="hiredate">
+                     <span class="text-danger" *ngIf="!rForm.controls['hiredate'].valid && rForm.controls['hiredate'].touched">{{ formErrors.hiredate }}</span>
+                  </div>
+               </div>
+               <div class="form-group">
+                  <label>Address 1</label>
+                  <input type="text" class="form-control" formControlName="address1" placeholder="Line 1">
+                  <span class="text-danger" *ngIf="!rForm.controls['address1'].valid && rForm.controls['address1'].touched">{{ formErrors.address1 }}</span>
+               </div>
+               <div class="form-group">
+                  <label>Address 2</label>
+                  <input type="text" class="form-control" formControlName="address2" placeholder="Line 2">
+                  <span class="text-danger" *ngIf="!rForm.controls['address2'].valid && rForm.controls['address2'].touched">{{ formErrors.address2 }}</span>
+               </div>
+               <div class="form-row">
+                  <div class="form-group col-md-2">
+                     <label>Postal code</label>
+                     <input type="text" class="form-control" formControlName="postalcode" placeholder="or zip code">
+                     <span class="text-danger" *ngIf="!rForm.controls['postalcode'].valid && rForm.controls['postalcode'].touched">{{ formErrors.postalcode }}</span>
+                  </div>
+                  <div class="form-group col-md-6">
+                     <label>Country</label>
+                     <input type="text" class="form-control" formControlName="country">
+                     <span class="text-danger" *ngIf="!rForm.controls['country'].valid && rForm.controls['country'].touched">{{ formErrors.country }}</span>
+                  </div>
+                  <div class="form-group col-md-4">
+                     <label>Phone number</label>
+                     <input type="text" class="form-control" formControlName="phonenumber" placeholder="Phone number">
+                     <span class="text-danger" *ngIf="!rForm.controls['phonenumber'].valid && rForm.controls['phonenumber'].touched">{{ formErrors.phonenumber }}</span>
+                  </div>
+               </div>
+               <div class="form-row">
+                  <div class="form-group col-md-6">
+                     <label>Bank name</label>
+                     <input type="text" class="form-control" formControlName="bankname" placeholder="Name of bank">
+                     <span class="text-danger" *ngIf="!rForm.controls['bankname'].valid && rForm.controls['bankname'].touched">{{ formErrors.bankname }}</span>
+                  </div>
+                  <div class="form-group col-md-4">
+                     <label>Bank account</label>
+                     <input type="text" class="form-control" formControlName="bankaccount" placeholder="Bank account">
+                     <span class="text-danger" *ngIf="!rForm.controls['bankaccount'].valid && rForm.controls['bankaccount'].touched">{{ formErrors.bankaccount }}</span>
+                  </div>
+                  <div class="form-group col-md-2">
+                     <label>Branch</label>
+                     <input type="text" class="form-control" formControlName="bankbranch" placeholder="or SWIFT">
+                     <span class="text-danger" *ngIf="!rForm.controls['bankbranch'].valid && rForm.controls['bankbranch'].touched">{{ formErrors.bankbranch }}</span>
+                  </div>
+               </div>
+               <div>
+                  <input type="submit" class="btn btn-primary btn-sm" value="Save" [disabled]="!rForm.valid">&nbsp;
+                  <input type="button" class="btn btn-primary btn-sm" value="Back" (click)="goBack()"/>
+               </div>
+            </form>
+         </div>
+      </div>
+   </div>
+</div>
+<!--<employee-list></employee-list>-->
