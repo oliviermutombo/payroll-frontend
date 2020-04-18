@@ -6,13 +6,14 @@ import { map, catchError } from 'rxjs/operators';
 
 import { UserService } from '../../services/user.service';
 import { Costcentre } from './costcentre';
+import { environment } from './../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CostcentreService {
 
-  baseUrl = 'http://localhost:8000/api';
+  baseUrl = environment.apiUrl;
   // baseUrl = 'http://localhost:51480/api'; // debungging
   costcentreUrl = this.baseUrl + '/costcentre';
   costcentreManageUrl = this.baseUrl + '/costcentre/manage';

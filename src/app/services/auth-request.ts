@@ -6,11 +6,28 @@ import { Observable } from 'rxjs';
 const AUTH_HEADER_KEY = 'Authorization';
 const AUTH_PREFIX = 'Bearer';
 
-@Injectable()
+/*@Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   constructor(public auth: UserService) {}
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
+    const token = localStorage.getItem(AUTH_TOKEN);
+    if(token) {
+      request = request.clone({
+        setHeaders: {
+          Authorization: `${AUTH_PREFIX} ${this.auth.getToken()}`
+        }
+      });
+    }
+    return next.handle(request);
+  }
+} v0*/
+
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+  constructor(public auth: UserService) {}
+  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    alert("AuthInterceptor request: \n" + JSON.stringify(request));
     const token = localStorage.getItem(AUTH_TOKEN);
     if(token) {
       request = request.clone({

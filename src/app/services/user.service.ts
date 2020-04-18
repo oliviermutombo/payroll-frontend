@@ -3,6 +3,7 @@ import {HttpClient, HttpHeaders, HttpErrorResponse} from '@angular/common/http';
 import * as jwt_decode from 'jwt-decode';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from './../../environments/environment';
 
 //guard
 
@@ -21,8 +22,9 @@ export class UserService {
   
   isSytemAdmin = true;
 
-  baseUrl = 'http://localhost:8000/api';
-  loginUrl = this.baseUrl + '/obtain-token/';
+  baseUrl = environment.apiUrl;
+  //loginUrl = this.baseUrl + '/obtain-token/'; //v0
+  loginUrl = this.baseUrl + '/oauth/token';
   tokenRefreshUrl = this.baseUrl + '/api-token-refresh/';
   createUrl = this.baseUrl + '/create-user';
   getUrl = this.baseUrl + '/get-user';
@@ -58,8 +60,14 @@ export class UserService {
     this.currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('currentUser')));
     this.currentUser = this.currentUserSubject.asObservable();
 
+    var apiUsername = environment.apiUsername;
+    var apiPassword = environment.apiPassword;
+
     this.httpOptions = {
-      headers: new HttpHeaders({'Content-Type': 'application/json'})
+      headers: new HttpHeaders({'Content-Type': 'application/x-www-form-urlencoded',
+                      'Authorization': 'Basic ' + btoa(apiUsername + ':' + apiPassword)//,
+                      //'Access-Control-Allow-Origin': '*' //REMOVE THIS! IT DOES NOTHING!!!
+                })
     };
 
     //roles
@@ -85,8 +93,8 @@ export class UserService {
     return this.currentUserSubject.value;
   }
 
-  login(user: any):  Observable<any> {
-    return this.http.post<any>(this.loginUrl, JSON.stringify(user), this.httpOptions)
+  login(requestBody: any):  Observable<any> {
+    return this.http.post<any>(this.loginUrl, requestBody.toString(), this.httpOptions)
     .pipe(map((userData) => {
       if (userData && userData['token']) {
         this.updateData(userData);
@@ -94,6 +102,7 @@ export class UserService {
       return userData;
     }));
   }
+
   // Refreshes the JWT token, to extend the time the user is logged in
   public refreshToken() {
     this.tokenExpired = true;

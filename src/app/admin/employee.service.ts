@@ -7,13 +7,15 @@ import { map, catchError } from 'rxjs/operators';
 import { Employee } from './employee/employee';
 import { Salary } from './salary/salary';
 
+import { environment } from './../../environments/environment';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class EmployeeService {
 
-  baseUrl = 'http://localhost:8000/api';
+  baseUrl = environment.apiUrl;
   salaryUrl = this.baseUrl + '/salary';
   salaryManageUrl = this.baseUrl + '/salary/manage';
   employeeUrl = this.baseUrl + '/employee';

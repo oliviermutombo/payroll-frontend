@@ -5,13 +5,14 @@ import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
 import { Department } from './department';
+import { environment } from './../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DepartmentService {
 
-  baseUrl = 'http://localhost:8000/api';
+  baseUrl = environment.apiUrl;
   departmentUrl = this.baseUrl + '/department';
   departmentManageUrl = this.baseUrl + '/department/manage';
   departments: Department[];

@@ -5,13 +5,14 @@ import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
 import { Position } from './position';
+import { environment } from './../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PositionService {
 
-  baseUrl = 'http://localhost:8000/api';
+  baseUrl = environment.apiUrl;
   // baseUrl = 'http://localhost:51480/api'; // debungging
   positionUrl = this.baseUrl + '/position';
   positionManageUrl = this.baseUrl + '/position/manage';

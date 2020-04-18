@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { environment } from './../../environments/environment';
 
 //////////////////////////////////////////////// open
 import { Observable, throwError } from 'rxjs';
@@ -19,7 +20,7 @@ export class DataService {
 
   private messageSource = new BehaviorSubject('default message');
   currentMessage = this.messageSource.asObservable();
-  baseUrl = 'http://localhost:8000/api';
+  baseUrl = environment.apiUrl;
 
   costcentreUrl = this.baseUrl + '/costcentre';
   costcentre: Costcentre;

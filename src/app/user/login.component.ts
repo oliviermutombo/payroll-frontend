@@ -43,18 +43,37 @@ export class LoginComponent implements OnInit {
         };
     }
 
-    login(f) {
+    /*login(f) {
         this.resetErrors();
         //this.userService.login({'email': f.email, 'password': f.password});
         let submittedUser = {'email': f.email, 'password': f.password};
         this.userService.login(submittedUser).subscribe(
             (res: any) => {
                 
-            }/*,
+            }//,
+            //(err) => {
+            //    alert ('Ereur yangoyo: ' + JSON.stringify(err));
+            //    this.error = err;
+            //}
+        );
+    } v0 */
+
+    login(f) {
+        this.resetErrors();
+        let requestBody = new URLSearchParams();
+        requestBody.set('username', f.email);
+        requestBody.set('password', f.password);
+        requestBody.set('grant_type', 'password');
+        //let submittedUser = {'username': f.email, 'password': f.password, 'grant_type': 'password'};
+        //this.userService.login(submittedUser).subscribe(
+        this.userService.login(requestBody).subscribe(
+            (res: any) => {
+                
+            },
             (err) => {
                 alert ('Ereur yangoyo: ' + JSON.stringify(err));
                 this.error = err;
-            }*/
+            }
         );
     }
     
