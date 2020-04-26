@@ -27,7 +27,6 @@ export class AuthInterceptor implements HttpInterceptor {
 export class AuthInterceptor implements HttpInterceptor {
   constructor(public auth: UserService) {}
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    alert("AuthInterceptor request: \n" + JSON.stringify(request));
     const token = localStorage.getItem(AUTH_TOKEN);
     if(token) {
       request = request.clone({
@@ -36,6 +35,7 @@ export class AuthInterceptor implements HttpInterceptor {
         }
       });
     }
+    alert("AuthInterceptor token: " + token);
     return next.handle(request);
   }
 }

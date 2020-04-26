@@ -23,8 +23,13 @@ export class UserService {
   isSytemAdmin = true;
 
   baseUrl = environment.apiUrl;
+  apiVersion = environment.apiVersion;
+
   //loginUrl = this.baseUrl + '/obtain-token/'; //v0
   loginUrl = this.baseUrl + '/oauth/token';
+  userUrl = this.baseUrl + this.apiVersion + '/users';
+
+
   tokenRefreshUrl = this.baseUrl + '/api-token-refresh/';
   createUrl = this.baseUrl + '/create-user';
   getUrl = this.baseUrl + '/get-user';
@@ -43,6 +48,9 @@ export class UserService {
  
   // the email of the logged in user
   public email: string;
+
+  // v1 username of the logged in user
+  public username: string;
  
   // error messages received from the login attempt.
   public error: any = [];
@@ -65,8 +73,8 @@ export class UserService {
 
     this.httpOptions = {
       headers: new HttpHeaders({'Content-Type': 'application/x-www-form-urlencoded',
-                      'Authorization': 'Basic ' + btoa(apiUsername + ':' + apiPassword)//,
-                      //'Access-Control-Allow-Origin': '*' //REMOVE THIS! IT DOES NOTHING!!!
+                      'Authorization': 'Basic ' + btoa(apiUsername + ':' + apiPassword),
+                      observe:'response'
                 })
     };
 
@@ -93,13 +101,24 @@ export class UserService {
     return this.currentUserSubject.value;
   }
 
-  login(requestBody: any):  Observable<any> {
+  /*login(requestBody: any):  Observable<any> {
     return this.http.post<any>(this.loginUrl, requestBody.toString(), this.httpOptions)
     .pipe(map((userData) => {
       if (userData && userData['token']) {
         this.updateData(userData);
       }
       return userData;
+    }));
+  } v0 */
+
+  login(requestBody: any):  Observable<any> {
+    return this.http.post<any>(this.loginUrl, requestBody.toString(), this.httpOptions)
+    .pipe(map((tokenResponseObj) => {
+      alert("tokenResponseObj: " + JSON.stringify(tokenResponseObj));
+      if (tokenResponseObj && tokenResponseObj['access_token']) {
+        alert('To Koti');
+        this.updateData(tokenResponseObj);
+      }
     }));
   }
 
@@ -124,6 +143,7 @@ export class UserService {
     // this.token = null;
     this.token_expires = null; // to be removed eventually
     this.email = null;
+    this.username = null;
 
     //guard
     localStorage.removeItem('currentUser');
@@ -135,7 +155,7 @@ export class UserService {
     //alert ('Successfully logged out');
   }
  
-  public updateData(userData) {
+  /*public updateData(userData) {
     // this.token = token;
     let token = userData.token;
     this.error = [];
@@ -156,6 +176,49 @@ export class UserService {
     localStorage.setItem(AUTH_TOKEN, token);
     localStorage.setItem('email', token_decoded.email);
     localStorage.setItem('token_expiry', String(new Date(token_decoded.exp * 1000)));
+  } v0 */
+
+  public updateData(userData) {
+    // this.token = token;
+    let token = userData.access_token;
+    this.error = [];
+ 
+    // decode the token to read the email and expiration timestamp
+    //const token_parts = this.token.split(/\./);
+    const token_parts = token.split(/\./);
+    const token_decoded = JSON.parse(window.atob(token_parts[1]));
+    this.token_expires = new Date(token_decoded.exp * 1000);
+    this.email = token_decoded.email;//Missing - not needed for now
+    this.username = token_decoded.user_name;
+
+    ////////////
+    alert("token_decoded: " + JSON.stringify(token_decoded));
+    //alert("token_decoded - email : " + this.email);
+    //alert("token_decoded - username : " + this.username);
+    ////////////
+
+    //May have to decomission the below since they're now saved in currentUser
+    localStorage.setItem(AUTH_TOKEN, token);
+    localStorage.setItem('email', token_decoded.email);
+    localStorage.setItem('token_expiry', String(new Date(token_decoded.exp * 1000)));
+
+    //new-v0
+    //var currentUserObj = this.getUserByUsername(this.username);
+    //alert('currentUserObj: ' + JSON.stringify(currentUserObj));
+    this.getUserByUsername(this.username).subscribe(
+      response => {
+        alert('@@@@@@@@@@@@@@@@\n' + JSON.stringify(response));
+      }/*,
+      err => {
+        this.error = err['error'];
+      }*/
+    );
+    //
+    
+    //save to local storage
+    //guard
+    localStorage.setItem('currentUser', JSON.stringify(userData));
+    this.currentUserSubject.next(userData);
   }
 
   public getLoggedInDetails(): string { // TEST
@@ -209,6 +272,15 @@ export class UserService {
   getUser(employeeId): Observable<any> { //NOTE THAT THIS IS THE EMPLOYEE ID and NOT USER ID. 
     return this.http.get<any>(`${this.getUrl}/${employeeId}`)
       .pipe(map((res) => {
+        return res;
+      }));
+  }
+  
+  getUserByUsername(username): Observable<any> {
+    alert('Trace - getUserByUsername');
+    return this.http.get<any>(`${this.userUrl}/username/${username}`)
+      .pipe(map((res) => {
+        alert('res: ' + JSON.stringify(res));
         return res;
       }));
   }

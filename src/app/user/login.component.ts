@@ -68,7 +68,7 @@ export class LoginComponent implements OnInit {
         //this.userService.login(submittedUser).subscribe(
         this.userService.login(requestBody).subscribe(
             (res: any) => {
-                
+
             },
             (err) => {
                 alert ('Ereur yangoyo: ' + JSON.stringify(err));
