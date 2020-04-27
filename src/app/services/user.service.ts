@@ -84,7 +84,7 @@ export class UserService {
     //alert('this.currentUser: ' + JSON.stringify(this.currentUser));
   }
 
-  public hasRole(_role) { //preferred technique because it pulls value from Observalable/BehaviorSubject
+  /*public hasRole(_role) { //preferred technique because it pulls value from Observalable/BehaviorSubject
     let rolesArr = this.currentUser.source['_value'].role;
     //alert('rolesArr!: ' + JSON.stringify(rolesArr));
     if (rolesArr) {
@@ -92,6 +92,18 @@ export class UserService {
         return true;
       }
     }
+    return false;
+  } // v0 */
+
+  public hasRole(_role) { //preferred technique because it pulls value from Observalable/BehaviorSubject
+    /*let rolesArr = this.currentUser.source['_value'].roles;
+    //alert('rolesArr!: ' + JSON.stringify(rolesArr));
+    if (rolesArr) {
+      if (rolesArr.indexOf(_role) > -1){
+        return true;
+      }
+    }*/
+    //alert('hasRole('+ _role +') -  this.currentUser' + JSON.stringify(this.currentUser));
     return false;
   }
 
@@ -206,19 +218,22 @@ export class UserService {
     //var currentUserObj = this.getUserByUsername(this.username);
     //alert('currentUserObj: ' + JSON.stringify(currentUserObj));
     this.getUserByUsername(this.username).subscribe(
-      response => {
-        alert('@@@@@@@@@@@@@@@@\n' + JSON.stringify(response));
-      }/*,
+      userDetails => {
+        //alert('@@@@@@@@@@@@@@@@\n' + JSON.stringify(response));
+        localStorage.setItem('currentUser', JSON.stringify(userDetails));
+        this.currentUserSubject.next(userDetails);
+      },
       err => {
         this.error = err['error'];
-      }*/
+      }
     );
+    alert('this.currentUserSubject: ' + JSON.stringify(this.currentUserSubject));
     //
     
     //save to local storage
     //guard
-    localStorage.setItem('currentUser', JSON.stringify(userData));
-    this.currentUserSubject.next(userData);
+    //localStorage.setItem('currentUser', JSON.stringify(userData));
+    //this.currentUserSubject.next(userData);
   }
 
   public getLoggedInDetails(): string { // TEST
@@ -277,10 +292,10 @@ export class UserService {
   }
   
   getUserByUsername(username): Observable<any> {
-    alert('Trace - getUserByUsername');
+    //alert('Trace - getUserByUsername');
     return this.http.get<any>(`${this.userUrl}/username/${username}`)
       .pipe(map((res) => {
-        alert('res: ' + JSON.stringify(res));
+        //alert('res: ' + JSON.stringify(res));
         return res;
       }));
   }
