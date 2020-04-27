@@ -10,7 +10,7 @@ export class AuthGuard implements CanActivate {
         private userService: UserService
     ) {}
 
-    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+    /*canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
         const currentUser = this.userService.currentUserValue;
         if (currentUser) {
             for (let role of route.data.roles) {
@@ -18,6 +18,26 @@ export class AuthGuard implements CanActivate {
                     return true;
                     break;// not needed anymore
                 }
+            }
+            // role not authorised so redirect to home page
+            this.router.navigate(['/']);
+            return false;
+        }
+
+        // not logged in so redirect to login page with the return url
+        this.router.navigate(['/login'], { queryParams: { returnUrl: state.url }});
+        return false;
+    } // v0*/
+
+    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+        const currentUser = this.userService.currentUserValue;
+        if (currentUser) {
+            for (let role of route.data.roles) {
+                alert ('currentUser.roles[\'name\']: ' + currentUser.roles['name']);
+                /*if (currentUser.roles['name'].indexOf(role) > -1){
+                    return true;
+                    break;// not needed anymore
+                }*/
             }
             // role not authorised so redirect to home page
             this.router.navigate(['/']);
