@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-        <div class="card" *ngIf="hasRole('systemAdmin')">
+        <div class="card" *ngIf="hasRole('ROLE_ADMIN')">
             <h5 class="card-header">System Administration</h5>
             <div class="card-body">
                 <div class="media">
@@ -20,7 +20,7 @@
                 </div>
             </div>
         </div>
-        <div class="card" *ngIf="hasRole('employeeAdmin')">
+        <div class="card" *ngIf="hasRole('ROLE_EMPLOYEE_ADMIN')">
             <h5 class="card-header">Employee Administration</h5>
             <div class="card-body">
                 <div class="media">
@@ -46,7 +46,7 @@
                 </div>
             </div>
         </div>
-        <div class="card" *ngIf="hasRole('payrollAdmin')">
+        <div class="card" *ngIf="hasRole('ROLE_PAYROLL_ADMIN')">
             <h5 class="card-header">Payroll Administration</h5>
             <div class="card-body">
                 <div class="media">
@@ -75,7 +75,7 @@
                 </div>
             </div>
         </div>
-        <div class="card" *ngIf="hasRole('employee')">
+        <div class="card" *ngIf="hasRole('ROLE_EMPLOYEE')">
             <h5 class="card-header">Employee tools</h5>
             <div class="card-body">
                 <div class="media">

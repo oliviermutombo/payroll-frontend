@@ -35,7 +35,7 @@ export class AuthInterceptor implements HttpInterceptor {
         }
       });
     }
-    alert("AuthInterceptor token: " + token);
+    //alert("AuthInterceptor token: " + token);
     return next.handle(request);
   }
 }

@@ -34,97 +34,97 @@ const routes: Routes = [
     path: 'manage_employee', //create employee
     component: ManageEmployeeComponent,
     canActivate: [AuthGuard], 
-    data: { roles: [Role.employeeAdmin,] }
+    data: { roles: [Role.ROLE_EMPLOYEE_ADMIN,] }
   },
   {
     path: 'manage_employee/:id',
     component: ManageEmployeeComponent,
     canActivate: [AuthGuard], 
-    data: { roles: [Role.employeeAdmin] }
+    data: { roles: [Role.ROLE_EMPLOYEE_ADMIN] }
   },
   {
     path: 'employee_list',
     component: EmployeeListComponent,
     canActivate: [AuthGuard], 
-    data: { roles: [Role.systemAdmin, Role.payrollAdmin, Role.employeeAdmin] }
+    data: { roles: [Role.ROLE_ADMIN, Role.ROLE_PAYROLL_ADMIN, Role.ROLE_EMPLOYEE_ADMIN] }
   },
   {
     path: 'user_list',
     component: UserListComponent,
     canActivate: [AuthGuard], 
-    data: { roles: [Role.systemAdmin] }
+    data: { roles: [Role.ROLE_ADMIN] }
   },
   {
     path: 'create_user/:id',
     component: ManageUserComponent,
     canActivate: [AuthGuard], 
-    data: { roles: [Role.systemAdmin] }
+    data: { roles: [Role.ROLE_ADMIN] }
   },
   {
     path: 'edit_user/:_id',
     component: ManageUserComponent,
     canActivate: [AuthGuard], 
-    data: { roles: [Role.systemAdmin] }
+    data: { roles: [Role.ROLE_ADMIN] }
   },
   {
     path: 'employee_details/:id',
     component: EmployeeDetailsComponent,
     canActivate: [AuthGuard], 
-    data: { roles: [Role.payrollAdmin, Role.employeeAdmin] }
+    data: { roles: [Role.ROLE_PAYROLL_ADMIN, Role.ROLE_EMPLOYEE_ADMIN] }
   },
   {
     path: 'salary',
     component: SalaryComponent,
     canActivate: [AuthGuard], 
-    data: { roles: [Role.payrollAdmin] }
+    data: { roles: [Role.ROLE_PAYROLL_ADMIN] }
   },
   {
     path: 'costcentre',
     component: CostcentreComponent,
     canActivate: [AuthGuard], 
-    data: { roles: [Role.payrollAdmin] }
+    data: { roles: [Role.ROLE_PAYROLL_ADMIN] }
   },
   {
     path: 'department',
     component: DepartmentComponent,
     canActivate: [AuthGuard], 
-    data: { roles: [Role.employeeAdmin] }
+    data: { roles: [Role.ROLE_EMPLOYEE_ADMIN] }
   },
   {
     path: 'position',
     component: PositionComponent,
     canActivate: [AuthGuard], 
-    data: { roles: [Role.employeeAdmin] }
+    data: { roles: [Role.ROLE_EMPLOYEE_ADMIN] }
   },
   {
     path: 'deduction',
     component: DeductionComponent,
     canActivate: [AuthGuard], 
-    data: { roles: [Role.payrollAdmin] }
+    data: { roles: [Role.ROLE_PAYROLL_ADMIN] }
   },
   {
     path: 'payrollperiod',
     component: PayrollPeriodComponent,
     canActivate: [AuthGuard], 
-    data: { roles: [Role.payrollAdmin] }
+    data: { roles: [Role.ROLE_PAYROLL_ADMIN] }
   },
   {
     path: 'payroll',
     component: PayrollComponent,
     canActivate: [AuthGuard], 
-    data: { roles: [Role.payrollAdmin] }
+    data: { roles: [Role.ROLE_PAYROLL_ADMIN] }
   },
   {
     path: 'payslip',
     component: PayslipComponent,
     canActivate: [AuthGuard], 
-    data: { roles: [Role.employee] }
+    data: { roles: [Role.ROLE_EMPLOYEE] }
   },
   {
     path: 'payslip/:id',
     component: PayslipComponent,
     canActivate: [AuthGuard], 
-    data: { roles: [Role.employee] }
+    data: { roles: [Role.ROLE_EMPLOYEE] }
   },
   {
       path: '',
