@@ -10,17 +10,12 @@ import { environment } from './../../environments/environment';
 import { User } from '../user/user'
 
 export const AUTH_TOKEN: string = 'jwt_token';
-
-
  
 // @Injectable()
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-
-  
-  isSytemAdmin = true;
 
   baseUrl = environment.apiUrl;
   apiVersion = environment.apiVersion;
@@ -82,153 +77,27 @@ export class UserService {
                       observe:'response'
                 })
     };
-
-    //roles
-    this.isSytemAdmin = true;
-    //alert('this.currentUser: ' + JSON.stringify(this.currentUser.source._value.role));
-    //alert('this.currentUser: ' + JSON.stringify(this.currentUser));
   }
 
-  /*public hasRole(_role) { //preferred technique because it pulls value from Observalable/BehaviorSubject
-    let rolesArr = this.currentUser.source['_value'].role;
-    //alert('rolesArr!: ' + JSON.stringify(rolesArr));
-    if (rolesArr) {
-      if (rolesArr.indexOf(_role) > -1){
-        return true;
-      }
-    }
-    return false;
-  } // v0 */
-
-  public hasRole(_role) { //preferred technique because it pulls value from Observalable/BehaviorSubject
-    //alert('++ hasRole ++\n looking for role: '+ _role + '\n current user role(s): ' + this.rolesArr);
+  public hasRole(_role) {
     let userdetails = this.currentUser.source['_value'];
-    //alert('Checking roles:\n' + JSON.stringify(userdetails));
-    //alert('currentUserSubject\n' + JSON.stringify(this.currentUserSubject));
     let rolesArr = null;
     if (userdetails) {
       rolesArr = this.currentUser.source['_value'].roles;
-      //alert('rolesArr: \n' + JSON.stringify(rolesArr));
     }
     
     if (rolesArr) {
-      //alert('rolesArr: \n' + JSON.stringify(rolesArr));
       if (rolesArr.indexOf(_role) > -1){
-        //alert('User ' + userdetails.username + ' has ' + _role + '\nuserdetails: ' + JSON.stringify(userdetails));
         return true;
       }
     }
-    //alert('hasRole('+ _role +') -  this.currentUser' + JSON.stringify(this.currentUser));
     return false;
   }
 
   //guard
   public get currentUserValue(): User {
-    //alert('this.currentUserSubject.value: ' + JSON.stringify(this.currentUserSubject.value))
     return this.currentUserSubject.value;
   }
-
-  /*login(requestBody: any):  Observable<any> {
-    return this.http.post<any>(this.loginUrl, requestBody.toString(), this.httpOptions)
-    .pipe(map((userData) => {
-      if (userData && userData['token']) {
-        this.updateData(userData);
-      }
-      return userData;
-    }));
-  } v0 */
-
-  /*login(requestBody: any):  Observable<any> {
-    let self = this;
-    return this.http.post<any>(this.loginUrl, requestBody.toString(), this.httpOptions)
-    .pipe(map((tokenResponseObj) => {
-      //alert("tokenResponseObj: " + JSON.stringify(tokenResponseObj));
-      if (tokenResponseObj && tokenResponseObj['access_token']) {
-        //this.updateData(tokenResponseObj);
-        //alert('3. this.currentUserSubject: ' + JSON.stringify(this.currentUserSubject));
-
-        alert("* We have logged in!\ntokenResponseObj: " + JSON.stringify(tokenResponseObj) + "\n\nLet us save the token now");
-        var gold = null;
-        this.saveToken(tokenResponseObj)
-        .then(username => {
-          alert('** Token saved\nNow get userdetails(2nd call)');
-          this.getUserDetails(username)
-          .then(userdetails => {
-            gold = userdetails;
-            alert('*** userdetails [NEVER NULL]: \n' + JSON.stringify(userdetails));
-            //save to local storage (IS THIS USED?)
-            localStorage.setItem('currentUser', JSON.stringify(userdetails));
-            //guard
-            self.currentUserSubject.next(userdetails);
-          });
-        });
-        alert('**** userdetails [PLEASE]: \n' + JSON.stringify(gold));
-        //
-      }
-    }));
-  }*/
-
-  /*login(requestBody: any):  Observable<any> {
-    let self = this;
-    return this.http.post<any>(this.loginUrl, requestBody.toString(), this.httpOptions)
-    .pipe(map((tokenResponseObj) => {
-      //alert("tokenResponseObj: " + JSON.stringify(tokenResponseObj));
-      if (tokenResponseObj && tokenResponseObj['access_token']) {
-        //this.updateData(tokenResponseObj);
-        //alert('3. this.currentUserSubject: ' + JSON.stringify(this.currentUserSubject));
-
-        alert("* We have logged in!\ntokenResponseObj: " + JSON.stringify(tokenResponseObj) + "\n\nLet us save the token now");
-        var gold = null;
-        this.saveToken(tokenResponseObj)
-        .then(username => {
-          alert('** Token saved\nNow get userdetails(2nd call)');
-          this.getUserByUsername(username).subscribe(userdetails => {
-            alert('*** userdetails [NEVER NULL]: \n' + JSON.stringify(userdetails));
-            //save to local storage (IS THIS USED?)
-            localStorage.setItem('currentUser', JSON.stringify(userdetails));
-            //guard
-            self.currentUserSubject.next(userdetails);
-          });
-        });
-        alert('**** userdetails [PLEASE]: \n' + JSON.stringify(gold));
-        //
-      }
-    }));
-  }*/
-
-  //trying mergemap here
-  /*_login(requestBody: any){
-    this.http.post<any>(this.loginUrl, requestBody.toString(), this.httpOptions)
-    .pipe(
-      map( tokenResponseObj => {
-        if (tokenResponseObj && tokenResponseObj['access_token']) {
-          alert("* We have logged in!\ntokenResponseObj: " + JSON.stringify(tokenResponseObj) + "\n\nLet us save the token now");
-          let token = tokenResponseObj['access_token'];
-          const token_parts = token.split(/\./);
-          const token_decoded = JSON.parse(window.atob(token_parts[1]));
-          this.token_expires = new Date(token_decoded.exp * 1000);
-          this.email = token_decoded.email;//Missing - not needed for now
-
-          this.username = token_decoded.user_name;
-          
-          localStorage.setItem(AUTH_TOKEN, token);
-          localStorage.setItem('email', token_decoded.email);
-          localStorage.setItem('token_expiry', String(new Date(token_decoded.exp * 1000)));
-        }
-        alert('** Token saved\nNow get userdetails(2nd call) for:\n' + this.username);
-        return this.username;
-      }),
-      mergeMap( username => this.http.get<any>(`${this.userUrl}/username/${username}`)),
-      take(1)
-    ).subscribe( userdetails => {
-       alert('*** userdetails [NEVER NULL]: \n' + JSON.stringify(userdetails));
-       //save to local storage (IS THIS USED?)
-       localStorage.setItem('currentUser', JSON.stringify(userdetails));
-       //guard
-       this.currentUserSubject.next(userdetails);
-       alert('KUDOS IF THE DASHBOARD HAS NOT LOADED YET BY NOW.\nIT SHOULD LOAD NEXT');
-    });
-  }*/
 
   //trying mergemap here
   login(requestBody: any){
@@ -236,7 +105,6 @@ export class UserService {
     .pipe(
       map( tokenResponseObj => {
         if (tokenResponseObj && tokenResponseObj['access_token']) {
-          //alert("* We have logged in!\ntokenResponseObj: " + JSON.stringify(tokenResponseObj) + "\n\nLet us save the token now");
 
           let token = tokenResponseObj['access_token'];
           const token_parts = token.split(/\./);
@@ -245,7 +113,6 @@ export class UserService {
           this.email = token_decoded.email;//Missing - not needed for now
           this.username = token_decoded.user_name;// now saving the username in userDetailsObj
           this.rolesArr = token_decoded.authorities;
-          //alert('rolesArr:\n' + this.rolesArr);
 
           this.userObj.email = "";
           this.userObj.username = token_decoded.user_name;
@@ -261,13 +128,11 @@ export class UserService {
           this.currentUserSubject.next(this.userObj);
           
         }
-        //alert('** Token saved\nNow get userdetails(2nd call) for:\n' + this.username);
         return this.username; // now saving the username in userDetailsObj - Update it.
       }),
       mergeMap( username => this.http.get<any>(`${this.userUrl}/username/${username}`)),
       take(1)
     ).subscribe( userdetails => {
-       //alert('*** userdetails [NEVER NULL]: \n' + JSON.stringify(userdetails));
        this.userObj.firstName = userdetails.result.firstName;
        this.userObj.lastName = userdetails.result.lastName;
        //save to local storage
@@ -275,8 +140,6 @@ export class UserService {
        //guard
        this.currentUserSubject.next(this.userObj);
        
-       //alert('UPDATED userObj:\n' + JSON.stringify(this.userObj));
-       //alert('UPDATED currentUserSubject:\n' + JSON.stringify(this.currentUserSubject));
     });
   }
 
@@ -286,65 +149,6 @@ export class UserService {
       displayName = this.currentUserValue.firstName + ' ' + this.currentUserValue.lastName;
     }
     return displayName;
-  }
-
-  /*testing(x) {
-    alert('THIS ALERT MUST DISPLAY BEFORE DASHBOARD LOADS!');
-    //save to local storage (IS THIS USED?)
-    localStorage.setItem('currentUser', JSON.stringify(x));
-    //guard
-    this.currentUserSubject.next(x);
-  }*/
-
-  test(){
-    return 'test - currentUserSubject: ' + JSON.stringify(this.currentUserSubject);
-  }
-
-  private saveToken(tokenResponseObj) : Promise<any> {
-
-    return new Promise((resolve, reject) => {
-      let token = tokenResponseObj.access_token;
-      const token_parts = token.split(/\./);
-      const token_decoded = JSON.parse(window.atob(token_parts[1]));
-      this.token_expires = new Date(token_decoded.exp * 1000);
-      this.email = token_decoded.email;//Missing - not needed for now
-      this.username = token_decoded.user_name;
-      
-      localStorage.setItem(AUTH_TOKEN, token);
-      localStorage.setItem('email', token_decoded.email);
-      localStorage.setItem('token_expiry', String(new Date(token_decoded.exp * 1000)));
-
-      resolve(this.username);
-
-    });
-    /*   
-    this.getUserDetails(this.username)
-    .then(value => {
-      self.email = value;
-      alert('ALERRRRRT [NEVER NULL]: \n' + JSON.stringify(this.email));
-    });
-    alert('ALERRRRRT: [NOT NULL]\n' + JSON.stringify(this.email));
-    */
-  }
-
-  private getUserDetails(user): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.getUserByUsername(user).subscribe(success => {
-        resolve(success);
-      });
-    });
-  }
-
-  public setUserDetails(username): void {
-    this.http.get<any>(`${this.userUrl}/username/${username}`)
-      .pipe(map((userdetails) => {
-        alert('*** userdetails [NEVER NULL]: \n' + JSON.stringify(userdetails));
-        //save to local storage (IS THIS USED?)
-        localStorage.setItem('currentUser', JSON.stringify(userdetails));
-        //guard
-        this.currentUserSubject.next(userdetails);
-        //return true;
-      }));
   }
 
   // Refreshes the JWT token, to extend the time the user is logged in
@@ -365,10 +169,6 @@ export class UserService {
   }
  
   public logout() {
-    //
-    //alert('ABOUT TO LOG OUT - this.currentUserSubject: \n ' + JSON.stringify(this.currentUserSubject));
-    //
-    // this.token = null;
     this.token_expires = null; // to be removed eventually
     this.email = null;
     this.username = null;
@@ -379,34 +179,9 @@ export class UserService {
 
     // clear local storage (Not really important anymore after guard)
     localStorage.clear();
-    //this.success = 'Successfully logged out';
-    //alert ('Successfully logged out');
   }
- 
-  /*public updateData(userData) {
-    // this.token = token;
-    let token = userData.token;
-    this.error = [];
- 
-    // decode the token to read the email and expiration timestamp
-    //const token_parts = this.token.split(/\./);
-    const token_parts = token.split(/\./);
-    const token_decoded = JSON.parse(window.atob(token_parts[1]));
-    this.token_expires = new Date(token_decoded.exp * 1000);
-    this.email = token_decoded.email;
 
-    //save to local storage
-    //guard
-    localStorage.setItem('currentUser', JSON.stringify(userData));
-    this.currentUserSubject.next(userData);
-
-    //May have to decomission the below since they're now saved in currentUser
-    localStorage.setItem(AUTH_TOKEN, token);
-    localStorage.setItem('email', token_decoded.email);
-    localStorage.setItem('token_expiry', String(new Date(token_decoded.exp * 1000)));
-  } v0 */
-
-  public updateData(userData) {
+  public updateData(userData) { //NEEDS TO BE TWICKED WHEN REFRESH TOKEN IS IMPLEMENTED
     // this.token = token;
     let token = userData.access_token;
     this.error = [];
@@ -419,20 +194,12 @@ export class UserService {
     this.email = token_decoded.email;//Missing - not needed for now
     this.username = token_decoded.user_name;
 
-    ////////////
-    //alert("token_decoded: " + JSON.stringify(token_decoded));
-    //alert("token_decoded - email : " + this.email);
-    //alert("token_decoded - username : " + this.username);
-    ////////////
-
     //May have to decomission the below since they're now saved in currentUser
     localStorage.setItem(AUTH_TOKEN, token);
     localStorage.setItem('email', token_decoded.email);
     localStorage.setItem('token_expiry', String(new Date(token_decoded.exp * 1000)));
 
     //new-v0
-    //var currentUserObj = this.getUserByUsername(this.username);
-    //alert('currentUserObj: ' + JSON.stringify(currentUserObj));
     this.getUserByUsername(this.username).subscribe(
       userDetails => {
         //alert('@@@@@@@@@@@@@@@@\n' + JSON.stringify(response));
@@ -446,15 +213,9 @@ export class UserService {
       }
     );
     alert('2. this.currentUserSubject: ' + JSON.stringify(this.currentUserSubject));
-    //
-    
-    //save to local storage
-    //guard
-    //localStorage.setItem('currentUser', JSON.stringify(userData));
-    //this.currentUserSubject.next(userData);
   }
 
-  public getLoggedInDetails(): string { // TEST
+  public getLoggedInDetails(): string { // TEST (To be removed - only tested in costcentre)
     return localStorage.getItem('email') + '. Token expires at:' + localStorage.getItem('token_expiry');
   }
 
@@ -483,11 +244,7 @@ export class UserService {
   }
 
   public isAuthenticated(): boolean {
-    // get the token
     const token = this.getToken();
-    // return a boolean reflecting 
-    // whether or not the token is expired
-    // alert('Has token expired? : ' + this.isTokenExpired(token));
     return !this.isTokenExpired(token);
   }
 

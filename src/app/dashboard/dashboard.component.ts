@@ -11,7 +11,6 @@ export class DashboardComponent implements OnInit {
   constructor(private userService: UserService) { }
 
   ngOnInit() {
-    alert('DashboardComponent - ngOnInit() \n' + this.userService.test());
   }
 
   hasRole(_role) {
