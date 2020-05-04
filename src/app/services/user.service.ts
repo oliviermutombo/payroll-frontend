@@ -40,14 +40,7 @@ export class UserService {
  
   // the token expiration date
   public token_expires: Date;
- 
-  // the email of the logged in user
-  public email: string;
 
-  // v1 username of the logged in user
-  public username: string;
-  // v1 roles of the logged in user
-  public rolesArr: any;
   // v1
   public userObj = new User();
  
@@ -99,48 +92,50 @@ export class UserService {
     return this.currentUserSubject.value;
   }
 
-  //trying mergemap here
   login(requestBody: any){
     this.http.post<any>(this.loginUrl, requestBody.toString(), this.httpOptions)
     .pipe(
       map( tokenResponseObj => {
-        if (tokenResponseObj && tokenResponseObj['access_token']) {
-
-          let token = tokenResponseObj['access_token'];
-          const token_parts = token.split(/\./);
-          const token_decoded = JSON.parse(window.atob(token_parts[1]));
-          this.token_expires = new Date(token_decoded.exp * 1000);
-          this.email = token_decoded.email;//Missing - not needed for now
-          this.username = token_decoded.user_name;// now saving the username in userDetailsObj
-          this.rolesArr = token_decoded.authorities;
-
-          this.userObj.email = "";
-          this.userObj.username = token_decoded.user_name;
-          this.userObj.roles = token_decoded.authorities;
-
-          localStorage.setItem(AUTH_TOKEN, token);
-          localStorage.setItem('email', token_decoded.email);// to remove
-          localStorage.setItem('token_expiry', String(new Date(token_decoded.exp * 1000)));
-
-          //save to local storage
-          localStorage.setItem('currentUser', JSON.stringify(this.userObj));
-          //guard
-          this.currentUserSubject.next(this.userObj);
-          
-        }
-        return this.username; // now saving the username in userDetailsObj - Update it.
+        return this.setUserData(tokenResponseObj);
       }),
       mergeMap( username => this.http.get<any>(`${this.userUrl}/username/${username}`)),
       take(1)
     ).subscribe( userdetails => {
-       this.userObj.firstName = userdetails.result.firstName;
-       this.userObj.lastName = userdetails.result.lastName;
-       //save to local storage
-       localStorage.setItem('currentUser', JSON.stringify(this.userObj));
-       //guard
-       this.currentUserSubject.next(this.userObj);
-       
+      this.updateUderData(userdetails);
     });
+  }
+
+  private setUserData(userData): string {
+
+    if (userData && userData['access_token']) {
+
+      let token = userData['access_token'];
+      const token_parts = token.split(/\./);
+      const token_decoded = JSON.parse(window.atob(token_parts[1]));
+      this.token_expires = new Date(token_decoded.exp * 1000);
+      
+      this.userObj.username = token_decoded.user_name;
+      this.userObj.roles = token_decoded.authorities;
+
+      localStorage.setItem(AUTH_TOKEN, token);
+      localStorage.setItem('token_expiry', String(new Date(token_decoded.exp * 1000)));
+
+      //save to local storage
+      localStorage.setItem('currentUser', JSON.stringify(this.userObj));
+      //guard
+      this.currentUserSubject.next(this.userObj);
+      
+    }
+    return this.userObj.username; // now saving the username in userDetailsObj - Update it.
+  }
+
+  private updateUderData(userData): void {
+    this.userObj.firstName = userData.result.firstName;
+    this.userObj.lastName = userData.result.lastName;
+    //save to local storage
+    localStorage.setItem('currentUser', JSON.stringify(this.userObj));
+    //guard
+    this.currentUserSubject.next(this.userObj);
   }
 
   public getUserDisplayName() {
@@ -159,7 +154,7 @@ export class UserService {
     this.http.post(this.tokenRefreshUrl, JSON.stringify({token: this.getToken()}), this.httpOptions).subscribe(
       userData => {
         alert('Token finally refreshed');
-        this.updateData(userData);
+        this.setUserData(userData);
         this.tokenExpired = false;
       }/*,
       err => {
@@ -170,8 +165,7 @@ export class UserService {
  
   public logout() {
     this.token_expires = null; // to be removed eventually
-    this.email = null;
-    this.username = null;
+    this.userObj = new User();//Do not set to null - rather empty object
 
     //guard
     localStorage.removeItem('currentUser');
@@ -179,40 +173,6 @@ export class UserService {
 
     // clear local storage (Not really important anymore after guard)
     localStorage.clear();
-  }
-
-  public updateData(userData) { //NEEDS TO BE TWICKED WHEN REFRESH TOKEN IS IMPLEMENTED
-    // this.token = token;
-    let token = userData.access_token;
-    this.error = [];
- 
-    // decode the token to read the email and expiration timestamp
-    //const token_parts = this.token.split(/\./);
-    const token_parts = token.split(/\./);
-    const token_decoded = JSON.parse(window.atob(token_parts[1]));
-    this.token_expires = new Date(token_decoded.exp * 1000);
-    this.email = token_decoded.email;//Missing - not needed for now
-    this.username = token_decoded.user_name;
-
-    //May have to decomission the below since they're now saved in currentUser
-    localStorage.setItem(AUTH_TOKEN, token);
-    localStorage.setItem('email', token_decoded.email);
-    localStorage.setItem('token_expiry', String(new Date(token_decoded.exp * 1000)));
-
-    //new-v0
-    this.getUserByUsername(this.username).subscribe(
-      userDetails => {
-        //alert('@@@@@@@@@@@@@@@@\n' + JSON.stringify(response));
-        alert('userDetails: \n' + JSON.stringify(userDetails))
-        localStorage.setItem('currentUser', JSON.stringify(userDetails));
-        this.currentUserSubject.next(userDetails);
-        alert('1. this.currentUserSubject: ' + JSON.stringify(this.currentUserSubject));
-      },
-      err => {
-        this.error = err['error'];
-      }
-    );
-    alert('2. this.currentUserSubject: ' + JSON.stringify(this.currentUserSubject));
   }
 
   public getLoggedInDetails(): string { // TEST (To be removed - only tested in costcentre)
@@ -266,7 +226,7 @@ export class UserService {
       }));
   }
   
-  getUserByUsername(username): Observable<any> {
+  getUserByUsername(username): Observable<any> { // Currently not used
     //alert('Trace - getUserByUsername');
     return this.http.get<any>(`${this.userUrl}/username/${username}`)
       .pipe(map((res) => {
