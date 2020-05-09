@@ -104,7 +104,8 @@ export class DepartmentComponent implements OnInit {
     this.resetErrors();
 
     this.department.name = f.name;
-    this.department.costcentre = f.costcentre;
+    //this.department.costcentre = f.costcentre;
+    this.department.costcentre = this.dataService.generateQuickIdObject(f.costcentre);
     this.department.hod = f.hod;
 
     this.departmentService.storeDepartment(this.department)
@@ -134,7 +135,7 @@ export class DepartmentComponent implements OnInit {
         this.rForm.setValue({
           name: this.department.name,
           costcentre: this.department.costcentre.id,
-          hod: this.department.hod
+          hod: (this.department.hod != null) ? this.department.hod : null//this.department.hod
         });
       }
     );
@@ -142,10 +143,34 @@ export class DepartmentComponent implements OnInit {
     window.scroll(0, 0);
   }
 
+  /*This could have worked fine to update only changed fields but backend JPA does not allow it by default.
+  updateDepartment(f) {
+    this.resetErrors();
+    
+    f.costcentre = this.dataService.generateQuickIdObject(f.costcentre);
+    var changesObj = this.dataService.getUpdateObject(this.department, f);
+    changesObj['id'] = this.department.id;
+    //changesObj['name'] = (changesObj['name']==f.name ? changesObj['name']:f.name);//Doing this because name is not nullable in the backend. but backend logic must be changed to allow update as long as id is provided.
+
+    this.departmentService.updateDepartment(changesObj)
+      .subscribe(
+        (res) => {
+          if (this.showList) {
+            // Refresh the entire list because the update only returns the ID of the FK and not the entire FK object
+            // for that reason we cannot replace the changed object with the FK object since we only have a reference ID.
+            this.getDepartments();
+          }
+          this.success = 'Updated successfully';
+          this.notifier.showSaved();
+          this.updateMode = false;
+          this.rForm.reset();
+        }
+      );
+  }*/
   updateDepartment(f) {
     this.resetErrors();
     this.department.name = f.name;
-    this.department.costcentre = f.costcentre;
+    this.department.costcentre = this.dataService.generateQuickIdObject(f.costcentre);//check behaviour when null
     this.department.hod = f.hod;
     this.departmentService.updateDepartment(this.department)
       .subscribe(

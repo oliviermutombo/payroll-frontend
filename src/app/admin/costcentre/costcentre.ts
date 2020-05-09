@@ -5,6 +5,6 @@ export class Costcentre {
 
     constructor(
       name: string,
-      owner: string,
+      owner?: string,
       id?: number) {}
   }

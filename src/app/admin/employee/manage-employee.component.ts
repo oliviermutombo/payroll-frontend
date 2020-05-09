@@ -38,54 +38,56 @@ export class ManageEmployeeComponent implements OnInit {
   success = '';
 
   // Create de default constructor if possible.
-  employee = new Employee('TestEmpCode', 'TestFirst', 'TestLast', '', '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', '');
+  employee = new Employee('', '', '', '', '', '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', '');
 
   rForm: FormGroup;
   showList = false;
   updateMode = false;
   post: any;                     // A property for our submitted form
-  firstname = '';
-  surname = '';
+  firstName = '';
+  middleName = '';
+  lastName = '';
   dob = '';
-  idnumber = '';
-  passportno = '';
-  emailaddress = '';
-  paygrade = 0;
-  basicpay = 0;
+  idNumber = '';
+  passportNumber = '';
+  emailAddress = '';
+  payGrade = 0;
+  basicPay = 0;
   department = 0;
   position = '';
-  taxnumber = '';
-  hiredate = '';
+  taxNumber = '';
+  hireDate = '';
   address1 = '';
   address2 = '';
-  postalcode = '';
+  postalCode = '';
   country = '';
-  phonenumber = '';
-  bankname = '';
-  bankaccount = '';
-  bankbranch = '';
+  phoneNumber = '';
+  bankName = '';
+  bankAccount = '';
+  bankBranch = '';
 
   public formErrors = {
-    firstname: '',
-    surname: '',
+    firstName: '',
+    middleName: '',
+    lastName: '',
     dob: '',
-    idnumber: '',
-    passportno: '',
-    emailaddress: '',
-    paygrade: '',
-    basicpay: '',
+    idNumber: '',
+    passportNumber: '',
+    emailAddress: '',
+    payGrade: '',
+    basicPay: '',
     department: '',
     position: '',
-    taxnumber: '',
-    hiredate: '',
+    taxNumber: '',
+    hireDate: '',
     address1: '',
     address2: '',
-    postalcode: '',
+    postalCode: '',
     country: '',
-    phonenumber: '',
-    bankname: '',
-    bankaccount: '',
-    bankbranch: ''
+    phoneNumber: '',
+    bankName: '',
+    bankAccount: '',
+    bankBranch: ''
   };
 
   constructor(private employeeService: EmployeeService,
@@ -96,26 +98,27 @@ export class ManageEmployeeComponent implements OnInit {
               public formService: FormService) { // TRY PRIVATE
 
     this.rForm = fb.group({
-      firstname: [null, [Validators.required, Validators.minLength(1), Validators.maxLength(50), CustomValidators.validateCharacters]],
-      surname: [null, [Validators.required, Validators.minLength(2), Validators.maxLength(50), CustomValidators.validateCharacters]],
+      firstName: [null, [Validators.required, Validators.minLength(1), Validators.maxLength(50), CustomValidators.validateCharacters]],
+      middleName: [null, [Validators.minLength(1), Validators.maxLength(50)]],
+      lastName: [null, [Validators.required, Validators.minLength(2), Validators.maxLength(50), CustomValidators.validateCharacters]],
       dob: [null, [Validators.required, CustomValidators.DateOfBirth]],
-      idnumber: [null, [Validators.minLength(13), Validators.maxLength(13)]],
-      passportno: [null, [Validators.minLength(3), Validators.maxLength(50)]],
-      emailaddress: [null, [Validators.required, Validators.email]], // THIS FIELD WAS FORGOTTEN. CATER FOR IT.
-      paygrade: [null, [Validators.required]],
-      basicpay: [null, [CustomValidators.numberOrDecimal]],
+      idNumber: [null, [Validators.minLength(13), Validators.maxLength(13)]],
+      passportNumber: [null, [Validators.minLength(3), Validators.maxLength(50)]],
+      emailAddress: [null, [Validators.required, Validators.email]], // THIS FIELD WAS FORGOTTEN. CATER FOR IT.
+      payGrade: [null, [Validators.required]],
+      basicPay: [null, [CustomValidators.numberOrDecimal]],
       department: [null, [Validators.required, Validators.minLength(1), Validators.maxLength(50)]],
       position: [null, [Validators.required, Validators.minLength(1), Validators.maxLength(50)]],
-      taxnumber: [null, [Validators.minLength(1), Validators.maxLength(50)]],
-      hiredate: [null, [Validators.required]],
+      taxNumber: [null, [Validators.minLength(1), Validators.maxLength(50)]],
+      hireDate: [null, [Validators.required]],
       address1: [null, [Validators.minLength(1), Validators.maxLength(50)]],
       address2: [null, [Validators.minLength(1), Validators.maxLength(50)]],
-      postalcode: [null, [Validators.minLength(1), Validators.maxLength(50)]],
+      postalCode: [null, [Validators.minLength(1), Validators.maxLength(50)]],
       country: [null, [Validators.minLength(1), Validators.maxLength(50)]],
-      phonenumber: [null, [Validators.minLength(1), Validators.maxLength(50)]],
-      bankname: [null, [Validators.minLength(1), Validators.maxLength(50)]],
-      bankaccount: [null, [Validators.minLength(1), Validators.maxLength(50)]],
-      bankbranch: [null, [Validators.minLength(1), Validators.maxLength(50)]],
+      phoneNumber: [null, [Validators.minLength(1), Validators.maxLength(50)]],
+      bankName: [null, [Validators.minLength(1), Validators.maxLength(50)]],
+      bankAccount: [null, [Validators.minLength(1), Validators.maxLength(50)]],
+      bankBranch: [null, [Validators.minLength(1), Validators.maxLength(50)]],
     });
 
     // on each value change we call the validateForm function
@@ -209,26 +212,28 @@ export class ManageEmployeeComponent implements OnInit {
   addEmployee(f) {
     this.resetErrors();
 
-    this.employee.empcode = Math.floor(Math.random() * 10001); // Temp random
-    this.employee.firstname = f.firstname;
-    this.employee.surname = f.surname;
+    this.employee.empCode = Math.floor(Math.random() * 10001); // Temp random
+    this.employee.firstName = f.firstName;
+    this.employee.middleName = f.middleName;
+    this.employee.lastName = f.lastName;
     this.employee.dob = f.dob;
-    this.employee.idnumber = f.idnumber;
-    this.employee.passportno = f.passportno;
-    this.employee.emailaddress = f.emailaddress;
-    this.employee.paygrade = f.paygrade;
-    this.employee.department = f.department;
-    this.employee.position = f.position;
-    this.employee.taxnumber = f.taxnumber;
-    this.employee.hiredate = f.hiredate;
+    this.employee.idNumber = f.idNumber;
+    this.employee.passportNumber = f.passportNumber;
+    this.employee.emailAddress = f.emailAddress;
+    this.employee.payGrade = this.dataService.generateQuickIdObject(f.payGrade);//f.payGrade;
+    this.employee.basicPay = f.basicPay;
+    this.employee.department = this.dataService.generateQuickIdObject(f.department);//f.department;
+    this.employee.position = this.dataService.generateQuickIdObject(f.position);//f.position;
+    this.employee.taxNumber = f.taxNumber;
+    this.employee.hireDate = f.hireDate;
     this.employee.address1 = f.address1;
     this.employee.address2 = f.address2;
-    this.employee.postalcode = f.postalcode;
+    this.employee.postalCode = f.postalCode;
     this.employee.country = f.country;
-    this.employee.phonenumber = f.phonenumber;
-    this.employee.bankname = f.bankname;
-    this.employee.bankaccount = f.bankaccount;
-    this.employee.bankbranch = f.bankbranch;
+    this.employee.phoneNumber = f.phoneNumber;
+    this.employee.bankName = f.bankName;
+    this.employee.bankAccount = f.bankAccount;
+    this.employee.bankBranch = f.bankBranch;
 
     this.employeeService.store(this.employee)
       .subscribe(
@@ -256,26 +261,27 @@ export class ManageEmployeeComponent implements OnInit {
       (res: Employee) => {
         this.employee = res;
         this.rForm.setValue({
-          firstname: this.employee.firstname,
-          surname: this.employee.surname,
+          firstName: this.employee.firstName,
+          middleName: this.employee.middleName,
+          lastName: this.employee.lastName,
           dob: this.employee.dob,
-          idnumber: this.employee.idnumber,
-          passportno: this.employee.passportno,
-          emailaddress: this.employee.emailaddress,
-          paygrade: (this.employee.paygrade != null) ? this.employee.paygrade.id : null, // very import otherwise null breaks things
-          basicpay: this.employee.basicpay,
+          idNumber: this.employee.idNumber,
+          passportNumber: this.employee.passportNumber,
+          emailAddress: this.employee.emailAddress,
+          payGrade: (this.employee.payGrade != null) ? this.employee.payGrade.id : null, // very import otherwise null breaks things
+          basicPay: this.employee.basicPay,
           department: (this.employee.department != null) ? this.employee.department.id : null, // very important to have the condition
           position: (this.employee.position != null) ? this.employee.position.id : null,
-          taxnumber: this.employee.taxnumber,
-          hiredate: this.employee.hiredate,
+          taxNumber: this.employee.taxNumber,
+          hireDate: this.employee.hireDate,
           address1: this.employee.address1,
           address2: this.employee.address2,
-          postalcode: this.employee.postalcode,
-          country: this.employee.country,
-          phonenumber: this.employee.phonenumber,
-          bankname: this.employee.bankname,
-          bankaccount: this.employee.bankaccount,
-          bankbranch: this.employee.bankbranch
+          postalCode: this.employee.postalCode,
+          country: (this.employee.country != null) ? this.employee.country : null,//this.employee.country,
+          phoneNumber: this.employee.phoneNumber,
+          bankName: (this.employee.bankName != null) ? this.employee.bankName : null,//this.employee.bankName,
+          bankAccount: (this.employee.bankAccount != null) ? this.employee.bankAccount : null,//this.employee.bankAccount,
+          bankBranch: (this.employee.bankBranch != null) ? this.employee.bankBranch : null,//this.employee.bankBranch
         });
       },
       (err) => {
@@ -287,26 +293,27 @@ export class ManageEmployeeComponent implements OnInit {
 
   updateEmployee(f) {
     this.resetErrors();
-    this.employee.firstname = f.firstname;
-    this.employee.surname = f.surname;
+    this.employee.firstName = f.firstName;
+    this.employee.middleName = f.middleName;
+    this.employee.lastName = f.lastName;
     this.employee.dob = f.dob;
-    this.employee.idnumber = f.idnumber;
-    this.employee.passportno = f.passportno;
-    this.employee.emailaddress = f.emailaddress;
-    this.employee.paygrade = f.paygrade;
-    this.employee.basicpay = f.basicpay;
-    this.employee.department = f.department;
-    this.employee.position = f.position;
-    this.employee.taxnumber = f.taxnumber;
-    this.employee.hiredate = f.hiredate;
+    this.employee.idNumber = f.idNumber;
+    this.employee.passportNumber = f.passportNumber;
+    this.employee.emailAddress = f.emailAddress;
+    this.employee.payGrade = this.dataService.generateQuickIdObject(f.payGrade);//check behaviour when null
+    this.employee.basicPay = f.basicPay;
+    this.employee.department = this.dataService.generateQuickIdObject(f.department);//check behaviour when null
+    this.employee.position = this.dataService.generateQuickIdObject(f.position);//check behaviour when null
+    this.employee.taxNumber = f.taxNumber;
+    this.employee.hireDate = f.hireDate;
     this.employee.address1 = f.address1;
     this.employee.address2 = f.address2;
-    this.employee.postalcode = f.postalcode;
+    this.employee.postalCode = f.postalCode;
     this.employee.country = f.country;
-    this.employee.phonenumber = f.phonenumber;
-    this.employee.bankname = f.bankname;
-    this.employee.bankaccount = f.bankaccount;
-    this.employee.bankbranch = f.bankbranch;
+    this.employee.phoneNumber = f.phoneNumber;
+    this.employee.bankName = f.bankName;
+    this.employee.bankAccount = f.bankAccount;
+    this.employee.bankBranch = f.bankBranch;
 
     this.employeeService.update(this.employee)
       .subscribe(

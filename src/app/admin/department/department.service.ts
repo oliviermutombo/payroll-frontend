@@ -12,9 +12,10 @@ import { environment } from './../../../environments/environment';
 })
 export class DepartmentService {
 
-  baseUrl = environment.apiUrl;
-  departmentUrl = this.baseUrl + '/department';
-  departmentManageUrl = this.baseUrl + '/department/manage';
+  baseUrl = environment.baseUrl;
+
+  departmentUrl = this.baseUrl + '/departments';
+  
   departments: Department[];
   department: Department; // Added this one
 
@@ -46,7 +47,7 @@ export class DepartmentService {
   }
 
   storeDepartment(department: Department): Observable<Department[]> {
-    return this.http.post<Department>(`${this.departmentManageUrl}/`, department)
+    return this.http.post<Department>(`${this.departmentUrl}/`, department)
       .pipe(map((res) => {
         if (this.departments) {
           // Above Condition added to make the list available on demand. can't populate list if not requested (or it throws an error)
@@ -57,7 +58,7 @@ export class DepartmentService {
   }
 
   updateDepartment(department: Department): Observable<Department[]> {
-    return this.http.put<Department>(`${this.departmentManageUrl}/${department.id}`, department)
+    return this.http.patch<Department>(`${this.departmentUrl}/${department.id}`, department)
     // The below stuff are just to update the views if they're displayed at the same time. double check if really needed.
       .pipe(map((res) => {
         const theDepartment = this.departments.find((item) => {
@@ -75,7 +76,7 @@ export class DepartmentService {
   }
 
   deleteDepartment(id: number): Observable<Department[]> {
-    return this.http.delete(`${this.departmentManageUrl}/${id}`)
+    return this.http.delete(`${this.departmentUrl}/${id}`)
     // The below stuff are just to update the views if they're displayed at the same time. double check if really needed.
       .pipe(map(res => {
         const filteredDepartments = this.departments.filter((department) => {

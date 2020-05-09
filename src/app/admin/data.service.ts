@@ -20,17 +20,17 @@ export class DataService {
 
   private messageSource = new BehaviorSubject('default message');
   currentMessage = this.messageSource.asObservable();
-  baseUrl = environment.apiUrl;
+  baseUrl = environment.baseUrl;
 
-  costcentreUrl = this.baseUrl + '/costcentre';
+  costcentreUrl = this.baseUrl + '/costcentres';
   costcentre: Costcentre;
   costcentres: Costcentre[];
 
-  departmentUrl = this.baseUrl + '/department';
+  departmentUrl = this.baseUrl + '/departments';
   department: Department;
   departments: Department[];
 
-  positionUrl = this.baseUrl + '/position';
+  positionUrl = this.baseUrl + '/positions';
   position: Position;
   positions: Position[];
 
@@ -43,6 +43,27 @@ export class DataService {
   deductions: Deduction[];
 
   constructor(private http: HttpClient) { }//
+
+  isObject(obj) {//Move to util class
+    return obj === Object(obj);
+  }
+
+  generateQuickIdObject(value){//Move to a util class
+    if (this.isObject(value)) return value
+    if (value == null) return null
+    return {'id': value}
+  }
+
+  getUpdateObject(orig, current) {//Move to a util class
+    var changes = {};
+
+    for (var prop in orig) {
+        if (prop.indexOf("$") != 0 && orig[prop] !== current[prop]) {
+            changes[prop] = current[prop];
+        }
+    }
+    return changes ;
+  };
 
   changeMessage(message: string) {
     this.messageSource.next(message);

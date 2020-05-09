@@ -25,7 +25,7 @@ export class EmployeeListComponent implements OnInit {
   success = '';
 
   // Create de default constructor if possible.
-  employee = new Employee('', '', '', '', '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', '');
+  employee = new Employee('', '', '', '', '', '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', '');
 
   updateMode = false;
 

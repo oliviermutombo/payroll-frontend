@@ -13,7 +13,7 @@
                     <span>{{employee.department.name}}</span>
                 <br><br>
                 </div>
-                    <div class="table-responsive ">
+                    <div class="table-responsive" *ngIf="employee.payGrade">
                         <table class="table">
                             <thead>
                                 <tr>
@@ -23,16 +23,17 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <th scope="row">{{employee.paygrade.paygrade}}</th>
-                                    <td>R{{employee.paygrade.basicpay}}</td>
+                                    <th scope="row">{{employee.payGrade.payGrade}}</th>
+                                    <td *ngIf="employee.basicPay; else elseBlock">R{{employee.basicPay}}</td>
+                                    <ng-template #elseBlock><td>R{{employee.payGrade.basicPay}}</td></ng-template>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
             </div>
             <div class="col-md-8">
-                <h3 class="mb-0">{{employee.firstname}} {{employee.surname}}</h3>
-                <h4>Employee number {{employee.empcode}}</h4>
+                <h3 class="mb-0">{{employee.firstName}} {{employee.middleName}} {{employee.lastName}}</h3>
+                <h4>Employee number {{employee.empCode}}</h4>
                 <hr>
                 <div class="table-responsive-sm">
                     <table class="table table-striped">
@@ -43,11 +44,11 @@
                             </tr>
                             <tr>
                                 <td class="center"><i class="fa fa-fw fa-hashtag"></i>ID number</td>
-                                <td class="left">{{employee.idnumber}}</td>
+                                <td class="left">{{employee.idNumber}}</td>
                             </tr>
                             <tr>
                                 <td class="center"><i class="fa fa-fw fa-hashtag"></i>Passport number</td>
-                                <td class="left">{{employee.passportno}}</td>
+                                <td class="left">{{employee.passportNumber}}</td>
                             </tr>
                             <tr>
                                 <td class="center"><i class="fa fa-fw fa-calendar-alt"></i>Date of birth</td>
@@ -55,27 +56,27 @@
                             </tr>
                                 <tr>
                                 <td class="center"><i class="fa fa-envelope"></i>Email address</td>
-                                <td class="left">{{employee.emailaddress}}</td>
+                                <td class="left">{{employee.emailAddress}}</td>
                             </tr>
                                 <tr>
                                 <td class="center"><i class="fa fa-fw fa-hashtag"></i>Tax number</td>
-                                <td class="left">{{employee.taxnumber}}</td>
+                                <td class="left">{{employee.taxNumber}}</td>
                             </tr>
                             <tr>
                                 <td class="center"><i class="fa fa-fw fa-calendar-alt"></i>Hire date</td>
-                                <td class="left">{{employee.hiredate}}</td>
+                                <td class="left">{{employee.hireDate}}</td>
                             </tr>
                             <tr>
                                 <td class="center"><i class="fa fa-fw fa-map-marker"></i>Addess</td>
-                                <td class="left">{{employee.address1}} <br> {{employee.address2}} <br> {{employee.postalcode}}</td>
+                                <td class="left">{{employee.address1}} <br> {{employee.address2}} <br> {{employee.postalCode}}</td>
                             </tr>
                             <tr>
                                 <td class="center"><i class="fa fa-fw fa-phone"></i>Phone number</td>
-                                <td class="left">{{employee.phonenumber}}</td>
+                                <td class="left">{{employee.phoneNumber}}</td>
                             </tr>
                             <tr>
                                 <td class="center"><i class="fa fa-fw fa-money-bill-alt"></i>Banking details</td>
-                                <td class="left">{{employee.bankname}} <br> {{employee.bankaccount}} <br> {{employee.bankbranch}}</td>
+                                <td class="left"><!--{{employee.bankName}} <br> {{employee.bankAccount}} <br> {{employee.bankBranch}}--></td>
                             </tr>
                         </tbody>
                     </table>

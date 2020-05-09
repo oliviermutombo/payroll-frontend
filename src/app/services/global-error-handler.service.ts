@@ -16,7 +16,6 @@ export class GlobalErrorHandlerService implements ErrorHandler {
         console.log('URL: ' + router.url);
       
       if (error instanceof HttpErrorResponse) {
-        //alert(JSON.stringify(error));
         if (error.status === 0) {
             if (error.statusText) {
                 if (error.statusText === 'Unknown Error') {
@@ -38,7 +37,7 @@ export class GlobalErrorHandlerService implements ErrorHandler {
                 } else {
                     //this.userService.logout(); // page may be on a resource that is restricted(401). do not log out here
                     //notifier.showError('Your session expired');
-                    notifier.showError('FOR DEBUGGING PURPOSES ONLY\r\n' + JSON.stringify(error.error));
+                    notifier.showError('FOR DEBUGGING PURPOSES ONLY - 401 \r\n' + JSON.stringify(error.error));
                 }
             } else if (error.statusText) {
                 notifier.showError(error.statusText);
@@ -48,11 +47,14 @@ export class GlobalErrorHandlerService implements ErrorHandler {
         } else if (error.status === 500) {
             let statusText = error.statusText;
             if (error.error){
+                if (error.error['message']){
+                    notifier.showError(error.error['message']);
+                }
                 if (error.error.startsWith("IntegrityError")){
                     notifier.showError(statusText + ' - Check if this record already exists or contact system administrator.' );
                 }
             } else {
-                notifier.showError('FOR DEBUGGING PURPOSES ONLY - ' + statusText + ' - ' + JSON.stringify(error.error));
+                notifier.showError('FOR DEBUGGING PURPOSES ONLY - 500\n' + statusText + ' - ' + JSON.stringify(error));
             }
         } else {
             notifier.showError('FOR DEBUGGING PURPOSES ONLY - ' + JSON.stringify(error.error));

@@ -22,9 +22,9 @@ export class ManageUserComponent implements OnInit {
   employee : any;// = new Employee('TestEmpCode', 'TestFirst', 'TestLast', '', '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', '');
   user = {
     'id': null,
-    'firstname' : '',
-    'lastname' : '',
-    'email' : '',
+    'firstName' : '',
+    'lastName' : '',
+    'emailAddress' : '',
     'employee': null,
     'password' : '12345', // Temporary
     'is_system_admin' : false,
@@ -39,9 +39,9 @@ export class ManageUserComponent implements OnInit {
   post: any;
 
   public formErrors = {
-    firstname: '',
-    surname: '',
-    emailaddress: '',
+    firstName: '',
+    lastName: '',
+    emailAddress: '',
     is_system_admin: '',
     is_payroll_admin: '',
     is_employee_admin: '',
@@ -87,9 +87,9 @@ export class ManageUserComponent implements OnInit {
               public formService: FormService) { // TRY PRIVATE
 
     this.rForm = fb.group({
-      firstname: [null, [Validators.required, Validators.minLength(1), Validators.maxLength(50), CustomValidators.validateCharacters]],
-      surname: [null, [Validators.required, Validators.minLength(2), Validators.maxLength(50), CustomValidators.validateCharacters]],
-      emailaddress: [null, [Validators.required, Validators.email]],
+      firstName: [null, [Validators.required, Validators.minLength(1), Validators.maxLength(50), CustomValidators.validateCharacters]],
+      lastName: [null, [Validators.required, Validators.minLength(2), Validators.maxLength(50), CustomValidators.validateCharacters]],
+      emailAddress: [null, [Validators.required, Validators.email]],
       is_system_admin: [null],
       is_payroll_admin: [null],
       is_employee_admin: [null],
@@ -134,9 +134,9 @@ export class ManageUserComponent implements OnInit {
   }
 
   addUser(f) {
-    this.user.firstname = f.firstname;
-    this.user.lastname = f.surname;
-    this.user.email = f.emailaddress;
+    this.user.firstName = f.firstName;
+    this.user.lastName = f.lastName;
+    this.user.emailAddress = f.emailAddress;
     this.user.employee = this.employee.id;
     // though they're also updated on class level:
     this.user.is_employee = (f.is_employee) ? true:false;
@@ -175,9 +175,9 @@ export class ManageUserComponent implements OnInit {
       (res: any) => {
         this.employee = res;
         this.rForm.setValue({
-          firstname: this.employee.firstname,
-          surname: this.employee.surname,
-          emailaddress: this.employee.emailaddress,
+          firstName: this.employee.firstName,
+          lastName: this.employee.lastName,
+          emailAddress: this.employee.emailAddress,
           is_system_admin: null,
           is_payroll_admin: null,
           is_employee_admin: null,
@@ -192,9 +192,9 @@ export class ManageUserComponent implements OnInit {
       (res: any) => {
         this.user = res;
         this.rForm.setValue({
-          firstname: this.user.firstname,
-          surname: this.user.lastname,
-          emailaddress: this.user.email,
+          firstName: this.user.firstName,
+          lastName: this.user.lastName,
+          emailAddress: this.user.emailAddress,
           is_system_admin: this.user.is_system_admin,
           is_payroll_admin: this.user.is_payroll_admin,
           is_employee_admin: this.user.is_employee_admin,

@@ -17,9 +17,9 @@
                         <!--<th>View details/Update</th>-->
                     </tr>
                     <tr *ngFor="let e of employees">
-                        <td>{{e.firstname}}</td>
-                        <td>{{e.surname}}</td>
-                        <td>{{e.emailaddress}}</td>
+                        <td>{{e.firstName}}</td>
+                        <td>{{e.lastName}}</td>
+                        <td>{{e.emailAddress}}</td>
                         <td *ngIf="!e.has_user_account"><button class="btn btn-info btn-xs" routerLink="/create_user/{{e.id}}">Create account</button></td>
                         <td *ngIf="e.has_user_account"><button class="btn btn-primary btn-xs" routerLink="/edit_user/{{e.id}}" >Manage</button></td>
                     </tr>

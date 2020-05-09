@@ -112,7 +112,7 @@ export class CostcentreComponent implements OnInit {
         this.costcentre = res;
         this.rForm.setValue({
           name: this.costcentre.name,
-          owner: this.costcentre.owner,
+          owner: (this.costcentre.owner != null) ? this.costcentre.owner : null//"this.costcentre.owner",
         });
       }
     );

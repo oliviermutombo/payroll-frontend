@@ -24,14 +24,14 @@ export class SalaryComponent implements OnInit {
   showList = false;
   updateMode = false;
   post: any;                     // A property for our submitted form
-  paygrade = '';
-  basicpay = 0;
+  payGrade = '';
+  basicPay = 0;
   requiredAlert = 'This field is required';
 
   constructor(private injector: Injector, private employeeService: EmployeeService, private fb: FormBuilder) {
     this.rForm = fb.group({
-        paygrade: [null, Validators.required],
-        basicpay: [null, [Validators.required, Validators.pattern('^[0-9]+(?:\.[0-9]+)?$')]]
+        payGrade: [null, Validators.required],
+        basicPay: [null, [Validators.required, Validators.pattern('^[0-9]+(?:\.[0-9]+)?$')]]
       });
   }
 
@@ -81,8 +81,8 @@ export class SalaryComponent implements OnInit {
   addSalary(f) {
     this.resetErrors();
 
-    this.salary.paygrade = f.paygrade;
-    this.salary.basicpay = f.basicpay;
+    this.salary.payGrade = f.payGrade;
+    this.salary.basicPay = f.basicPay;
 
     this.employeeService.storeSalary(this.salary)
       .subscribe(
@@ -108,8 +108,8 @@ export class SalaryComponent implements OnInit {
       (res: Salary) => {
         this.salary = res;
         this.rForm.setValue({
-          paygrade: this.salary.paygrade,
-          basicpay: this.salary.basicpay
+          payGrade: this.salary.payGrade,
+          basicPay: this.salary.basicPay
         });
       }/*,
       (err) => {
@@ -123,8 +123,8 @@ export class SalaryComponent implements OnInit {
 
   updateSalary(f) {
     this.resetErrors();
-    this.salary.paygrade = f.paygrade;
-    this.salary.basicpay = f.basicpay;
+    this.salary.payGrade = f.payGrade;
+    this.salary.basicPay = f.basicPay;
     this.employeeService.updateSalary(this.salary)
       .subscribe(
         (res) => {

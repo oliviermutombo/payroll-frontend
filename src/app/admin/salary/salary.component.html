@@ -11,11 +11,11 @@
                         <hr/>
 						<div class="form-group">
                             <label>Pay grade</label>
-                            <input type="text" class="form-control" formControlName="paygrade"><span class="text-danger" *ngIf="!rForm.controls['paygrade'].valid && rForm.controls['paygrade'].touched">{{ requiredAlert }}</span>
+                            <input type="text" class="form-control" formControlName="payGrade"><span class="text-danger" *ngIf="!rForm.controls['payGrade'].valid && rForm.controls['payGrade'].touched">{{ requiredAlert }}</span>
                         </div>
                         <div class="form-group">
                             <label>Basic pay</label>
-                            <input type="text" class="form-control" formControlName="basicpay"><span class="text-danger" *ngIf="!rForm.controls['basicpay'].valid && rForm.controls['basicpay'].touched">Numbers only. Format # or #.#</span>
+                            <input type="text" class="form-control" formControlName="basicPay"><span class="text-danger" *ngIf="!rForm.controls['basicPay'].valid && rForm.controls['basicPay'].touched">Numbers only. Format # or #.#</span>
                         </div>
                         <div><input type="submit" class="btn btn-primary btn-sm" value="Save" [disabled]="!rForm.valid"></div>
                     </div>
@@ -36,8 +36,8 @@
                                 <th>Delete</th>
                             </tr>
                             <tr *ngFor="let s of salaries">
-                                <td>{{s.paygrade}}</td>
-                                <td>{{s.basicpay}}</td>
+                                <td>{{s.payGrade}}</td>
+                                <td>{{s.basicPay}}</td>
                                 <td><button class="btn btn-primary btn-xs" (click)="salaryEdit(s.id)" >Update</button></td>
                                 <td><button class="btn btn-danger btn-xs" (click)="deleteSalary(s.id)" >Delete</button></td>
                             </tr>
