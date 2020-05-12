@@ -23,14 +23,14 @@ export class UserService {
   //loginUrl = this.baseUrl + '/obtain-token/'; //v0
   loginUrl = this.baseUrl + '/oauth/token';
   userUrl = this.baseUrl + this.apiVersion + '/users';
+  existsUrl = this.userUrl + '/exists';
 
 
   tokenRefreshUrl = this.baseUrl + '/api-token-refresh/';
-  createUrl = this.baseUrl + '/create-user';
-  getUrl = this.baseUrl + '/get-user';
-  updateUrl = this.baseUrl + '/update-user';
-  deleteUrl = this.baseUrl + '/delete-user';
-  existsUrl = this.baseUrl + '/user-exists';
+  //createUrl = this.baseUrl + '/create-user';
+  //getUrl = this.baseUrl + '/get-user';
+  //updateUrl = this.baseUrl + '/update-user';
+  //deleteUrl = this.baseUrl + '/delete-user';
  
   // http options used for making API calls
   private httpOptions: any;
@@ -209,7 +209,7 @@ export class UserService {
   }
 
   create(newuser: any): Observable<boolean> {
-    return this.http.post<any>(`${this.createUrl}/`, newuser)
+    return this.http.post<any>(`${this.userUrl}/`, newuser)
       .pipe(map((res) => {
         if (res) {
           return res;
@@ -219,8 +219,15 @@ export class UserService {
       }));
   }
 
-  getUser(employeeId): Observable<any> { //NOTE THAT THIS IS THE EMPLOYEE ID and NOT USER ID. 
+  /*getUser(employeeId): Observable<any> { //NOTE THAT THIS IS THE EMPLOYEE ID and NOT USER ID. 
     return this.http.get<any>(`${this.getUrl}/${employeeId}`)
+      .pipe(map((res) => {
+        return res;
+      }));
+  } v0*/
+
+  getUser(id): Observable<any> {
+    return this.http.get<any>(`${this.userUrl}/${id}`)
       .pipe(map((res) => {
         return res;
       }));
@@ -235,8 +242,20 @@ export class UserService {
       }));
   }
 
-  updateUser(user: any): Observable<boolean> {
-    return this.http.put<any>(`${this.updateUrl}/${user.employee}`, user) //NOTE THAT THIS IS THE EMPLOYEE ID and NOT USER ID. 
+  /*updateUser(user: any): Observable<boolean> {
+    return this.http.put<any>(`${this.userUrl}/${user.employee}`, user) //NOTE THAT THIS IS THE EMPLOYEE ID and NOT USER ID. 
+      .pipe(map((res) => {
+        if (res) {
+          return true;
+        } else {
+          return false;
+        }
+      })/*,
+      catchError(this.handleError)star-here/);
+  }*/
+
+  updateUser(user: any): Observable<boolean> {//TO-BE-COMPLETED.
+    return this.http.patch<any>(`${this.userUrl}`, user)
       .pipe(map((res) => {
         if (res) {
           return true;
@@ -248,7 +267,7 @@ export class UserService {
   }
 
   deleteUser(id: number): Observable<boolean> {
-    return this.http.delete(`${this.deleteUrl}/${id}`)
+    return this.http.delete(`${this.userUrl}/${id}`)
       .pipe(map(res => {
         if (res) {
           return true;
@@ -258,11 +277,10 @@ export class UserService {
       }));
   }
 
-  userExists(id: number): Observable<Boolean> {
-    return this.http.get(`${this.existsUrl}/${id}`)
+  userExists(employee: any): Observable<Boolean> {//Currently not used - no need for it anymore since employee now returns this info.
+    return this.http.post(`${this.existsUrl}`, employee)
       .pipe(map(res => {
-        //alert('res: ' + JSON.stringify(res));
-        return res['response'];
+        return res['result'];
       }));
   }
  

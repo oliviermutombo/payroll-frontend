@@ -8,7 +8,8 @@ import { UserService } from '../services/user.service'
 import { CustomValidators } from '../services/custom_validators';
 import { FormService } from '../services/form';
 import { DataService } from '../admin/data.service';
-import { NotificationService } from '../services/notification.service'
+import { NotificationService } from '../services/notification.service';
+import { Role } from '../user/role';
 
 @Component({
   templateUrl: './manage-user.component.html'
@@ -20,17 +21,16 @@ export class ManageUserComponent implements OnInit {
 
   // Create de default constructor if possible.
   employee : any;// = new Employee('TestEmpCode', 'TestFirst', 'TestLast', '', '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', '');
+
   user = {
     'id': null,
     'firstName' : '',
     'lastName' : '',
-    'emailAddress' : '',
+    'email' : '',
+    'username' : '',
     'employee': null,
     'password' : '12345', // Temporary
-    'is_system_admin' : false,
-    'is_payroll_admin' : false,
-    'is_employee_admin' : false,
-    'is_employee' : false
+    'role' : []
   };
 
   rForm: FormGroup;
@@ -47,35 +47,48 @@ export class ManageUserComponent implements OnInit {
     is_employee_admin: '',
     is_employee: ''
   };
+  
+stripRole(role) {
+  return role.replace('ROLE_','');
+}
 
-  checkSysAdmin($isChecked): void {
+  /* These role sets do not get triggered on updatemode - only on create mode*/
+ checkSysAdmin($isChecked): void {
+  if(!this.updateMode) {
     if ($isChecked) {
-      this.user.is_system_admin = true;
+      this.user.role = this.dataService.addToArray(this.user.role, this.stripRole(Role.ROLE_ADMIN));
     } else {
-      this.user.is_system_admin = false;
+      this.user.role = this.user.role.filter(item => item !== this.stripRole(Role.ROLE_ADMIN));
     }
   }
-  checkPayrollAdmin($isChecked): void {
+}
+checkPayrollAdmin($isChecked): void {
+  if(!this.updateMode) {
     if ($isChecked) {
-      this.user.is_payroll_admin = true;
+      this.user.role = this.dataService.addToArray(this.user.role, this.stripRole(Role.ROLE_PAYROLL_ADMIN));
     } else {
-      this.user.is_payroll_admin = false;
+      this.user.role = this.user.role.filter(item => item !== this.stripRole(Role.ROLE_PAYROLL_ADMIN));
     }
   }
-  checkEmployeeAdmin($isChecked): void {
+}
+checkEmployeeAdmin($isChecked): void {
+  if(!this.updateMode) {
     if ($isChecked) {
-      this.user.is_employee_admin = true;
+      this.user.role = this.dataService.addToArray(this.user.role, this.stripRole(Role.ROLE_EMPLOYEE_ADMIN));
     } else {
-      this.user.is_employee_admin = false;
+      this.user.role = this.user.role.filter(item => item !== this.stripRole(Role.ROLE_EMPLOYEE_ADMIN));
     }
   }
-  checkEmployee($isChecked): void {
+}
+checkEmployee($isChecked): void {
+  if(!this.updateMode) {
     if ($isChecked) {
-      this.user.is_employee = true;
+      this.user.role = this.dataService.addToArray(this.user.role, this.stripRole(Role.ROLE_EMPLOYEE));
     } else {
-      this.user.is_employee = false;
+      this.user.role = this.user.role.filter(item => item !== this.stripRole(Role.ROLE_EMPLOYEE));
     }
   }
+}
 
   constructor(private employeeService: EmployeeService,
               private userService: UserService,
@@ -105,6 +118,7 @@ export class ManageUserComponent implements OnInit {
   }
 
   ngOnInit() {
+    
     this.getEmployeeToEdit();
   }
 
@@ -136,13 +150,10 @@ export class ManageUserComponent implements OnInit {
   addUser(f) {
     this.user.firstName = f.firstName;
     this.user.lastName = f.lastName;
-    this.user.emailAddress = f.emailAddress;
-    this.user.employee = this.employee.id;
-    // though they're also updated on class level:
-    this.user.is_employee = (f.is_employee) ? true:false;
-    this.user.is_employee_admin = (f.is_employee_admin) ? true:false;
-    this.user.is_payroll_admin = (f.is_payroll_admin) ? true:false;
-    this.user.is_system_admin = (f.is_system_admin) ? true:false;
+    this.user.email = f.emailAddress;
+    this.user.username = f.emailAddress;
+    this.user.employee = this.dataService.generateQuickIdObject(this.employee.id);
+  
     this.userService.create(this.user)
       .subscribe(
         (res: any) => {
@@ -156,12 +167,8 @@ export class ManageUserComponent implements OnInit {
   }
 
   updateUser(f) {
-    // Find a way to log out that user to force his token refresh or maybe wait for token refresh? latter is better.
-    // This is a partial update. no need to put all fields
-    this.user.is_employee = f.is_employee;
-    this.user.is_employee_admin = f.is_employee_admin;
-    this.user.is_payroll_admin = f.is_payroll_admin;
-    this.user.is_system_admin = f.is_system_admin;
+    this.user.employee = this.dataService.generateQuickIdObject(this.user.employee.id);
+    this.user.role = this.getEditedRoles(f);
     this.userService.updateUser(this.user)
       .subscribe(
         (res) => {
@@ -170,9 +177,20 @@ export class ManageUserComponent implements OnInit {
       );
   }
 
+  getEditedRoles(f){
+    /* role sets for updatemode */
+    let rolesArr = [];
+    if (f.is_system_admin) this.dataService.addToArray(rolesArr, this.stripRole(Role.ROLE_ADMIN));
+    if (f.is_payroll_admin) this.dataService.addToArray(rolesArr, this.stripRole(Role.ROLE_PAYROLL_ADMIN));
+    if (f.is_employee_admin) this.dataService.addToArray(rolesArr, this.stripRole(Role.ROLE_EMPLOYEE_ADMIN));
+    if (f.is_employee) this.dataService.addToArray(rolesArr, this.stripRole(Role.ROLE_EMPLOYEE));
+    return rolesArr;
+  }
+
   populateForm(id){
     this.employeeService.getEmployee(id).subscribe(
       (res: any) => {
+        //alert('populateForm(id)\n' + JSON.stringify(res));
         this.employee = res;
         this.rForm.setValue({
           firstName: this.employee.firstName,
@@ -181,7 +199,7 @@ export class ManageUserComponent implements OnInit {
           is_system_admin: null,
           is_payroll_admin: null,
           is_employee_admin: null,
-          is_employee: true // set to true by default.
+          is_employee: null // set to true by default.
         });
       }
     );
@@ -190,33 +208,28 @@ export class ManageUserComponent implements OnInit {
   populateFormToEdit(id){
     this.userService.getUser(id).subscribe(
       (res: any) => {
-        this.user = res;
+        this.user = res.result;
         this.rForm.setValue({
           firstName: this.user.firstName,
           lastName: this.user.lastName,
-          emailAddress: this.user.emailAddress,
-          is_system_admin: this.user.is_system_admin,
-          is_payroll_admin: this.user.is_payroll_admin,
-          is_employee_admin: this.user.is_employee_admin,
-          is_employee: this.user.is_employee
-          //is_system_admin.setValue( true )
+          emailAddress: this.user.email,
+          is_system_admin: this.hasRole(this.user['roles'], this.stripRole(Role.ROLE_ADMIN)),
+          is_payroll_admin: this.hasRole(this.user['roles'], this.stripRole(Role.ROLE_PAYROLL_ADMIN)),
+          is_employee_admin: this.hasRole(this.user['roles'], this.stripRole(Role.ROLE_EMPLOYEE_ADMIN)),
+          is_employee: this.hasRole(this.user['roles'], this.stripRole(Role.ROLE_EMPLOYEE))
         });
       }
     );
   }
 
-  /*updateEmployee(partialEmployee) {
-    this.employeeService.updatePartial(partialEmployee)
-      .subscribe(
-        (res) => {
-          // No need to notify here
-        },
-        (err) => {
-          this.notification.showError('Seems the user reference was not updated on the employee table.\n Double check and delete user then recreate if necessary!');
-        }
-      );
-    window.scroll(0, 0);
-  }*/
+  hasRole(Obj: any, role: string) {
+    let s = Obj.find(r=>r.name == role);
+    if(this.dataService.isObject(s)){
+      if (s['name']==role) return true;//Second If is not needed
+    }
+    //return JSON.stringify(s);
+    return false;
+  }
 
   deleteUser(id) {
     this.userService.deleteUser(id)

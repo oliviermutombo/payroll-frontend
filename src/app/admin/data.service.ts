@@ -54,6 +54,12 @@ export class DataService {
     return {'id': value}
   }
 
+  addToArray(arr, x){
+    if (arr==undefined) arr = [];
+    arr.push(x);
+    return arr;
+  }
+
   getUpdateObject(orig, current) {//Move to a util class
     var changes = {};
 

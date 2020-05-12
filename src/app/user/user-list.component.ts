@@ -41,15 +41,6 @@ export class UserListComponent implements OnInit {
       }
     );
   }
-  /*No longer used
-  userExists(empId): any {
-    this.userService.userExists(empId).subscribe(
-      (res: Boolean) => {
-        alert(empId + ' : ' + res)
-        return res;
-      }
-    );
-  }*/
 
   getEmployee(id): void {
     this.employeeService.getEmployee(id).subscribe(
