@@ -1,7 +1,8 @@
-import { Component, OnInit, Injector } from '@angular/core';
+import { Component, OnInit, Injector, ViewChild } from '@angular/core';
 import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
 import { Position } from './position';
 import { PositionService } from './position.service';
+import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material'; //pagination
 import { NotificationService } from '../../services/notification.service';
 import { CustomValidators } from '../../services/custom_validators';
 import { FormService } from '../../services/form';
@@ -13,8 +14,17 @@ import { FormService } from '../../services/form';
 })
 
 export class PositionComponent implements OnInit {
+
+  //
+  allPostion:Position[];
+  positions: MatTableDataSource<Position>;
+  displayedColumns: string[] = ['name','manageColumn'];
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
+  //
+
   title = 'payroll-system';
-  positions: Position[];
+  //positions: Position[];
   error = '';
   success = '';
 
@@ -43,10 +53,13 @@ export class PositionComponent implements OnInit {
       this.formErrors = this.formService.validateForm(this.rForm, this.formErrors, true);
     });
   }
-
+  
   notifier = this.injector.get(NotificationService);
 
   ngOnInit() {
+    //this.positions.paginator = this.paginator;
+    //this.positions.sort = this.sort;
+
     if (this.showList) {
       this.getPositions();
     }
@@ -63,10 +76,22 @@ export class PositionComponent implements OnInit {
       this.showList = false;
     }
   }
+
+  applyFilter(filterValue: string) {
+    this.positions.filter = filterValue.trim().toLowerCase();
+
+    if (this.positions.paginator) {
+      this.positions.paginator.firstPage();
+    }
+  }
+
   getPositions(): void { // UPDATE TO POINT TO DATA SERVICE INSTEAD
     this.positionService.getAllPositions().subscribe(
       (res: Position[]) => {
-        this.positions = res;
+        //this.positions = res;
+        this.positions = new MatTableDataSource(res);
+        this.positions.paginator = this.paginator;
+        this.positions.sort = this.sort;
       }
     );
   }
@@ -90,7 +115,7 @@ export class PositionComponent implements OnInit {
           // Update the list of positions
           if (this.showList) {
             // Above Condition added to make the list available on demand. service will only populate list if requested.
-            this.positions = res;
+            this.positions = new MatTableDataSource(res); // Impelement a list refresh rather
           }
           // Inform the user
           this.success = 'Created successfully';
@@ -121,7 +146,7 @@ export class PositionComponent implements OnInit {
       .subscribe(
         (res) => {
           if (this.showList) {
-            this.positions = res;
+            this.positions = new MatTableDataSource(res); // Impelement a list refresh rather
           }
           this.success = 'Updated successfully';
           this.notifier.showSaved();
@@ -137,7 +162,7 @@ export class PositionComponent implements OnInit {
       .subscribe(
         (res: Position[]) => {
           if (this.showList) {
-            this.positions = res;
+            this.positions = new MatTableDataSource(res); // Impelement a list refresh rather
           }
           this.success = 'Deleted successfully';
           this.notifier.showDeleted();

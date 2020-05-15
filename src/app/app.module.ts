@@ -37,6 +37,11 @@ import { AuthInterceptor } from './services/auth-request';
 
 import { GlobalErrorHandlerService } from './services/global-error-handler.service';
 
+//pagination
+import { AngularmaterialModule } from './material/angularmaterial/angularmaterial.module';
+import { PositionService } from './admin/position/position.service';
+
+
 let schemas: any[] = [];
 schemas.push(CUSTOM_ELEMENTS_SCHEMA);
 
@@ -68,12 +73,14 @@ schemas.push(CUSTOM_ELEMENTS_SCHEMA);
     ReactiveFormsModule,
     BrowserAnimationsModule,
     MatSnackBarModule,
+    AngularmaterialModule, //pagination
     AppRoutingModule
   ],
   providers: [ 
     UserService,
     CustomValidators,
     FormService,
+    PositionService, //pagination
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
