@@ -20,3 +20,41 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     color: white;
     font-weight: bold;
 }
+
+
+.mat-table {
+    width: 100%;
+}
+.mat-header-cell{
+    font-size: 13px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #7a80b4;
+    border-color:#7a80b4;
+}
+.mat-form-field {
+    font-family: 'Circular Std Book';
+    color: #71748d;
+    font-size: 15px;
+    width: 100%;
+}
+.mat-paginator, .mat-select-value {
+    font-family: 'Circular Std Book';
+    color: #71748d;
+    font-size: 13px;
+}
+.mat-cell {
+  font-family: 'Circular Std Book';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  color: #71748d;
+  -webkit-font-smoothing: antialiased;
+}
+.mat-table-header-row {
+    font-weight: bold;
+    height: 35px !important;
+}
+.mat-table-row {
+    height: 35px !important;
+}

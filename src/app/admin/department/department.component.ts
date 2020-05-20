@@ -1,4 +1,4 @@
-import { Component, OnInit, Injector } from '@angular/core';
+import { Component, OnInit, Injector, ViewChild } from '@angular/core';
 import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
 import { Department } from './department';
 import { DepartmentService } from './department.service';
@@ -7,6 +7,10 @@ import { FormService } from '../../services/form';
 import { DataService } from '../data.service';
 import { NotificationService } from '../../services/notification.service';
 import { Costcentre } from '../costcentre/costcentre'; // For dropdown
+import { Observable } from 'rxjs';//////////////////////////////////////////////////
+import { filter, startWith, map, switchMap } from 'rxjs/operators';/////////////////////////////////
+import { Subscription } from 'rxjs';
+import { MatAutocompleteTrigger } from '@angular/material';//.................................
 
 @Component({
   selector: 'app-department', // WHAT MUST THE SELECTOR BE???
@@ -19,7 +23,9 @@ export class DepartmentComponent implements OnInit {
   departments: Department[];
   error = '';
   success = '';
-  costcentres: Costcentre[]; // For dropdown
+  //costcentres: Costcentre[]; // For dropdown
+  allCostcentres: Observable<Costcentre[]>;
+  filteredCostcentres: Observable<Costcentre[]>;
 
   department = new Department('', 0, '');
 
@@ -36,6 +42,10 @@ export class DepartmentComponent implements OnInit {
     costcentre: '',
     hod: ''
   };
+
+  @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
+
+  subscription: Subscription;
 
   constructor(private injector: Injector,
               private departmentService: DepartmentService,
@@ -58,6 +68,11 @@ export class DepartmentComponent implements OnInit {
 
   ngOnInit() {
     this.getCostcentres();
+    this.filteredCostcentres = this.thecostcentre.valueChanges
+    .pipe(
+      startWith(''),
+      switchMap(value => this.filterCostcentres(value))
+    );
     if (this.showList) {
       this.getDepartments();
     }
@@ -76,12 +91,16 @@ export class DepartmentComponent implements OnInit {
   }
 
   // for dropdown
-  getCostcentres(): void {
+  /*getCostcentres(): void {
     this.dataService.getAllCostcentres().subscribe(
       (res: Costcentre[]) => {
         this.costcentres = res;
       }
     );
+  }*/
+  
+  getCostcentres(): void {
+    this.allCostcentres = this.dataService.getAllCostcentres();
   }
 
   getDepartments(): void {
@@ -134,7 +153,8 @@ export class DepartmentComponent implements OnInit {
         this.department = res;
         this.rForm.setValue({
           name: this.department.name,
-          costcentre: this.department.costcentre.id,
+          //costcentre: this.department.costcentre.id,
+          costcentre: this.department.costcentre,
           hod: (this.department.hod != null) ? this.department.hod : null//this.department.hod
         });
       }
@@ -208,4 +228,54 @@ export class DepartmentComponent implements OnInit {
     this.success = '';
     this.error   = '';
   }
+
+  ngAfterViewInit() {
+    this._subscribeToClosingActions();
+  }
+
+  ngOnDestroy() {
+    if (this.subscription && !this.subscription.closed) {
+      this.subscription.unsubscribe();
+    }
+  }
+
+  private _subscribeToClosingActions(): void {
+    if (this.subscription && !this.subscription.closed) {
+      this.subscription.unsubscribe();
+    }
+
+    this.subscription = this.trigger.panelClosingActions
+      .subscribe(e => {
+        if (!e || !e.source) {
+          console.log(this.trigger)
+          console.log(e)
+          this.rForm.controls.costcentre.setValue(null);
+        }
+      },
+      err => this._subscribeToClosingActions(),
+      () => this._subscribeToClosingActions());
+  }
+    
+  private filterCostcentres(value: string | Costcentre) {
+    let filterValue = '';
+    if (value) {
+      filterValue = typeof value === 'string' ? value.toLowerCase() : value.name.toLowerCase();
+      return this.allCostcentres.pipe(
+        map(costcentres => costcentres.filter(costcentre => costcentre.name.toLowerCase().includes(filterValue)))
+      );
+    } else {
+      return this.allCostcentres;
+    }
+  }
+  displayFn(costcentre?: Costcentre): string | undefined {
+    return costcentre ? costcentre.name : undefined;
+  }
+  
+  get thecostcentre() {
+    return this.rForm.get('costcentre');
+  }
+
+  /*resetForm() {
+    this.rForm.reset();
+  }*/
 }

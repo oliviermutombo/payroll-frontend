@@ -41,6 +41,8 @@ import { GlobalErrorHandlerService } from './services/global-error-handler.servi
 import { AngularmaterialModule } from './material/angularmaterial/angularmaterial.module';
 import { PositionService } from './admin/position/position.service';
 
+import { MatAutocompleteModule, MatInputModule } from '@angular/material';
+
 
 let schemas: any[] = [];
 schemas.push(CUSTOM_ELEMENTS_SCHEMA);
@@ -74,6 +76,8 @@ schemas.push(CUSTOM_ELEMENTS_SCHEMA);
     BrowserAnimationsModule,
     MatSnackBarModule,
     AngularmaterialModule, //pagination
+    MatAutocompleteModule,
+    MatInputModule,
     AppRoutingModule
   ],
   providers: [ 
