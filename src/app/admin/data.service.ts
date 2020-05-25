@@ -11,6 +11,7 @@ import { Department } from './department/department';
 import { Position } from './position/position';
 import { PayrollPeriod } from './payrollPeriod/payrollPeriod';
 import { Deduction } from './deduction/deduction';
+import { Employee } from './employee/employee';
 //////////////////////////////////////////////// close
 
 @Injectable({
@@ -21,6 +22,10 @@ export class DataService {
   private messageSource = new BehaviorSubject('default message');
   currentMessage = this.messageSource.asObservable();
   baseUrl = environment.baseUrl;
+
+  employeeUrl = this.baseUrl + '/employees';
+  employee: Employee;
+  employees: Employee[];
 
   costcentreUrl = this.baseUrl + '/costcentres';
   costcentre: Costcentre;
@@ -73,6 +78,14 @@ export class DataService {
 
   changeMessage(message: string) {
     this.messageSource.next(message);
+  }
+
+  getAllEmployees(): Observable<Employee[]> {
+    return this.http.get<Employee[]>(`${this.employeeUrl}/`).pipe(
+      map((res) => {
+        this.employees = res;
+        return this.employees;
+    }));
   }
 
   getAllCostcentres(): Observable<Costcentre[]> {

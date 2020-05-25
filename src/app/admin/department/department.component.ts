@@ -124,9 +124,9 @@ export class DepartmentComponent implements OnInit {
 
     this.department.name = f.name;
     //this.department.costcentre = f.costcentre;
-    this.department.costcentre = this.dataService.generateQuickIdObject(f.costcentre);
+    this.department.costcentre = this.dataService.generateQuickIdObject(f.costcentre.id);
     this.department.hod = f.hod;
-
+    //alert('Pre-storing depatment\n' + JSON.stringify(this.department));
     this.departmentService.storeDepartment(this.department)
       .subscribe(
         (res: Department[]) => {
@@ -190,7 +190,7 @@ export class DepartmentComponent implements OnInit {
   updateDepartment(f) {
     this.resetErrors();
     this.department.name = f.name;
-    this.department.costcentre = this.dataService.generateQuickIdObject(f.costcentre);//check behaviour when null
+    this.department.costcentre = this.dataService.generateQuickIdObject(f.costcentre.id);//check behaviour when null
     this.department.hod = f.hod;
     this.departmentService.updateDepartment(this.department)
       .subscribe(

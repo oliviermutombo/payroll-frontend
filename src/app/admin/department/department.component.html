@@ -70,7 +70,7 @@
                             <tr *ngFor="let d of departments">
                                 <td>{{d.name}}</td>
                                 <!--<td>{{d.costcentre}}</td>-->
-                                <td>{{d.costcentre.name}}</td>
+                                <td><span *ngIf="d.costcentre">{{d.costcentre.name}}</span></td>
                                 <td>{{d.hod}}</td>
                                 <td><button class="btn btn-primary btn-xs" (click)="departmentEdit(d.id)" >Update</button></td>
                                 <td><button class="btn btn-danger btn-xs" (click)="deleteDepartment(d.id)" >Delete</button></td>
