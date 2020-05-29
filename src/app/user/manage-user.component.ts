@@ -131,23 +131,26 @@ checkEmployee($isChecked): void {
 
   getEmployeeToEdit(): void {
 
-    let empId = this.route.snapshot.paramMap.get('empId');//add
-    let emp_userIds = this.route.snapshot.paramMap.get('emp_userIds');//edit
+    const queryParams = this.route.snapshot.queryParams
+    //const routeParams = this.route.snapshot.params;
+    //let empId = this.route.snapshot.paramMap.get('empId');
+    //let userId = this.route.snapshot.paramMap.get('userId');
 
-    if (empId) {
-      empId = decodeURIComponent(empId);
+    let empId = queryParams['empId'];
+    let userId = queryParams.userId;
+
+    if (empId && !userId) {
+      //empId = decodeURIComponent(empId);
       this.updateMode = false;
       let decryptedEmpId = this.utilitiesService.Decrypt(empId);
       this.populateForm(+decryptedEmpId);
-    }
 
-    if (emp_userIds) {
-      emp_userIds = decodeURIComponent(emp_userIds);
+    }else if (userId && empId) {
+      //userId = decodeURIComponent(userId);
       this.updateMode = true;
-      let decryptedParams = this.utilitiesService.Decrypt(emp_userIds);
-      let params = this.utilitiesService.splitString(decryptedParams);
-      this.empIdToEdit = +params[0];
-      this.populateFormToEdit(+params[1]);
+      let decryptedUserId = +this.utilitiesService.Decrypt(userId);
+      this.empIdToEdit = +this.utilitiesService.Decrypt(empId);
+      this.populateFormToEdit(decryptedUserId);
     }
     
   }
@@ -170,28 +173,36 @@ checkEmployee($isChecked): void {
     this.user.email = f.emailAddress;
     this.user.username = f.emailAddress;
     this.user.employee = this.dataService.generateQuickIdObject(this.employee.id);
-  
-    this.userService.create(this.user)
-      .subscribe(
-        (res: any) => {
-          if (res) {
-            this.notification.showSaved();
+    if (this.user.role.length == 0) {
+        this.notification.showError('No role(s) selected!');
+    } else {
+      this.userService.create(this.user)
+        .subscribe(
+          (res: any) => {
+            if (res) {
+              this.notification.showSaved();
+            }
+            // Reset the form
+            this.rForm.reset();
           }
-          // Reset the form
-          this.rForm.reset();
-        }
-      );
+        );
+    }
   }
 
   updateUser(f) {
     this.user.employee = this.dataService.generateQuickIdObject(this.empIdToEdit)//this.user.employee.id);
     this.user.role = this.getEditedRoles(f);
-    this.userService.updateUser(this.user)
-      .subscribe(
-        (res) => {
-          this.notification.showSaved();
-        }
-      );
+    
+    if (this.user.role.length == 0) {
+      this.notification.showError('No role(s) selected!');
+    } else {
+      this.userService.updateUser(this.user)
+        .subscribe(
+          (res) => {
+            this.notification.showSaved();
+          }
+        );
+    }
   }
 
   getEditedRoles(f){

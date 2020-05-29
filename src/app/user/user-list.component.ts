@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
 import { Employee } from '../admin/employee/employee';
 import { EmployeeService } from '../admin/employee.service';
-import { UserService } from '../services/user.service';
-import { DataService } from '../admin/data.service';
 import { UtilitiesService } from '../services/utilities.service';
 
 @Component({
@@ -26,9 +23,7 @@ export class UserListComponent implements OnInit {
   updateMode = false;
 
   constructor(private employeeService: EmployeeService,
-              private userService: UserService,
-              private utilitiesService: UtilitiesService,
-              private dataService: DataService) {
+              private utilitiesService: UtilitiesService) {
   }
 
   ngOnInit() {
@@ -60,10 +55,20 @@ export class UserListComponent implements OnInit {
     } else return null;
   }
 
-  getEditUrl(userId, EmpId) {
+  /*getEditUrl(userId, EmpId) {
     return `/edit_user/${encodeURIComponent(this.encryptParams(userId,EmpId))}`;
   }
   getCreateUrl(EmpId) {
     return `/create_user/${encodeURIComponent(this.encryptParams(EmpId))}`;
+  }*/
+
+  getUserObject(empId, userId?){
+    if (empId && userId) {
+      let params = {empId:this.encryptParams(empId), userId:this.encryptParams(userId)};
+      return params;
+    } else if (empId && !userId) {
+      let params = {empId:this.encryptParams(empId)};
+      return params;
+    }
   }
 }
