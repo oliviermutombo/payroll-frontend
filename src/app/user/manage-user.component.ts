@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Injector } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
@@ -10,6 +10,7 @@ import { FormService } from '../services/form';
 import { DataService } from '../admin/data.service';
 import { NotificationService } from '../services/notification.service';
 import { Role } from '../user/role';
+import { UtilitiesService } from '../services/utilities.service';
 
 @Component({
   templateUrl: './manage-user.component.html'
@@ -32,6 +33,8 @@ export class ManageUserComponent implements OnInit {
     'password' : '12345', // Temporary
     'role' : []
   };
+
+  empIdToEdit = 0;//////////////////////////////////
 
   rForm: FormGroup;
   showList = false;
@@ -90,13 +93,15 @@ checkEmployee($isChecked): void {
   }
 }
 
-  constructor(private employeeService: EmployeeService,
+  constructor(private injector: Injector,
+              private employeeService: EmployeeService,
               private userService: UserService,
               private dataService: DataService,
               private fb: FormBuilder,
               private route: ActivatedRoute,
               private location: Location,
               private notification: NotificationService,
+              private utilitiesService: UtilitiesService,
               public formService: FormService) { // TRY PRIVATE
 
     this.rForm = fb.group({
@@ -117,22 +122,34 @@ checkEmployee($isChecked): void {
     });
   }
 
+  notifier = this.injector.get(NotificationService);
+
   ngOnInit() {
     
     this.getEmployeeToEdit();
   }
 
-  getEmployeeToEdit(): void { // to add/edit user
-    const id = +this.route.snapshot.paramMap.get('id');//add
-    const _id = +this.route.snapshot.paramMap.get('_id');//edit
-    if (id>0){
+  getEmployeeToEdit(): void {
+
+    let empId = this.route.snapshot.paramMap.get('empId');//add
+    let emp_userIds = this.route.snapshot.paramMap.get('emp_userIds');//edit
+
+    if (empId) {
+      empId = decodeURIComponent(empId);
       this.updateMode = false;
-      this.populateForm(id);
-      //this.userEdit(id);
-    } else if (_id>0) {
-      this.updateMode = true;
-      this.populateFormToEdit(_id);
+      let decryptedEmpId = this.utilitiesService.Decrypt(empId);
+      this.populateForm(+decryptedEmpId);
     }
+
+    if (emp_userIds) {
+      emp_userIds = decodeURIComponent(emp_userIds);
+      this.updateMode = true;
+      let decryptedParams = this.utilitiesService.Decrypt(emp_userIds);
+      let params = this.utilitiesService.splitString(decryptedParams);
+      this.empIdToEdit = +params[0];
+      this.populateFormToEdit(+params[1]);
+    }
+    
   }
 
   goBack(): void {
@@ -167,7 +184,7 @@ checkEmployee($isChecked): void {
   }
 
   updateUser(f) {
-    this.user.employee = this.dataService.generateQuickIdObject(this.user.employee.id);
+    this.user.employee = this.dataService.generateQuickIdObject(this.empIdToEdit)//this.user.employee.id);
     this.user.role = this.getEditedRoles(f);
     this.userService.updateUser(this.user)
       .subscribe(

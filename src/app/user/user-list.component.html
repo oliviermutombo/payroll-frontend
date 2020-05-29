@@ -21,8 +21,14 @@
                         <td>{{e.lastName}}</td>
                         <td>{{e.emailAddress}}</td>
                         <!--<td *ngIf="e['user'] else doesnt_exist"><button class="btn btn-primary btn-xs" routerLink="/edit_user/{{e.id}}" >Manage</button></td>-->
-                        <td *ngIf="e['user'] else doesnt_exist"><button class="btn btn-primary btn-xs" routerLink="/edit_user/{{e['user'].id}}" >Manage</button></td>
-                        <ng-template #doesnt_exist><td><button class="btn btn-primary btn-xs" routerLink="/create_user/{{e.id}}">Create account</button></td></ng-template>
+                        <!--<td *ngIf="e['user'] else doesnt_exist"><button class="btn btn-primary btn-xs" routerLink="/edit_user/{{e['user'].id}}" >Manage</button></td>
+                        <ng-template #doesnt_exist><td><button class="btn btn-primary btn-xs" routerLink="/create_user/{{e.id}}">Create account</button></td></ng-template>-->
+                        <!--
+                        <td *ngIf="e['user'] else doesnt_exist"><button class="btn btn-primary btn-xs" routerLink="/edit_user/{{encryptParams(e['user'].id, e.id)}}" >Manage</button></td>
+                        <ng-template #doesnt_exist><td><button class="btn btn-primary btn-xs" routerLink="/create_user/{{encryptParams(e.id, e.id)}}">Create account</button></td></ng-template>
+                        -->
+                        <td *ngIf="e['user'] else doesnt_exist"><button class="btn btn-primary btn-xs" routerLink="{{getEditUrl(e['user'].id, e.id)}}" >Manage</button></td>
+                        <ng-template #doesnt_exist><td><button class="btn btn-primary btn-xs" routerLink="{{getCreateUrl(e.id)}}">Create account</button></td></ng-template>
                     </tr>
                 </table>
             </span>

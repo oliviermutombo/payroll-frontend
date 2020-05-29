@@ -64,10 +64,9 @@ export class GlobalErrorHandlerService implements ErrorHandler {
         console.error('Backend returned status code: ', error.status);
         console.error('Response body:', error.message);          	  
       } else {
-            //alert('we\'re finally here!');
-            //alert(error);
-            //alert(JSON.stringify(error.message));
-            notifier.showError(error.message);       
+            
+            //notifier.showError('An error occurred!');
+            notifier.showError('FOR DEBUGGING PURPOSES ONLY - ' + error.message);
             console.error('An error occurred:', error.message);          
       }
       //alert('Navigating to error page now');

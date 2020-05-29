@@ -55,13 +55,13 @@ const routes: Routes = [
     data: { roles: [Role.ROLE_ADMIN] }
   },
   {
-    path: 'create_user/:id',
+    path: 'create_user/:empId',
     component: ManageUserComponent,
     canActivate: [AuthGuard], 
     data: { roles: [Role.ROLE_ADMIN] }
   },
   {
-    path: 'edit_user/:_id',
+    path: 'edit_user/:emp_userIds',
     component: ManageUserComponent,
     canActivate: [AuthGuard], 
     data: { roles: [Role.ROLE_ADMIN] }
