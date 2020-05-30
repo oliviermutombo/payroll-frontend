@@ -11,6 +11,8 @@ import { Observable } from 'rxjs';//////////////////////////////////////////////
 import { filter, startWith, map, switchMap } from 'rxjs/operators';/////////////////////////////////
 import { Subscription } from 'rxjs';
 import { MatAutocompleteTrigger } from '@angular/material';//.................................
+import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material'; //pagination
+import { Employee } from '../employee/employee';
 
 @Component({
   selector: 'app-department', // WHAT MUST THE SELECTOR BE???
@@ -20,12 +22,20 @@ import { MatAutocompleteTrigger } from '@angular/material';//...................
 
 export class DepartmentComponent implements OnInit {
   title = 'payroll-system';
-  departments: Department[];
+  departments: MatTableDataSource<Department>;
   error = '';
   success = '';
   //costcentres: Costcentre[]; // For dropdown
   allCostcentres: Observable<Costcentre[]>;
   filteredCostcentres: Observable<Costcentre[]>;
+
+  //hod
+  allEmployees: Observable<Employee[]>;
+  filteredEmployees: Observable<Employee[]>;
+
+  displayedColumns: string[] = ['name', 'hod', 'costcentre', 'manageColumn'];
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
 
   department = new Department('', 0, '');
 
@@ -76,6 +86,19 @@ export class DepartmentComponent implements OnInit {
     if (this.showList) {
       this.getDepartments();
     }
+    //hod
+    this.getEmployees();
+    this.filteredEmployees = this.theHod.valueChanges
+    .pipe(
+      startWith(''),
+      switchMap(value => this.filterEmployees(value))
+    );
+    if (this.showList) {
+      this.getCostcentres();
+    }
+  }
+  getEmployees(): void {
+    this.allEmployees = this.dataService.getAllEmployees();
   }
 
   showHideList($isChecked): void {
@@ -98,6 +121,14 @@ export class DepartmentComponent implements OnInit {
       }
     );
   }*/
+
+  applyFilter(filterValue: string) {
+    this.departments.filter = filterValue.trim().toLowerCase();
+
+    if (this.departments.paginator) {
+      this.departments.paginator.firstPage();
+    }
+  }
   
   getCostcentres(): void {
     this.allCostcentres = this.dataService.getAllCostcentres();
@@ -106,7 +137,9 @@ export class DepartmentComponent implements OnInit {
   getDepartments(): void {
     this.departmentService.getAllDepartments().subscribe(
       (res: Department[]) => {
-        this.departments = res;
+        this.departments = new MatTableDataSource(res);
+        this.departments.paginator = this.paginator;
+        this.departments.sort = this.sort;
       }
     );
   }
@@ -125,7 +158,7 @@ export class DepartmentComponent implements OnInit {
     this.department.name = f.name;
     //this.department.costcentre = f.costcentre;
     this.department.costcentre = this.dataService.generateQuickIdObject(f.costcentre.id);
-    this.department.hod = f.hod;
+    this.department.hod = this.dataService.generateQuickIdObject(f.hod.id);//f.hod;
     //alert('Pre-storing depatment\n' + JSON.stringify(this.department));
     this.departmentService.storeDepartment(this.department)
       .subscribe(
@@ -187,11 +220,12 @@ export class DepartmentComponent implements OnInit {
         }
       );
   }*/
+
   updateDepartment(f) {
     this.resetErrors();
     this.department.name = f.name;
     this.department.costcentre = this.dataService.generateQuickIdObject(f.costcentre.id);//check behaviour when null
-    this.department.hod = f.hod;
+    this.department.hod = this.dataService.generateQuickIdObject(f.hod.id);//f.hod;
     this.departmentService.updateDepartment(this.department)
       .subscribe(
         (res) => {
@@ -214,7 +248,7 @@ export class DepartmentComponent implements OnInit {
       .subscribe(
         (res: Department[]) => {
           if (this.showList) {
-            this.departments = res;
+            this.departments = new MatTableDataSource(res); // Impelement a list refresh rather
           }
           this.success = 'Deleted successfully';
           this.notifier.showDeleted();
@@ -275,6 +309,26 @@ export class DepartmentComponent implements OnInit {
     return this.rForm.get('costcentre');
   }
 
+  //hod
+  private filterEmployees(value: string | Employee) {
+    let filterValue = '';
+    if (value) {
+      filterValue = typeof value === 'string' ? value.toLowerCase() : value.firstName.toLowerCase();
+      return this.allEmployees.pipe(
+        //map(employees => employees.filter(employee => employee.firstName.toLowerCase().includes(filterValue)))
+        map(employees => employees.filter(employee => employee.firstName.toLowerCase().includes(filterValue) || employee.lastName.toLowerCase().includes(filterValue)))
+      );
+    } else {
+      return this.allEmployees;
+    }
+  }
+  displayHodFn(employee?: Employee): string | undefined {
+    return employee ? employee.firstName + ' ' + employee.lastName : undefined;
+  }
+
+  get theHod() {
+    return this.rForm.get('hod');
+  }
   /*resetForm() {
     this.rForm.reset();
   }*/
