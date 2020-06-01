@@ -83,7 +83,7 @@
                     <table align="right">
                         <tr>
                             <td><input type="button" class="btn btn-primary btn-xs" value="Back" (click)="goBack()"/></td>
-                            <td><button class="btn btn-primary btn-xs" routerLink="/manage_employee/{{employee.id}}" >Edit</button></td>
+                            <td><button class="btn btn-primary btn-xs" routerLink="/manage_employee/{{encryptedEmpId}}" >Edit</button></td>
                             <td><button class="btn btn-danger btn-xs" (click)="deleteEmployee(employee.id)" >Delete</button></td>
                         </tr>
                     </table>

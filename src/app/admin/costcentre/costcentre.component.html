@@ -21,14 +21,6 @@
                             <span class="text-danger" *ngIf="!rForm.controls['owner'].valid && rForm.controls['owner'].touched">{{ formErrors.owner }}</span>
                         </div>
                         -->
-                        <mat-form-field>
-                            <input type="text" placeholder="Select cost centre owner" matInput formControlName="owner" [matAutocomplete]="auto">
-                            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-                              <mat-option *ngFor="let employee of filteredEmployees | async" [value]="employee">
-                                {{employee.firstName}} {{employee.lastName}}  [{{employee.empCode}}]
-                              </mat-option>
-                            </mat-autocomplete>
-                        </mat-form-field>
                         <div><input type="submit" class="btn btn-primary btn-sm" value="Save" [disabled]="!rForm.valid"></div>
                     </div>
                 </form>

@@ -4,6 +4,7 @@ import { Location } from '@angular/common';
 import { Employee } from './employee';
 import { Salary } from '../salary/salary'
 import { EmployeeService } from '../employee.service';
+import { UtilitiesService } from '../../services/utilities.service';
 
 @Component({
   selector: 'app-employee-details',
@@ -24,11 +25,15 @@ export class EmployeeDetailsComponent implements OnInit{
 
     employee: Employee;
     salary: Salary;
+
+    encryptedEmpId = '';
+
     // employee: {};
 
     constructor(
       private route: ActivatedRoute,
       private employeeService: EmployeeService,
+      private utilitiesService: UtilitiesService,
       private location: Location
     ) {}
 
@@ -36,9 +41,9 @@ export class EmployeeDetailsComponent implements OnInit{
       this.getEmployee();
     }
 
-
     getEmployee(): void {
-      const id = +this.route.snapshot.paramMap.get('id');
+      this.encryptedEmpId = this.route.snapshot.paramMap.get('id');
+      const id = +this.utilitiesService.Decrypt(this.encryptedEmpId);
       this.employeeService.getEmployee(id)
         .subscribe(
           employee => this.employee = employee/*,
@@ -47,6 +52,17 @@ export class EmployeeDetailsComponent implements OnInit{
           }*/
         );
     }
+
+    /*getEmployee(): void {
+      const id = +this.route.snapshot.paramMap.get('id');
+      this.employeeService.getEmployee(id)
+        .subscribe(
+          employee => this.employee = employee,
+          (err) => {
+            this.error = err;
+          }
+        );
+    }*/
     
     goBack(): void {
       this.location.back();

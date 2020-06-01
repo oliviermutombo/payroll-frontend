@@ -10,7 +10,6 @@ import { NotificationService } from '../../services/notification.service';
 import { Observable } from 'rxjs';
 import { startWith, map, switchMap } from 'rxjs/operators';/////////////////////////////////
 import { Subscription } from 'rxjs';
-import { MatAutocompleteTrigger } from '@angular/material';//.................................
 import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material'; //pagination
 
 @Component({
@@ -26,8 +25,6 @@ export class CostcentreComponent implements OnInit {
   success = '';
 
   costcentre = new Costcentre('', '');
-  allEmployees: Observable<Employee[]>;
-  filteredEmployees: Observable<Employee[]>;
 
   displayedColumns: string[] = ['name', 'owner', 'manageColumn'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -44,9 +41,6 @@ export class CostcentreComponent implements OnInit {
     name: '',
     owner: '',
   };
-
-  @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
-  subscription: Subscription;
 
   constructor(private injector: Injector,
               private costcentreService: CostcentreService,
@@ -67,12 +61,6 @@ export class CostcentreComponent implements OnInit {
   notifier = this.injector.get(NotificationService);
 
   ngOnInit() {
-    this.getEmployees();
-    this.filteredEmployees = this.theowner.valueChanges
-    .pipe(
-      startWith(''),
-      switchMap(value => this.filterEmployees(value))
-    );
     if (this.showList) {
       this.getCostcentres();
     }
@@ -88,10 +76,6 @@ export class CostcentreComponent implements OnInit {
     } else {
       this.showList = false;
     }
-  }
-
-  getEmployees(): void {
-    this.allEmployees = this.dataService.getAllEmployees();
   }
 
   applyFilter(filterValue: string) {
@@ -198,50 +182,7 @@ export class CostcentreComponent implements OnInit {
     this.error   = '';
   }
 
-  ngAfterViewInit() {
-    this._subscribeToClosingActions();
-  }
-
-  ngOnDestroy() {
-    if (this.subscription && !this.subscription.closed) {
-      this.subscription.unsubscribe();
-    }
-  }
-
-  private _subscribeToClosingActions(): void {
-    if (this.subscription && !this.subscription.closed) {
-      this.subscription.unsubscribe();
-    }
-
-    this.subscription = this.trigger.panelClosingActions
-      .subscribe(e => {
-        if (!e || !e.source) {
-          console.log(this.trigger)
-          console.log(e)
-          this.rForm.controls.owner.setValue(null);
-        }
-      },
-      err => this._subscribeToClosingActions(),
-      () => this._subscribeToClosingActions());
-  }
-
-  private filterEmployees(value: string | Employee) {
-    let filterValue = '';
-    if (value) {
-      filterValue = typeof value === 'string' ? value.toLowerCase() : value.firstName.toLowerCase();
-      return this.allEmployees.pipe(
-        //map(employees => employees.filter(employee => employee.firstName.toLowerCase().includes(filterValue)))
-        map(employees => employees.filter(employee => employee.firstName.toLowerCase().includes(filterValue) || employee.lastName.toLowerCase().includes(filterValue)))
-      );
-    } else {
-      return this.allEmployees;
-    }
-  }
   displayFn(employee?: Employee): string | undefined {
     return employee ? employee.firstName + ' ' + employee.lastName : undefined;
-  }
-  
-  get theowner() {
-    return this.rForm.get('owner');
   }
 }

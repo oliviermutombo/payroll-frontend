@@ -1,7 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Employee } from '../admin/employee/employee';
 import { EmployeeService } from '../admin/employee.service';
 import { UtilitiesService } from '../services/utilities.service';
+import { MatAutocompleteTrigger } from '@angular/material';
+import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -11,8 +14,12 @@ import { UtilitiesService } from '../services/utilities.service';
 export class UserListComponent implements OnInit {
   title = 'payroll-system';
 
-  employees: Employee[];
-  showList = false;
+  employees: MatTableDataSource<Employee>;
+  displayedColumns: string[] = ['firstName', 'lastName', 'emailAddress', 'manage'];
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
+  subscription: Subscription;
 
   error = '';
   success = '';
@@ -33,8 +40,9 @@ export class UserListComponent implements OnInit {
   getEmployees(): any {
     this.employeeService.getAll().subscribe(
       (res: Employee[]) => {
-        this.employees = res;
-        this.showList = true; // added
+        this.employees = new MatTableDataSource(res);
+        this.employees.paginator = this.paginator;
+        this.employees.sort = this.sort;
       }
     );
   }
@@ -55,13 +63,6 @@ export class UserListComponent implements OnInit {
     } else return null;
   }
 
-  /*getEditUrl(userId, EmpId) {
-    return `/edit_user/${encodeURIComponent(this.encryptParams(userId,EmpId))}`;
-  }
-  getCreateUrl(EmpId) {
-    return `/create_user/${encodeURIComponent(this.encryptParams(EmpId))}`;
-  }*/
-
   getUserObject(empId, userId?){
     if (empId && userId) {
       let params = {empId:this.encryptParams(empId), userId:this.encryptParams(userId)};
@@ -69,6 +70,14 @@ export class UserListComponent implements OnInit {
     } else if (empId && !userId) {
       let params = {empId:this.encryptParams(empId)};
       return params;
+    }
+  }
+  
+  applyFilter(filterValue: string) {
+    this.employees.filter = filterValue.trim().toLowerCase();
+
+    if (this.employees.paginator) {
+      this.employees.paginator.firstPage();
     }
   }
 }

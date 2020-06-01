@@ -10,6 +10,7 @@ import { FormService } from '../../services/form';
 import { DataService } from '../data.service';
 import { Department } from '../department/department'; // For dropdown
 import { Position } from '../position/position'; // For dropdown
+import { UtilitiesService } from '../../services/utilities.service';
 
 @Component({
   // selector: 'app-root', // WHAT MUST THE SELECTOR BE???
@@ -95,6 +96,7 @@ export class ManageEmployeeComponent implements OnInit {
               private fb: FormBuilder,
               private route: ActivatedRoute,
               private location: Location,
+              private utilitiesService: UtilitiesService,
               public formService: FormService) { // TRY PRIVATE
 
     this.rForm = fb.group({
@@ -137,7 +139,7 @@ export class ManageEmployeeComponent implements OnInit {
   }
 
   getEmployeeToEdit(): void {
-    const id = +this.route.snapshot.paramMap.get('id');
+    const id = +this.utilitiesService.Decrypt(this.route.snapshot.paramMap.get('id'));
     if (id>0){
       this.updateMode = true;
         this.employeeEdit(id);

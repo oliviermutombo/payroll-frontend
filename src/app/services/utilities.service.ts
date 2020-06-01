@@ -20,7 +20,7 @@ import {Injectable} from '@angular/core';
 
     public Decrypt(input) {
         if (input) {
-            let decrypted: any = atob(input)
+            let decrypted: any = atob(input);
             decrypted = decrypted.substr(1).slice(0, -1);
             if (+decrypted) {
                 decrypted /= this.cryptKey;
