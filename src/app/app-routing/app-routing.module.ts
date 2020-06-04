@@ -13,8 +13,10 @@ import { EmployeeDetailsComponent } from '../admin/employee/employee-details.com
 import { DeductionComponent } from '../admin/deduction/deduction.component';
 import { PayrollPeriodComponent } from '../admin/payrollPeriod/payrollPeriod.component';
 import { PayrollComponent } from '../admin/payroll/payroll.component';
+import { CountryComponent } from '../admin/countries/country.component';
 import { UserListComponent } from '../user/user-list.component';
 import { ManageUserComponent } from '../user/manage-user.component';
+import { CompanyComponent } from '../admin/company/company.component';
 
 //emp
 import { PayslipComponent } from '../employee/payslip/payslip.component';
@@ -99,6 +101,18 @@ const routes: Routes = [
   {
     path: 'position',
     component: PositionComponent,
+    canActivate: [AuthGuard], 
+    data: { roles: [Role.ROLE_EMPLOYEE_ADMIN] }
+  },
+  {
+    path: 'countries',
+    component: CountryComponent,
+    canActivate: [AuthGuard], 
+    data: { roles: [Role.ROLE_EMPLOYEE_ADMIN] }
+  },
+  {
+    path: 'company_details',
+    component: CompanyComponent,
     canActivate: [AuthGuard], 
     data: { roles: [Role.ROLE_EMPLOYEE_ADMIN] }
   },
