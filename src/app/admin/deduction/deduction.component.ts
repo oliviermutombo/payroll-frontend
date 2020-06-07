@@ -162,15 +162,15 @@ export class DeductionComponent implements OnInit {
 
   addDeduction(f) {
     this.resetErrors();
-    
-    this.deduction.employee = f.employee;//
-    this.deduction.tax = f.tax;
-    this.deduction.annual = f.annual;
-    this.deduction.monthly = f.monthly;
-    this.deduction.medicalaid = f.medicalaid;
-    this.deduction.retirement = f.retirement;
+    let deduction = new Deduction();
+    deduction.employee = f.employee;//
+    deduction.tax = f.tax;
+    deduction.annual = f.annual;
+    deduction.monthly = f.monthly;
+    deduction.medicalaid = f.medicalaid;
+    deduction.retirement = f.retirement;
 
-    this.deductionService.storeDeduction(this.deduction)
+    this.deductionService.storeDeduction(deduction)
       .subscribe(
         (res: Deduction[]) => {
           // Update the list of deductions
@@ -221,6 +221,7 @@ export class DeductionComponent implements OnInit {
             this.deductions = res;
           }
           this.success = 'Updated successfully';
+          this.deduction = new Deduction();
           this.notifier.showSaved();
           this.updateMode = false;
           this.rForm.get('employee').enable();

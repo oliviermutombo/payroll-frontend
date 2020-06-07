@@ -5,6 +5,7 @@ import { DepartmentService } from './department.service';
 import { CustomValidators } from '../../services/custom_validators';
 import { FormService } from '../../services/form';
 import { DataService } from '../data.service';
+import { ApiService } from 'src/app/admin/api.service';
 import { NotificationService } from '../../services/notification.service';
 import { Costcentre } from '../costcentre/costcentre'; // For dropdown
 import { Observable } from 'rxjs';//////////////////////////////////////////////////
@@ -22,6 +23,7 @@ import { Employee } from '../employee/employee';
 
 export class DepartmentComponent implements OnInit {
   title = 'payroll-system';
+  entityEndpoint = '/departments';
   departments: MatTableDataSource<Department>;
   error = '';
   success = '';
@@ -60,6 +62,7 @@ export class DepartmentComponent implements OnInit {
   constructor(private injector: Injector,
               private departmentService: DepartmentService,
               private dataService: DataService,
+              private apiService: ApiService,
               private fb: FormBuilder,
               public formService: FormService) {
 
@@ -113,15 +116,6 @@ export class DepartmentComponent implements OnInit {
     }
   }
 
-  // for dropdown
-  /*getCostcentres(): void {
-    this.dataService.getAllCostcentres().subscribe(
-      (res: Costcentre[]) => {
-        this.costcentres = res;
-      }
-    );
-  }*/
-
   applyFilter(filterValue: string) {
     this.departments.filter = filterValue.trim().toLowerCase();
 
@@ -135,7 +129,7 @@ export class DepartmentComponent implements OnInit {
   }
 
   getDepartments(): void {
-    this.departmentService.getAllDepartments().subscribe(
+    this.apiService.getAll(this.entityEndpoint).subscribe(
       (res: Department[]) => {
         this.departments = new MatTableDataSource(res);
         this.departments.paginator = this.paginator;
@@ -145,7 +139,7 @@ export class DepartmentComponent implements OnInit {
   }
 
   getDepartment(id): void {
-    this.departmentService.getDepartment(id).subscribe(
+    this.apiService.getById(this.entityEndpoint, id).subscribe(
       (res: Department) => {
         this.department = res;
       }
@@ -154,13 +148,11 @@ export class DepartmentComponent implements OnInit {
 
   addDepartment(f) {
     this.resetErrors();
-
-    this.department.name = f.name;
-    //this.department.costcentre = f.costcentre;
-    this.department.costcentre = this.dataService.generateQuickIdObject(f.costcentre.id);
-    this.department.hod = this.dataService.generateQuickIdObject(f.hod.id);//f.hod;
-    //alert('Pre-storing depatment\n' + JSON.stringify(this.department));
-    this.departmentService.storeDepartment(this.department)
+    let department = new Department();
+    department.name = f.name;
+    department.costcentre = this.dataService.generateQuickIdObject(f.costcentre.id);
+    department.hod = this.dataService.generateQuickIdObject(f.hod.id);//f.hod;
+    this.apiService.save(this.entityEndpoint, department, this.departments.data)
       .subscribe(
         (res: Department[]) => {
           // Update the list of departments
@@ -181,12 +173,11 @@ export class DepartmentComponent implements OnInit {
   }
 
   departmentEdit(id) {
-    this.departmentService.getDepartment(id).subscribe(
+    this.apiService.getById(this.entityEndpoint, id).subscribe(
       (res: Department) => {
         this.department = res;
         this.rForm.setValue({
           name: this.department.name,
-          //costcentre: this.department.costcentre.id,
           costcentre: this.department.costcentre,
           hod: (this.department.hod != null) ? this.department.hod : null//this.department.hod
         });
@@ -226,7 +217,7 @@ export class DepartmentComponent implements OnInit {
     this.department.name = f.name;
     this.department.costcentre = this.dataService.generateQuickIdObject(f.costcentre.id);//check behaviour when null
     this.department.hod = this.dataService.generateQuickIdObject(f.hod.id);//f.hod;
-    this.departmentService.updateDepartment(this.department)
+    this.apiService.update(this.entityEndpoint, this.department, this.departments.data)
       .subscribe(
         (res) => {
           if (this.showList) {
@@ -235,6 +226,7 @@ export class DepartmentComponent implements OnInit {
             this.getDepartments();
           }
           this.success = 'Updated successfully';
+          this.department = new Department();
           this.notifier.showSaved();
           this.updateMode = false;
           this.rForm.reset();
@@ -244,7 +236,7 @@ export class DepartmentComponent implements OnInit {
 
   deleteDepartment(id) {
     this.resetErrors();
-    this.departmentService.deleteDepartment(id)
+    this.apiService.delete(this.entityEndpoint, id, this.departments.data)
       .subscribe(
         (res: Department[]) => {
           if (this.showList) {
@@ -315,7 +307,6 @@ export class DepartmentComponent implements OnInit {
     if (value) {
       filterValue = typeof value === 'string' ? value.toLowerCase() : value.firstName.toLowerCase();
       return this.allEmployees.pipe(
-        //map(employees => employees.filter(employee => employee.firstName.toLowerCase().includes(filterValue)))
         map(employees => employees.filter(employee => employee.firstName.toLowerCase().includes(filterValue) || employee.lastName.toLowerCase().includes(filterValue)))
       );
     } else {

@@ -10,7 +10,9 @@ import { NotificationService } from '../../services/notification.service';
 import { Observable } from 'rxjs';
 import { startWith, map, switchMap } from 'rxjs/operators';/////////////////////////////////
 import { Subscription } from 'rxjs';
+import { MatAutocompleteTrigger } from '@angular/material';
 import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material'; //pagination
+import { ApiService } from 'src/app/admin/api.service';
 
 @Component({
   selector: 'app-costcentre',
@@ -20,15 +22,20 @@ import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material'; /
 
 export class CostcentreComponent implements OnInit {
   title = 'payroll-system';
+  entityEndpoint = '/costcentres';
   costcentres: MatTableDataSource<Costcentre>;
   error = '';
   success = '';
 
   costcentre = new Costcentre('', '');
+  allEmployees: Observable<Employee[]>;
+  filteredEmployees: Observable<Employee[]>;
 
   displayedColumns: string[] = ['name', 'owner', 'manageColumn'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
+  subscription: Subscription;
 
   rForm: FormGroup;
   showList = false;
@@ -44,6 +51,7 @@ export class CostcentreComponent implements OnInit {
 
   constructor(private injector: Injector,
               private costcentreService: CostcentreService,
+              private apiService: ApiService,
               private dataService: DataService,
               private fb: FormBuilder,
               public formService: FormService) {
@@ -61,6 +69,12 @@ export class CostcentreComponent implements OnInit {
   notifier = this.injector.get(NotificationService);
 
   ngOnInit() {
+    this.getEmployees();
+    this.filteredEmployees = this.theowner.valueChanges
+    .pipe(
+      startWith(''),
+      switchMap(value => this.filterEmployees(value))
+    );
     if (this.showList) {
       this.getCostcentres();
     }
@@ -76,6 +90,10 @@ export class CostcentreComponent implements OnInit {
     } else {
       this.showList = false;
     }
+  }
+
+  getEmployees(): void {
+    this.allEmployees = this.dataService.getAllEmployees();
   }
 
   applyFilter(filterValue: string) {
@@ -106,11 +124,11 @@ export class CostcentreComponent implements OnInit {
 
   addCostcentre(f) {
     this.resetErrors();
+    let costcentre = new Costcentre();
+    costcentre.name = f.name;
+    if (f.owner) costcentre.owner = this.dataService.generateQuickIdObject(f.owner.id);
 
-    this.costcentre.name = f.name;
-    if (f.owner) this.costcentre.owner = this.dataService.generateQuickIdObject(f.owner.id);
-
-    this.costcentreService.storeCostcentre(this.costcentre)
+    this.costcentreService.storeCostcentre(costcentre)
       .subscribe(
         (res: Costcentre[]) => {
           // Update the list of costcentres
@@ -145,15 +163,17 @@ export class CostcentreComponent implements OnInit {
   updateCostcentre(f) {
     this.resetErrors();
     this.costcentre.name = f.name;
-    //this.costcentre.owner = this.dataService.generateQuickIdObject(f.owner.id);//check behaviour when null
     this.costcentre.owner = this.dataService.generateQuickIdObject(f.owner.id);//check behaviour when null
-    this.costcentreService.updateCostcentre(this.costcentre)
+    //this.costcentreService.updateCostcentre(this.costcentre)
+    this.apiService.update(this.entityEndpoint, this.costcentre, this.costcentres.data)
       .subscribe(
         (res) => {
           if (this.showList) {
+            //alert('res\n' + JSON.stringify(res));
             this.costcentres = new MatTableDataSource(res);
           }
           this.success = 'Updated successfully';
+          this.costcentre = new Costcentre();
           this.notifier.showSaved();
           this.updateMode = false;
           this.rForm.reset();
@@ -177,12 +197,56 @@ export class CostcentreComponent implements OnInit {
       );
   }
 
-  private resetErrors() {
-    this.success = '';
-    this.error   = '';
+  ngAfterViewInit() {
+    this._subscribeToClosingActions();
+  }
+
+  ngOnDestroy() {
+    if (this.subscription && !this.subscription.closed) {
+      this.subscription.unsubscribe();
+    }
+  }
+
+  private _subscribeToClosingActions(): void {
+    if (this.subscription && !this.subscription.closed) {
+      this.subscription.unsubscribe();
+    }
+
+    this.subscription = this.trigger.panelClosingActions
+      .subscribe(e => {
+        if (!e || !e.source) {
+          console.log(this.trigger)
+          console.log(e)
+          this.rForm.controls.owner.setValue(null);
+        }
+      },
+      err => this._subscribeToClosingActions(),
+      () => this._subscribeToClosingActions());
+  }
+
+  private filterEmployees(value: string | Employee) {
+    let filterValue = '';
+    if (value) {
+      filterValue = typeof value === 'string' ? value.toLowerCase() : value.firstName.toLowerCase();
+      return this.allEmployees.pipe(
+        //map(employees => employees.filter(employee => employee.firstName.toLowerCase().includes(filterValue)))
+        map(employees => employees.filter(employee => employee.firstName.toLowerCase().includes(filterValue) || employee.lastName.toLowerCase().includes(filterValue)))
+      );
+    } else {
+      return this.allEmployees;
+    }
+  }
+
+  get theowner() {
+    return this.rForm.get('owner');
   }
 
   displayFn(employee?: Employee): string | undefined {
     return employee ? employee.firstName + ' ' + employee.lastName : undefined;
+  }
+
+  private resetErrors() {
+    this.success = '';
+    this.error   = '';
   }
 }

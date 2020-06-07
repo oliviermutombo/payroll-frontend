@@ -8,11 +8,11 @@ export class Deduction {
     id: any;
 
     constructor(
-        employee: any,
-        tax: any,
-        annual: any,
-        monthly: any,
-        medicalaid: any,
-        retirement: any,
+        employee?: any,
+        tax?: any,
+        annual?: any,
+        monthly?: any,
+        medicalaid?: any,
+        retirement?: any,
         id?: number) {}
   }

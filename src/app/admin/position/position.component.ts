@@ -109,9 +109,10 @@ export class PositionComponent implements OnInit {
   addPosition(f) {
     this.resetErrors();
 
-    this.position.name = f.name;
+    let position = new Position();
+    position.name = f.name;
 
-    this.apiService.save(this.entityEndpoint, this.position, this.positions.data)
+    this.apiService.save(this.entityEndpoint, position, this.positions.data)
       .subscribe(
         (res: Position[]) => {
           // Update the list of positions
@@ -151,6 +152,7 @@ export class PositionComponent implements OnInit {
             this.positions = new MatTableDataSource(res); // Implement a list refresh rather
           }
           this.success = 'Updated successfully';
+          this.position = new Position();
           this.notifier.showSaved();
           this.updateMode = false;
           this.rForm.reset();

@@ -4,6 +4,7 @@ import { Location } from '@angular/common';
 import { Employee } from './employee';
 import { Salary } from '../salary/salary'
 import { EmployeeService } from '../employee.service';
+import { ApiService } from 'src/app/admin/api.service';
 import { UtilitiesService } from '../../services/utilities.service';
 
 @Component({
@@ -23,6 +24,8 @@ export class EmployeeDetailsComponent implements OnInit{
     error = '';
     success = '';
 
+    entityEndpoint = '/employees';
+
     employee: Employee;
     salary: Salary;
 
@@ -33,6 +36,7 @@ export class EmployeeDetailsComponent implements OnInit{
     constructor(
       private route: ActivatedRoute,
       private employeeService: EmployeeService,
+      private apiService: ApiService,
       private utilitiesService: UtilitiesService,
       private location: Location
     ) {}
@@ -44,7 +48,8 @@ export class EmployeeDetailsComponent implements OnInit{
     getEmployee(): void {
       this.encryptedEmpId = this.route.snapshot.paramMap.get('id');
       const id = +this.utilitiesService.Decrypt(this.encryptedEmpId);
-      this.employeeService.getEmployee(id)
+      //this.employeeService.getEmployee(id)
+      this.apiService.getById(this.entityEndpoint, id)
         .subscribe(
           employee => this.employee = employee/*,
           (err) => {
@@ -52,17 +57,6 @@ export class EmployeeDetailsComponent implements OnInit{
           }*/
         );
     }
-
-    /*getEmployee(): void {
-      const id = +this.route.snapshot.paramMap.get('id');
-      this.employeeService.getEmployee(id)
-        .subscribe(
-          employee => this.employee = employee,
-          (err) => {
-            this.error = err;
-          }
-        );
-    }*/
     
     goBack(): void {
       this.location.back();
@@ -86,7 +80,8 @@ export class EmployeeDetailsComponent implements OnInit{
     deleteEmployee(id) {
       this.resetErrors();
       this.employee = null;
-      this.employeeService.delete(id)
+      //this.employeeService.delete(id)
+      this.apiService.deleteOnly(this.entityEndpoint, id)
         .subscribe(
           (res: boolean) => {
             this.success = 'Deleted successfully';

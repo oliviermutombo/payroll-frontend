@@ -8,6 +8,7 @@ import { EmployeeService } from '../employee.service';
 import { CustomValidators } from '../../services/custom_validators';
 import { FormService } from '../../services/form';
 import { DataService } from '../data.service';
+import { ApiService } from 'src/app/admin/api.service';
 import { Department } from '../department/department'; // For dropdown
 import { Position } from '../position/position'; // For dropdown
 import { UtilitiesService } from '../../services/utilities.service';
@@ -31,6 +32,7 @@ export class ManageEmployeeComponent implements OnInit {
   master = 'Message from parent'; // Test
 
   title = 'payroll-system';
+  entityEndpoint = '/employees';
   employees: Employee[];
   salaries: Salary[]; // For dropdown
   departments: Department[]; // For dropdown
@@ -92,6 +94,7 @@ export class ManageEmployeeComponent implements OnInit {
   };
 
   constructor(private employeeService: EmployeeService,
+              private apiService: ApiService,
               private dataService: DataService,
               private fb: FormBuilder,
               private route: ActivatedRoute,
@@ -147,7 +150,8 @@ export class ManageEmployeeComponent implements OnInit {
   }
 
   getEmployees(): void {
-    this.employeeService.getAll().subscribe(
+    //this.employeeService.getAll().subscribe(
+    this.apiService.getAll(this.entityEndpoint).subscribe(
       (res: Employee[]) => {
         this.employees = res;
       },
@@ -200,7 +204,8 @@ export class ManageEmployeeComponent implements OnInit {
   }
 
   getEmployee(id): void {
-    this.employeeService.getEmployee(id).subscribe(
+    //this.employeeService.getEmployee(id).subscribe(
+    this.apiService.getById(this.entityEndpoint, id).subscribe(
       (res: Employee) => {
         this.employee = res;
       },
@@ -237,7 +242,8 @@ export class ManageEmployeeComponent implements OnInit {
     this.employee.bankAccount = f.bankAccount;
     this.employee.bankBranch = f.bankBranch;
 
-    this.employeeService.store(this.employee)
+    //this.employeeService.store(this.employee)
+    this.apiService.saveOnly(this.entityEndpoint, this.employee)
       .subscribe(
         (res: boolean) => {
           // Update the list of cars
@@ -259,7 +265,8 @@ export class ManageEmployeeComponent implements OnInit {
   }
 
   employeeEdit(id){
-    this.employeeService.getEmployee(id).subscribe(
+    //this.employeeService.getEmployee(id).subscribe(
+    this.apiService.getById(this.entityEndpoint, id).subscribe(
       (res: Employee) => {
         this.employee = res;
         this.rForm.setValue({
@@ -317,7 +324,8 @@ export class ManageEmployeeComponent implements OnInit {
     this.employee.bankAccount = f.bankAccount;
     this.employee.bankBranch = f.bankBranch;
 
-    this.employeeService.update(this.employee)
+    //this.employeeService.update(this.employee)
+    this.apiService.updateOnly(this.entityEndpoint, this.position)
       .subscribe(
         (res) => {
           // this.employees = res;
@@ -330,7 +338,8 @@ export class ManageEmployeeComponent implements OnInit {
 
   deleteEmployee(id) {
     this.resetErrors();
-    this.employeeService.delete(id)
+    //this.employeeService.delete(id)
+    this.apiService.deleteOnly(this.entityEndpoint, id)
       .subscribe(
         (res: boolean) => {
           // this.employees = res;

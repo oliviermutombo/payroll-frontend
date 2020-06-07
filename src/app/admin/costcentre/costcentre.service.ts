@@ -80,6 +80,7 @@ export class CostcentreService {
           theCostcentre.name = costcentre.name;
           theCostcentre.owner = +costcentre.owner;
         }
+        //alert('updateCostcentre - this.costcentres\n' + JSON.stringify(this.costcentres));
         return this.costcentres;
       }));
   }

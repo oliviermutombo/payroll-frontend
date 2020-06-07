@@ -5,8 +5,8 @@ export class Department {
   id: any;
 
   constructor(
-    name: string,
-    costcentre: number,
-    hod: string,
+    name?: string,
+    costcentre?: number,
+    hod?: string,
     id?: number) {}
 }

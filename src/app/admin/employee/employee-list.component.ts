@@ -3,6 +3,7 @@ import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
 import { Employee } from './employee';
 import { Salary} from '../salary/salary'; // For dropdown
 import { EmployeeService } from '../employee.service';
+import { ApiService } from 'src/app/admin/api.service';
 import { CustomValidators } from '../../services/custom_validators';
 import { FormService } from '../../services/form';
 import { DataService } from '../data.service';
@@ -20,6 +21,8 @@ import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material';
 export class EmployeeListComponent implements OnInit {
   title = 'payroll-system';
 
+  entityEndpoint = '/employees';
+
   employees: MatTableDataSource<Employee>;
   displayedColumns: string[] = ['firstName', 'lastName', 'emailAddress', 'manageColumn'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -34,6 +37,7 @@ export class EmployeeListComponent implements OnInit {
   updateMode = false;
 
   constructor(private employeeService: EmployeeService,
+              private apiService: ApiService,
               private utilitiesService: UtilitiesService,
               private dataService: DataService) {
 
@@ -55,7 +59,8 @@ export class EmployeeListComponent implements OnInit {
   }
 
   getEmployees(): void {
-    this.employeeService.getAll().subscribe(
+    //this.employeeService.getAll().subscribe(
+    this.apiService.getAll(this.entityEndpoint).subscribe(
       (res: Employee[]) => {
         this.employees = new MatTableDataSource(res);
         this.employees.paginator = this.paginator;
@@ -68,7 +73,8 @@ export class EmployeeListComponent implements OnInit {
   }
 
   getEmployee(id): void {
-    this.employeeService.getEmployee(id).subscribe(
+    //this.employeeService.getEmployee(id).subscribe(
+    this.apiService.getById(this.entityEndpoint, id).subscribe(
       (res: Employee) => {
         this.employee = res;
       }/*,

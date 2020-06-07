@@ -3,6 +3,6 @@ export class Position {
     id: any;
 
     constructor(
-      name: string,
+      name?: string,
       id?: number) {}
   }

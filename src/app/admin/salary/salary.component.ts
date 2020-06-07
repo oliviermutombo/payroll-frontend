@@ -3,6 +3,7 @@ import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
 
 import { Salary } from './salary';
 import { EmployeeService } from '../employee.service';
+import { ApiService } from 'src/app/admin/api.service';
 import { NotificationService } from '../../services/notification.service'; // new
 
 @Component({
@@ -14,6 +15,7 @@ import { NotificationService } from '../../services/notification.service'; // ne
 })
 export class SalaryComponent implements OnInit {
   title = 'payroll-system (SALARY)';
+  entityEndpoint = '/salaries';
   salaries: Salary[];
   error = '';
   success = '';
@@ -28,7 +30,7 @@ export class SalaryComponent implements OnInit {
   basicPay = 0;
   requiredAlert = 'This field is required';
 
-  constructor(private injector: Injector, private employeeService: EmployeeService, private fb: FormBuilder) {
+  constructor(private injector: Injector, private employeeService: EmployeeService, private apiService: ApiService, private fb: FormBuilder) {
     this.rForm = fb.group({
         payGrade: [null, Validators.required],
         basicPay: [null, [Validators.required, Validators.pattern('^[0-9]+(?:\.[0-9]+)?$')]]
@@ -55,7 +57,8 @@ export class SalaryComponent implements OnInit {
     }
   }
   getSalaries(): void {
-    this.employeeService.getAllSalaries().subscribe(
+    //this.employeeService.getAllSalaries().subscribe(
+    this.apiService.getAll(this.entityEndpoint).subscribe(
       (res: Salary[]) => {
         this.salaries = res;
       }/*,
@@ -67,7 +70,8 @@ export class SalaryComponent implements OnInit {
   }
 
   getSalary(id): void {
-    this.employeeService.getSalary(id).subscribe(
+    //this.employeeService.getSalary(id).subscribe(
+    this.apiService.getById(this.entityEndpoint, id).subscribe(
       (res: Salary) => {
         this.salary = res;
       }/*,
@@ -81,10 +85,12 @@ export class SalaryComponent implements OnInit {
   addSalary(f) {
     this.resetErrors();
 
-    this.salary.payGrade = f.payGrade;
-    this.salary.basicPay = f.basicPay;
+    let salary = new Salary();//Very important - otherwise, if say a salary profile was active for update. it will use it.
+    salary.payGrade = f.payGrade;
+    salary.basicPay = f.basicPay;
 
-    this.employeeService.storeSalary(this.salary)
+    //this.employeeService.storeSalary(this.salary)
+    this.apiService.save(this.entityEndpoint, salary, this.salaries)
       .subscribe(
         (res: Salary[]) => {
           // Update the list of salaries
@@ -104,7 +110,8 @@ export class SalaryComponent implements OnInit {
   }
 
   salaryEdit(id){
-    this.employeeService.getSalary(id).subscribe(
+    //this.employeeService.getSalary(id).subscribe(
+    this.apiService.getById(this.entityEndpoint, id).subscribe(
       (res: Salary) => {
         this.salary = res;
         this.rForm.setValue({
@@ -125,7 +132,8 @@ export class SalaryComponent implements OnInit {
     this.resetErrors();
     this.salary.payGrade = f.payGrade;
     this.salary.basicPay = f.basicPay;
-    this.employeeService.updateSalary(this.salary)
+    //this.employeeService.updateSalary(this.salary)
+    this.apiService.update(this.entityEndpoint, this.salary, this.salaries)
       .subscribe(
         (res) => {
           if (this.showList) {
@@ -134,7 +142,7 @@ export class SalaryComponent implements OnInit {
           this.success = 'Updated successfully'; // to be decomissioned
           // Inform the user
           this.notifier.showSaved();
-
+          this.salary = new Salary(); //reset object after update.
           this.updateMode = false;
           this.rForm.reset();
         }/*,
@@ -144,7 +152,8 @@ export class SalaryComponent implements OnInit {
 
   deleteSalary(id) {
     this.resetErrors();
-    this.employeeService.deleteSalary(id)
+    //this.employeeService.deleteSalary(id)
+    this.apiService.delete(this.entityEndpoint, id, this.salaries)
       .subscribe(
         (res: Salary[]) => {
           if (this.showList) {
