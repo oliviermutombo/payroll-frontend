@@ -59,7 +59,7 @@ stripRole(role) {
  checkSysAdmin($isChecked): void {
   if(!this.updateMode) {
     if ($isChecked) {
-      this.user.role = this.dataService.addToArray(this.user.role, this.stripRole(Role.ROLE_ADMIN));
+      this.user.role = this.utilitiesService.addToArray(this.user.role, this.stripRole(Role.ROLE_ADMIN));
     } else {
       this.user.role = this.user.role.filter(item => item !== this.stripRole(Role.ROLE_ADMIN));
     }
@@ -68,7 +68,7 @@ stripRole(role) {
 checkPayrollAdmin($isChecked): void {
   if(!this.updateMode) {
     if ($isChecked) {
-      this.user.role = this.dataService.addToArray(this.user.role, this.stripRole(Role.ROLE_PAYROLL_ADMIN));
+      this.user.role = this.utilitiesService.addToArray(this.user.role, this.stripRole(Role.ROLE_PAYROLL_ADMIN));
     } else {
       this.user.role = this.user.role.filter(item => item !== this.stripRole(Role.ROLE_PAYROLL_ADMIN));
     }
@@ -77,7 +77,7 @@ checkPayrollAdmin($isChecked): void {
 checkEmployeeAdmin($isChecked): void {
   if(!this.updateMode) {
     if ($isChecked) {
-      this.user.role = this.dataService.addToArray(this.user.role, this.stripRole(Role.ROLE_EMPLOYEE_ADMIN));
+      this.user.role = this.utilitiesService.addToArray(this.user.role, this.stripRole(Role.ROLE_EMPLOYEE_ADMIN));
     } else {
       this.user.role = this.user.role.filter(item => item !== this.stripRole(Role.ROLE_EMPLOYEE_ADMIN));
     }
@@ -86,7 +86,7 @@ checkEmployeeAdmin($isChecked): void {
 checkEmployee($isChecked): void {
   if(!this.updateMode) {
     if ($isChecked) {
-      this.user.role = this.dataService.addToArray(this.user.role, this.stripRole(Role.ROLE_EMPLOYEE));
+      this.user.role = this.utilitiesService.addToArray(this.user.role, this.stripRole(Role.ROLE_EMPLOYEE));
     } else {
       this.user.role = this.user.role.filter(item => item !== this.stripRole(Role.ROLE_EMPLOYEE));
     }
@@ -172,7 +172,7 @@ checkEmployee($isChecked): void {
     this.user.lastName = f.lastName;
     this.user.email = f.emailAddress;
     this.user.username = f.emailAddress;
-    this.user.employee = this.dataService.generateQuickIdObject(this.employee.id);
+    this.user.employee = this.utilitiesService.generateQuickIdObject(this.employee.id);
     if (this.user.role.length == 0) {
         this.notification.showError('No role(s) selected!');
     } else {
@@ -190,7 +190,7 @@ checkEmployee($isChecked): void {
   }
 
   updateUser(f) {
-    this.user.employee = this.dataService.generateQuickIdObject(this.empIdToEdit)//this.user.employee.id);
+    this.user.employee = this.utilitiesService.generateQuickIdObject(this.empIdToEdit)
     this.user.role = this.getEditedRoles(f);
     
     if (this.user.role.length == 0) {
@@ -208,10 +208,10 @@ checkEmployee($isChecked): void {
   getEditedRoles(f){
     /* role sets for updatemode */
     let rolesArr = [];
-    if (f.is_system_admin) this.dataService.addToArray(rolesArr, this.stripRole(Role.ROLE_ADMIN));
-    if (f.is_payroll_admin) this.dataService.addToArray(rolesArr, this.stripRole(Role.ROLE_PAYROLL_ADMIN));
-    if (f.is_employee_admin) this.dataService.addToArray(rolesArr, this.stripRole(Role.ROLE_EMPLOYEE_ADMIN));
-    if (f.is_employee) this.dataService.addToArray(rolesArr, this.stripRole(Role.ROLE_EMPLOYEE));
+    if (f.is_system_admin) this.utilitiesService.addToArray(rolesArr, this.stripRole(Role.ROLE_ADMIN));
+    if (f.is_payroll_admin) this.utilitiesService.addToArray(rolesArr, this.stripRole(Role.ROLE_PAYROLL_ADMIN));
+    if (f.is_employee_admin) this.utilitiesService.addToArray(rolesArr, this.stripRole(Role.ROLE_EMPLOYEE_ADMIN));
+    if (f.is_employee) this.utilitiesService.addToArray(rolesArr, this.stripRole(Role.ROLE_EMPLOYEE));
     return rolesArr;
   }
 
@@ -252,7 +252,7 @@ checkEmployee($isChecked): void {
 
   hasRole(Obj: any, role: string) {
     let s = Obj.find(r=>r.name == role);
-    if(this.dataService.isObject(s)){
+    if(this.utilitiesService.isObject(s)){
       if (s['name']==role) return true;//Second If is not needed
     }
     //return JSON.stringify(s);

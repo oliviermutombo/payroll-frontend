@@ -7,11 +7,11 @@ import { Salary} from '../salary/salary'; // For dropdown
 import { EmployeeService } from '../employee.service';
 import { CustomValidators } from '../../services/custom_validators';
 import { FormService } from '../../services/form';
-import { DataService } from '../data.service';
 import { ApiService } from 'src/app/admin/api.service';
 import { Department } from '../department/department'; // For dropdown
 import { Position } from '../position/position'; // For dropdown
 import { UtilitiesService } from '../../services/utilities.service';
+import * as globals from 'src/app/globals';
 
 @Component({
   // selector: 'app-root', // WHAT MUST THE SELECTOR BE???
@@ -32,7 +32,6 @@ export class ManageEmployeeComponent implements OnInit {
   master = 'Message from parent'; // Test
 
   title = 'payroll-system';
-  entityEndpoint = '/employees';
   employees: Employee[];
   salaries: Salary[]; // For dropdown
   departments: Department[]; // For dropdown
@@ -95,7 +94,6 @@ export class ManageEmployeeComponent implements OnInit {
 
   constructor(private employeeService: EmployeeService,
               private apiService: ApiService,
-              private dataService: DataService,
               private fb: FormBuilder,
               private route: ActivatedRoute,
               private location: Location,
@@ -151,7 +149,7 @@ export class ManageEmployeeComponent implements OnInit {
 
   getEmployees(): void {
     //this.employeeService.getAll().subscribe(
-    this.apiService.getAll(this.entityEndpoint).subscribe(
+    this.apiService.getAll(globals.EMPLOYEE_ENDPOINT).subscribe(
       (res: Employee[]) => {
         this.employees = res;
       },
@@ -174,7 +172,7 @@ export class ManageEmployeeComponent implements OnInit {
   }
   // for dropdown
   getDepartments(): void {
-    this.dataService.getAllDepartments().subscribe(
+    this.apiService.getAll('/departments').subscribe(
       (res: Department[]) => {
         this.departments = res;
       },
@@ -187,7 +185,7 @@ export class ManageEmployeeComponent implements OnInit {
 
   // for dropdown
   getPositions(): void {
-    this.dataService.getAllPositions().subscribe(
+    this.apiService.getAll('/positions').subscribe(
       (res: Position[]) => {
         // alert('Positions comp: ' + JSON.stringify(res));
         this.positions = res;
@@ -205,7 +203,7 @@ export class ManageEmployeeComponent implements OnInit {
 
   getEmployee(id): void {
     //this.employeeService.getEmployee(id).subscribe(
-    this.apiService.getById(this.entityEndpoint, id).subscribe(
+    this.apiService.getById(globals.EMPLOYEE_ENDPOINT, id).subscribe(
       (res: Employee) => {
         this.employee = res;
       },
@@ -227,10 +225,10 @@ export class ManageEmployeeComponent implements OnInit {
     this.employee.idNumber = f.idNumber;
     this.employee.passportNumber = f.passportNumber;
     this.employee.emailAddress = f.emailAddress;
-    this.employee.payGrade = this.dataService.generateQuickIdObject(f.payGrade);//f.payGrade;
+    this.employee.payGrade = this.utilitiesService.generateQuickIdObject(f.payGrade);//f.payGrade;
     this.employee.basicPay = f.basicPay;
-    this.employee.department = this.dataService.generateQuickIdObject(f.department);//f.department;
-    this.employee.position = this.dataService.generateQuickIdObject(f.position);//f.position;
+    this.employee.department = this.utilitiesService.generateQuickIdObject(f.department);//f.department;
+    this.employee.position = this.utilitiesService.generateQuickIdObject(f.position);//f.position;
     this.employee.taxNumber = f.taxNumber;
     this.employee.hireDate = f.hireDate;
     this.employee.address1 = f.address1;
@@ -243,7 +241,7 @@ export class ManageEmployeeComponent implements OnInit {
     this.employee.bankBranch = f.bankBranch;
 
     //this.employeeService.store(this.employee)
-    this.apiService.saveOnly(this.entityEndpoint, this.employee)
+    this.apiService.saveOnly(globals.EMPLOYEE_ENDPOINT, this.employee)
       .subscribe(
         (res: boolean) => {
           // Update the list of cars
@@ -266,7 +264,7 @@ export class ManageEmployeeComponent implements OnInit {
 
   employeeEdit(id){
     //this.employeeService.getEmployee(id).subscribe(
-    this.apiService.getById(this.entityEndpoint, id).subscribe(
+    this.apiService.getById(globals.EMPLOYEE_ENDPOINT, id).subscribe(
       (res: Employee) => {
         this.employee = res;
         this.rForm.setValue({
@@ -309,10 +307,10 @@ export class ManageEmployeeComponent implements OnInit {
     this.employee.idNumber = f.idNumber;
     this.employee.passportNumber = f.passportNumber;
     this.employee.emailAddress = f.emailAddress;
-    this.employee.payGrade = this.dataService.generateQuickIdObject(f.payGrade);//check behaviour when null
+    this.employee.payGrade = this.utilitiesService.generateQuickIdObject(f.payGrade);//check behaviour when null
     this.employee.basicPay = f.basicPay;
-    this.employee.department = this.dataService.generateQuickIdObject(f.department);//check behaviour when null
-    this.employee.position = this.dataService.generateQuickIdObject(f.position);//check behaviour when null
+    this.employee.department = this.utilitiesService.generateQuickIdObject(f.department);//check behaviour when null
+    this.employee.position = this.utilitiesService.generateQuickIdObject(f.position);//check behaviour when null
     this.employee.taxNumber = f.taxNumber;
     this.employee.hireDate = f.hireDate;
     this.employee.address1 = f.address1;
@@ -325,7 +323,7 @@ export class ManageEmployeeComponent implements OnInit {
     this.employee.bankBranch = f.bankBranch;
 
     //this.employeeService.update(this.employee)
-    this.apiService.updateOnly(this.entityEndpoint, this.position)
+    this.apiService.updateOnly(globals.EMPLOYEE_ENDPOINT, this.employee)
       .subscribe(
         (res) => {
           // this.employees = res;
@@ -339,7 +337,7 @@ export class ManageEmployeeComponent implements OnInit {
   deleteEmployee(id) {
     this.resetErrors();
     //this.employeeService.delete(id)
-    this.apiService.deleteOnly(this.entityEndpoint, id)
+    this.apiService.deleteOnly(globals.EMPLOYEE_ENDPOINT, id)
       .subscribe(
         (res: boolean) => {
           // this.employees = res;

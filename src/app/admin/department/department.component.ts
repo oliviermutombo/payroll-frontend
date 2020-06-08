@@ -14,6 +14,7 @@ import { Subscription } from 'rxjs';
 import { MatAutocompleteTrigger } from '@angular/material';//.................................
 import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material'; //pagination
 import { Employee } from '../employee/employee';
+import * as globals from 'src/app/globals';
 
 @Component({
   selector: 'app-department', // WHAT MUST THE SELECTOR BE???
@@ -23,7 +24,6 @@ import { Employee } from '../employee/employee';
 
 export class DepartmentComponent implements OnInit {
   title = 'payroll-system';
-  entityEndpoint = '/departments';
   departments: MatTableDataSource<Department>;
   error = '';
   success = '';
@@ -129,7 +129,7 @@ export class DepartmentComponent implements OnInit {
   }
 
   getDepartments(): void {
-    this.apiService.getAll(this.entityEndpoint).subscribe(
+    this.apiService.getAll(globals.DEPARTMENT_ENDPOINT).subscribe(
       (res: Department[]) => {
         this.departments = new MatTableDataSource(res);
         this.departments.paginator = this.paginator;
@@ -139,7 +139,7 @@ export class DepartmentComponent implements OnInit {
   }
 
   getDepartment(id): void {
-    this.apiService.getById(this.entityEndpoint, id).subscribe(
+    this.apiService.getById(globals.DEPARTMENT_ENDPOINT, id).subscribe(
       (res: Department) => {
         this.department = res;
       }
@@ -150,9 +150,18 @@ export class DepartmentComponent implements OnInit {
     this.resetErrors();
     let department = new Department();
     department.name = f.name;
-    department.costcentre = this.dataService.generateQuickIdObject(f.costcentre.id);
-    department.hod = this.dataService.generateQuickIdObject(f.hod.id);//f.hod;
-    this.apiService.save(this.entityEndpoint, department, this.departments.data)
+    if (f.costcentre) {
+      department.costcentre = {}
+      department.costcentre.id = f.costcentre.id;
+      department.costcentre.name = f.costcentre.name;
+    }
+    if (f.hod) {
+      department.hod = {};
+      department.hod.id = f.hod.id;
+      department.hod.firstName = f.hod.firstName;
+      department.hod.lastName = f.hod.lastName;
+    }
+    this.apiService.save(globals.DEPARTMENT_ENDPOINT, department, (this.departments) ? this.departments.data : null)
       .subscribe(
         (res: Department[]) => {
           // Update the list of departments
@@ -160,7 +169,7 @@ export class DepartmentComponent implements OnInit {
           if (this.showList) {
             // Refresh the entire list because the update only returns the ID of the FK and not the entire FK object
             // for that reason we cannot replace the changed object with the FK object since we only have a reference ID.
-            this.getDepartments();
+            this.departments.data = res;
           }
           // Inform the user
           this.success = 'Created successfully';
@@ -173,7 +182,7 @@ export class DepartmentComponent implements OnInit {
   }
 
   departmentEdit(id) {
-    this.apiService.getById(this.entityEndpoint, id).subscribe(
+    this.apiService.getById(globals.DEPARTMENT_ENDPOINT, id).subscribe(
       (res: Department) => {
         this.department = res;
         this.rForm.setValue({
@@ -215,15 +224,22 @@ export class DepartmentComponent implements OnInit {
   updateDepartment(f) {
     this.resetErrors();
     this.department.name = f.name;
-    this.department.costcentre = this.dataService.generateQuickIdObject(f.costcentre.id);//check behaviour when null
-    this.department.hod = this.dataService.generateQuickIdObject(f.hod.id);//f.hod;
-    this.apiService.update(this.entityEndpoint, this.department, this.departments.data)
+   if (f.costcentre) {
+      this.department.costcentre = {}
+      this.department.costcentre.id = f.costcentre.id;
+      this.department.costcentre.name = f.costcentre.name;
+    }
+    if (f.hod) {
+      this.department.hod = {};
+      this.department.hod.id = f.hod.id;
+      this.department.hod.firstName = f.hod.firstName;
+      this.department.hod.lastName = f.hod.lastName;
+    }
+    this.apiService.update(globals.DEPARTMENT_ENDPOINT, this.department, this.departments.data)
       .subscribe(
         (res) => {
           if (this.showList) {
-            // Refresh the entire list because the update only returns the ID of the FK and not the entire FK object
-            // for that reason we cannot replace the changed object with the FK object since we only have a reference ID.
-            this.getDepartments();
+            this.departments.data = res;
           }
           this.success = 'Updated successfully';
           this.department = new Department();
@@ -236,11 +252,11 @@ export class DepartmentComponent implements OnInit {
 
   deleteDepartment(id) {
     this.resetErrors();
-    this.apiService.delete(this.entityEndpoint, id, this.departments.data)
+    this.apiService.delete(globals.DEPARTMENT_ENDPOINT, id, this.departments.data)
       .subscribe(
         (res: Department[]) => {
           if (this.showList) {
-            this.departments = new MatTableDataSource(res); // Impelement a list refresh rather
+            this.departments.data = res;
           }
           this.success = 'Deleted successfully';
           this.notifier.showDeleted();

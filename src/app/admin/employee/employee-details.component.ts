@@ -6,6 +6,7 @@ import { Salary } from '../salary/salary'
 import { EmployeeService } from '../employee.service';
 import { ApiService } from 'src/app/admin/api.service';
 import { UtilitiesService } from '../../services/utilities.service';
+import * as globals from 'src/app/globals';
 
 @Component({
   selector: 'app-employee-details',
@@ -23,8 +24,6 @@ export class EmployeeDetailsComponent implements OnInit{
     //DO A REST FOR THESE (MISSING)
     error = '';
     success = '';
-
-    entityEndpoint = '/employees';
 
     employee: Employee;
     salary: Salary;
@@ -49,7 +48,7 @@ export class EmployeeDetailsComponent implements OnInit{
       this.encryptedEmpId = this.route.snapshot.paramMap.get('id');
       const id = +this.utilitiesService.Decrypt(this.encryptedEmpId);
       //this.employeeService.getEmployee(id)
-      this.apiService.getById(this.entityEndpoint, id)
+      this.apiService.getById(globals.EMPLOYEE_ENDPOINT, id)
         .subscribe(
           employee => this.employee = employee/*,
           (err) => {
@@ -81,7 +80,7 @@ export class EmployeeDetailsComponent implements OnInit{
       this.resetErrors();
       this.employee = null;
       //this.employeeService.delete(id)
-      this.apiService.deleteOnly(this.entityEndpoint, id)
+      this.apiService.deleteOnly(globals.EMPLOYEE_ENDPOINT, id)
         .subscribe(
           (res: boolean) => {
             this.success = 'Deleted successfully';

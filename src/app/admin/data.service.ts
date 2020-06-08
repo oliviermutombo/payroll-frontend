@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
 import { environment } from './../../environments/environment';
 
 //////////////////////////////////////////////// open
@@ -19,8 +18,6 @@ import { Employee } from './employee/employee';
 })
 export class DataService {
 
-  private messageSource = new BehaviorSubject('default message');
-  currentMessage = this.messageSource.asObservable();
   baseUrl = environment.baseUrl;
 
   employeeUrl = this.baseUrl + '/employees';
@@ -48,37 +45,6 @@ export class DataService {
   deductions: Deduction[];
 
   constructor(private http: HttpClient) { }//
-
-  isObject(obj) {//Move to util class
-    return obj === Object(obj);
-  }
-
-  generateQuickIdObject(value){//Move to a util class
-    if (this.isObject(value)) return value
-    if (value == null) return null
-    return {'id': value}
-  }
-
-  addToArray(arr, x){
-    if (arr==undefined) arr = [];
-    arr.push(x);
-    return arr;
-  }
-
-  getUpdateObject(orig, current) {//Move to a util class
-    var changes = {};
-
-    for (var prop in orig) {
-        if (prop.indexOf("$") != 0 && orig[prop] !== current[prop]) {
-            changes[prop] = current[prop];
-        }
-    }
-    return changes ;
-  };
-
-  changeMessage(message: string) {
-    this.messageSource.next(message);
-  }
 
   getAllEmployees(): Observable<Employee[]> {
     return this.http.get<Employee[]>(`${this.employeeUrl}/`).pipe(

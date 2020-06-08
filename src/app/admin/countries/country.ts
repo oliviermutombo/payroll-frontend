@@ -7,9 +7,9 @@ export class Country {
     id: any;
 
     constructor(
-      name: string,
-      code: string,
-      zip: string,
+      name?: string,
+      code?: string,
+      zip?: string,
       currency?: string,
       symbol?: string,
       id?: number) {}

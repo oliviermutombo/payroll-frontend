@@ -91,7 +91,8 @@ export class ApiService {
             if (index !== -1) {
                 allArr.splice(index, 1);
             }
-            allArr.push(res);
+            //allArr.push(res);
+            allArr.push(entityObject);
             return allArr;
         }));
     }

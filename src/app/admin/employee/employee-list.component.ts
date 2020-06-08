@@ -11,6 +11,7 @@ import { Department } from '../department/department'; // For dropdown
 import { Position } from '../position/position'; // For dropdown
 import { UtilitiesService } from '../../services/utilities.service';
 import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material';
+import * as globals from 'src/app/globals';
 
 @Component({
   selector: 'app-root', // WHAT MUST THE SELECTOR BE???
@@ -20,8 +21,6 @@ import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material';
 
 export class EmployeeListComponent implements OnInit {
   title = 'payroll-system';
-
-  entityEndpoint = '/employees';
 
   employees: MatTableDataSource<Employee>;
   displayedColumns: string[] = ['firstName', 'lastName', 'emailAddress', 'manageColumn'];
@@ -60,7 +59,7 @@ export class EmployeeListComponent implements OnInit {
 
   getEmployees(): void {
     //this.employeeService.getAll().subscribe(
-    this.apiService.getAll(this.entityEndpoint).subscribe(
+    this.apiService.getAll(globals.EMPLOYEE_ENDPOINT).subscribe(
       (res: Employee[]) => {
         this.employees = new MatTableDataSource(res);
         this.employees.paginator = this.paginator;
@@ -74,7 +73,7 @@ export class EmployeeListComponent implements OnInit {
 
   getEmployee(id): void {
     //this.employeeService.getEmployee(id).subscribe(
-    this.apiService.getById(this.entityEndpoint, id).subscribe(
+    this.apiService.getById(globals.EMPLOYEE_ENDPOINT, id).subscribe(
       (res: Employee) => {
         this.employee = res;
       }/*,

@@ -7,6 +7,7 @@ import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material'; /
 import { NotificationService } from '../../services/notification.service';
 import { CustomValidators } from '../../services/custom_validators';
 import { FormService } from '../../services/form';
+import * as globals from 'src/app/globals';
 
 @Component({
   selector: 'app-position',
@@ -25,7 +26,6 @@ export class PositionComponent implements OnInit {
   //
 
   title = 'payroll-system Positions';
-  entityEndpoint = '/positions';
   //positions: Position[];
   error = '';
   success = '';
@@ -60,9 +60,6 @@ export class PositionComponent implements OnInit {
   notifier = this.injector.get(NotificationService);
 
   ngOnInit() {
-    //this.positions.paginator = this.paginator;
-    //this.positions.sort = this.sort;
-
     if (this.showList) {
       this.getPositions();
     }
@@ -89,7 +86,7 @@ export class PositionComponent implements OnInit {
   }
 
   getPositions(): void {
-    this.apiService.getAll(this.entityEndpoint).subscribe(
+    this.apiService.getAll(globals.POSITION_ENDPOINT).subscribe(
       (res: Position[]) => {
         this.positions = new MatTableDataSource(res);
         this.positions.paginator = this.paginator;
@@ -99,7 +96,7 @@ export class PositionComponent implements OnInit {
   }
 
   getPosition(id): void {
-    this.apiService.getById(this.entityEndpoint, id).subscribe(
+    this.apiService.getById(globals.POSITION_ENDPOINT, id).subscribe(
       (res: Position) => {
         this.position = res;
       }
@@ -112,13 +109,13 @@ export class PositionComponent implements OnInit {
     let position = new Position();
     position.name = f.name;
 
-    this.apiService.save(this.entityEndpoint, position, this.positions.data)
+    this.apiService.save(globals.POSITION_ENDPOINT, position, (this.positions) ? this.positions.data : null)
       .subscribe(
         (res: Position[]) => {
           // Update the list of positions
           if (this.showList) {
             // Above Condition added to make the list available on demand. service will only populate list if requested.
-            this.positions = new MatTableDataSource(res); // Implement a list refresh rather
+            this.positions.data = res; // Implement a list refresh rather
           }
           // Inform the user
           this.success = 'Created successfully';
@@ -130,7 +127,7 @@ export class PositionComponent implements OnInit {
   }
 
   positionEdit(id) {
-    this.apiService.getById(this.entityEndpoint, id).subscribe(
+    this.apiService.getById(globals.POSITION_ENDPOINT, id).subscribe(
       (res: Position) => {
         this.position = res;
         this.rForm.setValue({
@@ -145,11 +142,11 @@ export class PositionComponent implements OnInit {
   updatePosition(f) {
     this.resetErrors();
     this.position.name = f.name;
-    this.apiService.update(this.entityEndpoint, this.position, this.positions.data)
+    this.apiService.update(globals.POSITION_ENDPOINT, this.position, this.positions.data)
       .subscribe(
         (res) => {
           if (this.showList) {
-            this.positions = new MatTableDataSource(res); // Implement a list refresh rather
+            this.positions.data = res; // Implement a list refresh rather
           }
           this.success = 'Updated successfully';
           this.position = new Position();
@@ -162,11 +159,11 @@ export class PositionComponent implements OnInit {
 
   deletePosition(id) {
     this.resetErrors();
-    this.apiService.delete(this.entityEndpoint, id, this.positions.data)
+    this.apiService.delete(globals.POSITION_ENDPOINT, id, this.positions.data)
       .subscribe(
         (res: Position[]) => {
           if (this.showList) {
-            this.positions = new MatTableDataSource(res); // Impelement a list refresh rather
+            this.positions.data = res; // Impelement a list refresh rather
           }
           this.success = 'Deleted successfully';
           this.notifier.showDeleted();
@@ -180,171 +177,4 @@ export class PositionComponent implements OnInit {
     this.success = '';
     this.error   = '';
   }
-  
-  
-  
-  
-  /*
-  //
-  allPostion:Position[];
-  positions: MatTableDataSource<Position>;
-  displayedColumns: string[] = ['name','manageColumn'];
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
-  //
-
-  title = 'payroll-system';
-  //positions: Position[];
-  error = '';
-  success = '';
-
-  position = new Position('', 0);
-
-  rForm: FormGroup;
-  showList = false;
-  updateMode = false;
-  post: any;
-  name = '';
-
-  public formErrors = {
-    name: ''
-  };
-
-  constructor(private injector: Injector,
-    private positionService: PositionService,
-    private fb: FormBuilder,
-    public formService: FormService) {
-
-    this.rForm = fb.group({
-      name: [null, [Validators.required, Validators.minLength(1), Validators.maxLength(50), CustomValidators.validateCharacters]],
-    });
-
-    this.rForm.valueChanges.subscribe((data) => {
-      this.formErrors = this.formService.validateForm(this.rForm, this.formErrors, true);
-    });
-  }
-  
-  notifier = this.injector.get(NotificationService);
-
-  ngOnInit() {
-    //this.positions.paginator = this.paginator;
-    //this.positions.sort = this.sort;
-
-    if (this.showList) {
-      this.getPositions();
-    }
-  }
-
-  showHideList($isChecked): void {
-    if ($isChecked) {
-      if (!this.positions) {
-        // Above Condition added to make the list available on demand. can't retrieve list if not defined (or it throws an error)
-        this.getPositions();
-      }
-      this.showList = true;
-    } else {
-      this.showList = false;
-    }
-  }
-
-  applyFilter(filterValue: string) {
-    this.positions.filter = filterValue.trim().toLowerCase();
-
-    if (this.positions.paginator) {
-      this.positions.paginator.firstPage();
-    }
-  }
-
-  getPositions(): void { // UPDATE TO POINT TO DATA SERVICE INSTEAD
-    this.positionService.getAllPositions().subscribe(
-      (res: Position[]) => {
-        //this.positions = res;
-        this.positions = new MatTableDataSource(res);
-        this.positions.paginator = this.paginator;
-        this.positions.sort = this.sort;
-      }
-    );
-  }
-
-  getPosition(id): void { // UPDATE TO POINT TO DATA SERVICE INSTEAD
-    this.positionService.getPosition(id).subscribe(
-      (res: Position) => {
-        this.position = res;
-      }
-    );
-  }
-
-  addPosition(f) {
-    this.resetErrors();
-
-    this.position.name = f.name;
-
-    this.positionService.storePosition(this.position)
-      .subscribe(
-        (res: Position[]) => {
-          // Update the list of positions
-          if (this.showList) {
-            // Above Condition added to make the list available on demand. service will only populate list if requested.
-            this.positions = new MatTableDataSource(res); // Impelement a list refresh rather
-          }
-          // Inform the user
-          this.success = 'Created successfully';
-          this.notifier.showSaved();
-          // Reset the form
-          this.rForm.reset();
-        }
-      );
-  }
-
-  positionEdit(id) {
-    this.positionService.getPosition(id).subscribe(
-      (res: Position) => {
-        this.position = res;
-        this.rForm.setValue({
-          name: this.position.name,
-        });
-      }
-    );
-    this.updateMode = true;
-    window.scroll(0, 0);
-  }
-
-  updatePosition(f) {
-    this.resetErrors();
-    this.position.name = f.name;
-    this.positionService.updatePosition(this.position)
-      .subscribe(
-        (res) => {
-          if (this.showList) {
-            this.positions = new MatTableDataSource(res); // Impelement a list refresh rather
-          }
-          this.success = 'Updated successfully';
-          this.notifier.showSaved();
-          this.updateMode = false;
-          this.rForm.reset();
-        }
-      );
-  }
-
-  deletePosition(id) {
-    this.resetErrors();
-    this.positionService.deletePosition(id)
-      .subscribe(
-        (res: Position[]) => {
-          if (this.showList) {
-            this.positions = new MatTableDataSource(res); // Impelement a list refresh rather
-          }
-          this.success = 'Deleted successfully';
-          this.notifier.showDeleted();
-          this.updateMode = false;
-          this.rForm.reset();
-        }
-      );
-  }
-
-  private resetErrors() {
-    this.success = '';
-    this.error   = '';
-  }
-  */
 }

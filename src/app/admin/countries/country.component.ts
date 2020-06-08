@@ -3,10 +3,11 @@ import { Country } from './country';
 import { MatTableDataSource, MatPaginator, MatSort } from '@angular/material';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CustomValidators } from '../../services/custom_validators';
-import { CountryService } from './country.service';
+import { ApiService } from 'src/app/admin/api.service';
 import { DataService } from '../data.service';
 import { FormService } from '../../services/form';
 import { NotificationService } from 'src/app/services/notification.service';
+import * as globals from 'src/app/globals';
 
 
 @Component({
@@ -41,7 +42,7 @@ import { NotificationService } from 'src/app/services/notification.service';
       };
 
     constructor(private injector: Injector,
-        private countryService: CountryService,
+        private apiService: ApiService,
         private dataService: DataService,
         private fb: FormBuilder,
         public formService: FormService) {
@@ -74,7 +75,7 @@ import { NotificationService } from 'src/app/services/notification.service';
       }
 
     getCountries(): void {
-        this.countryService.getAllCountries().subscribe(
+      this.apiService.getAll(globals.COUNTRY_ENDPOINT).subscribe(
           (res: Country[]) => {
             this.countries = new MatTableDataSource(res);
             this.countries.paginator = this.paginator;
@@ -84,7 +85,7 @@ import { NotificationService } from 'src/app/services/notification.service';
       }
     
       getCountry(id): void {
-        this.countryService.getCountry(id).subscribe(
+        this.apiService.getById(globals.COUNTRY_ENDPOINT, id).subscribe(
           (res: Country) => {
             this.country = res;
           }
@@ -92,16 +93,17 @@ import { NotificationService } from 'src/app/services/notification.service';
       }
     
       addCountry(f) {
-        this.country.name = f.name;
-        this.country.code = f.code;
-        this.country.zip = f.zip;
-        this.country.currency = f.currency;
-        this.country.symbol = f.symbol;
-        this.countryService.storeCountry(this.country)
+        let country = new Country();
+        country.name = f.name;
+        country.code = f.code;
+        country.zip = f.zip;
+        country.currency = f.currency;
+        country.symbol = f.symbol;
+        this.apiService.save(globals.COUNTRY_ENDPOINT, country, (this.countries) ? this.countries.data : null)
           .subscribe(
             (res: Country[]) => {
               // Update the list of countries
-              this.getCountries();
+              this.countries.data = res;
               // Inform the user
               this.notifier.showSaved();
     
@@ -112,7 +114,7 @@ import { NotificationService } from 'src/app/services/notification.service';
       }
     
       countryEdit(id) {
-        this.countryService.getCountry(id).subscribe(
+        this.apiService.getById(globals.COUNTRY_ENDPOINT, id).subscribe(
           (res: Country) => {
             this.country = res;
             this.rForm.setValue({
@@ -134,10 +136,10 @@ import { NotificationService } from 'src/app/services/notification.service';
         this.country.zip = f.zip;
         this.country.currency = f.currency;
         this.country.symbol = f.symbol;
-        this.countryService.updateCountry(this.country)
+        this.apiService.update(globals.COUNTRY_ENDPOINT, this.country, this.countries.data)
           .subscribe(
             (res) => {
-                this.getCountries();
+                this.countries.data = res;
                 this.notifier.showSaved();
                 this.updateMode = false;
                 this.rForm.reset();
@@ -146,10 +148,10 @@ import { NotificationService } from 'src/app/services/notification.service';
       }
     
       deleteCountry(id) {
-        this.countryService.deleteCountry(id)
+        this.apiService.delete(globals.COUNTRY_ENDPOINT, id, this.countries.data)
           .subscribe(
             (res: Country[]) => {
-              this.countries = new MatTableDataSource(res);
+              this.countries.data = res;
               this.notifier.showDeleted();
               this.updateMode = false;
               this.rForm.reset();

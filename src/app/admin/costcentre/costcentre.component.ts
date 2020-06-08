@@ -2,7 +2,6 @@ import { Component, OnInit, Injector, ViewChild } from '@angular/core';
 import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
 import { Costcentre } from './costcentre';
 import { Employee } from '../employee/employee';
-import { CostcentreService } from './costcentre.service';
 import { DataService } from '../data.service';
 import { CustomValidators } from '../../services/custom_validators';
 import { FormService } from '../../services/form';
@@ -13,6 +12,7 @@ import { Subscription } from 'rxjs';
 import { MatAutocompleteTrigger } from '@angular/material';
 import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material'; //pagination
 import { ApiService } from 'src/app/admin/api.service';
+import * as globals from 'src/app/globals';
 
 @Component({
   selector: 'app-costcentre',
@@ -22,7 +22,6 @@ import { ApiService } from 'src/app/admin/api.service';
 
 export class CostcentreComponent implements OnInit {
   title = 'payroll-system';
-  entityEndpoint = '/costcentres';
   costcentres: MatTableDataSource<Costcentre>;
   error = '';
   success = '';
@@ -50,7 +49,6 @@ export class CostcentreComponent implements OnInit {
   };
 
   constructor(private injector: Injector,
-              private costcentreService: CostcentreService,
               private apiService: ApiService,
               private dataService: DataService,
               private fb: FormBuilder,
@@ -104,8 +102,8 @@ export class CostcentreComponent implements OnInit {
     }
   }
   
-  getCostcentres(): void { // UPDATE TO POINT TO DATA SERVICE INSTEAD
-    this.costcentreService.getAllCostcentres().subscribe(
+  getCostcentres(): void {
+    this.apiService.getAll(globals.COSTCENTRE_ENDPOINT).subscribe(
       (res: Costcentre[]) => {
         this.costcentres = new MatTableDataSource(res);
         this.costcentres.paginator = this.paginator;
@@ -114,8 +112,8 @@ export class CostcentreComponent implements OnInit {
     );
   }
 
-  getCostcentre(id): void { // UPDATE TO POINT TO DATA SERVICE INSTEAD
-    this.costcentreService.getCostcentre(id).subscribe(
+  getCostcentre(id): void {
+    this.apiService.getById(globals.COSTCENTRE_ENDPOINT, id).subscribe(
       (res: Costcentre) => {
         this.costcentre = res;
       }
@@ -126,15 +124,20 @@ export class CostcentreComponent implements OnInit {
     this.resetErrors();
     let costcentre = new Costcentre();
     costcentre.name = f.name;
-    if (f.owner) costcentre.owner = this.dataService.generateQuickIdObject(f.owner.id);
+    if (f.owner) { //Only populating relevant fields (which will be used to update view list and save api call cost)
+      costcentre.owner = {};
+      costcentre.owner.id = f.owner.id;
+      costcentre.owner.firstName = f.owner.firstName;
+      costcentre.owner.lastName = f.owner.lastName;
+    }
 
-    this.costcentreService.storeCostcentre(costcentre)
+    this.apiService.save(globals.COSTCENTRE_ENDPOINT, costcentre, (this.costcentres) ? this.costcentres.data : null)
       .subscribe(
         (res: Costcentre[]) => {
           // Update the list of costcentres
           if (this.showList) {
             // Above Condition added to make the list available on demand. service will only populate list if requested.
-            this.costcentres = new MatTableDataSource(res); // Impelement a list refresh rather
+            this.costcentres.data = res; // Impelement a list refresh rather
           }
           // Inform the user
           this.success = 'Created successfully';
@@ -147,7 +150,7 @@ export class CostcentreComponent implements OnInit {
   }
 
   costcentreEdit(id) {
-    this.costcentreService.getCostcentre(id).subscribe(
+    this.apiService.getById(globals.COSTCENTRE_ENDPOINT, id).subscribe(
       (res: Costcentre) => {
         this.costcentre = res;
         this.rForm.setValue({
@@ -163,14 +166,18 @@ export class CostcentreComponent implements OnInit {
   updateCostcentre(f) {
     this.resetErrors();
     this.costcentre.name = f.name;
-    this.costcentre.owner = this.dataService.generateQuickIdObject(f.owner.id);//check behaviour when null
-    //this.costcentreService.updateCostcentre(this.costcentre)
-    this.apiService.update(this.entityEndpoint, this.costcentre, this.costcentres.data)
+    if (f.owner) { //Only populating relevant fields (which will be used to update view list and save api call cost)
+      this.costcentre.owner = {};
+      this.costcentre.owner.id = f.owner.id;
+      this.costcentre.owner.firstName = f.owner.firstName;
+      this.costcentre.owner.lastName = f.owner.lastName;
+    }
+
+    this.apiService.update(globals.COSTCENTRE_ENDPOINT, this.costcentre, this.costcentres.data)
       .subscribe(
         (res) => {
           if (this.showList) {
-            //alert('res\n' + JSON.stringify(res));
-            this.costcentres = new MatTableDataSource(res);
+            this.costcentres.data = res;
           }
           this.success = 'Updated successfully';
           this.costcentre = new Costcentre();
@@ -183,11 +190,11 @@ export class CostcentreComponent implements OnInit {
 
   deleteCostcentre(id) {
     this.resetErrors();
-    this.costcentreService.deleteCostcentre(id)
+    this.apiService.delete(globals.COSTCENTRE_ENDPOINT, id, this.costcentres.data)
       .subscribe(
         (res: Costcentre[]) => {
           if (this.showList) {
-            this.costcentres = new MatTableDataSource(res); // Impelement a list refresh rather
+            this.costcentres.data = res; // Impelement a list refresh rather
           }
           this.success = 'Deleted successfully';
           this.notifier.showDeleted();

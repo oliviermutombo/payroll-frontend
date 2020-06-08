@@ -1,10 +1,12 @@
-import { Component, OnInit, Injector } from '@angular/core';
+import { Component, OnInit, Injector, ViewChild } from '@angular/core';
 import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
 
 import { Salary } from './salary';
 import { EmployeeService } from '../employee.service';
 import { ApiService } from 'src/app/admin/api.service';
 import { NotificationService } from '../../services/notification.service'; // new
+import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material'; //pagination
+import * as globals from 'src/app/globals';
 
 @Component({
   selector: 'app-root', // WHAT MUST THE SELECTOR BE???
@@ -15,8 +17,10 @@ import { NotificationService } from '../../services/notification.service'; // ne
 })
 export class SalaryComponent implements OnInit {
   title = 'payroll-system (SALARY)';
-  entityEndpoint = '/salaries';
-  salaries: Salary[];
+  salaries: MatTableDataSource<Salary>;
+  displayedColumns: string[] = ['payGrade', 'basicPay', 'manage'];
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
   error = '';
   success = '';
 
@@ -30,7 +34,9 @@ export class SalaryComponent implements OnInit {
   basicPay = 0;
   requiredAlert = 'This field is required';
 
-  constructor(private injector: Injector, private employeeService: EmployeeService, private apiService: ApiService, private fb: FormBuilder) {
+  constructor(private injector: Injector,
+    private apiService: ApiService, 
+    private fb: FormBuilder) {
     this.rForm = fb.group({
         payGrade: [null, Validators.required],
         basicPay: [null, [Validators.required, Validators.pattern('^[0-9]+(?:\.[0-9]+)?$')]]
@@ -56,11 +62,21 @@ export class SalaryComponent implements OnInit {
       this.showList = false;
     }
   }
+
+  applyFilter(filterValue: string) {
+    this.salaries.filter = filterValue.trim().toLowerCase();
+
+    if (this.salaries.paginator) {
+      this.salaries.paginator.firstPage();
+    }
+  }
+
   getSalaries(): void {
-    //this.employeeService.getAllSalaries().subscribe(
-    this.apiService.getAll(this.entityEndpoint).subscribe(
+    this.apiService.getAll(globals.SALARY_ENDPOINT).subscribe(
       (res: Salary[]) => {
-        this.salaries = res;
+        this.salaries = new MatTableDataSource(res);
+        this.salaries.paginator = this.paginator;
+        this.salaries.sort = this.sort;
       }/*,
       (err) => {
         alert('error: ' + JSON.stringify(err));
@@ -70,8 +86,7 @@ export class SalaryComponent implements OnInit {
   }
 
   getSalary(id): void {
-    //this.employeeService.getSalary(id).subscribe(
-    this.apiService.getById(this.entityEndpoint, id).subscribe(
+    this.apiService.getById(globals.SALARY_ENDPOINT, id).subscribe(
       (res: Salary) => {
         this.salary = res;
       }/*,
@@ -89,14 +104,13 @@ export class SalaryComponent implements OnInit {
     salary.payGrade = f.payGrade;
     salary.basicPay = f.basicPay;
 
-    //this.employeeService.storeSalary(this.salary)
-    this.apiService.save(this.entityEndpoint, salary, this.salaries)
+    this.apiService.save(globals.SALARY_ENDPOINT, salary, (this.salaries) ? this.salaries.data : null)
       .subscribe(
         (res: Salary[]) => {
           // Update the list of salaries
           if (this.showList) {
             // Above Condition added to make the list available on demand. service will only populate list if requested.
-            this.salaries = res;
+            this.salaries.data = res;
           }
           // Inform the user
           this.success = 'Created successfully'; // to be decomissioned
@@ -110,8 +124,7 @@ export class SalaryComponent implements OnInit {
   }
 
   salaryEdit(id){
-    //this.employeeService.getSalary(id).subscribe(
-    this.apiService.getById(this.entityEndpoint, id).subscribe(
+    this.apiService.getById(globals.SALARY_ENDPOINT, id).subscribe(
       (res: Salary) => {
         this.salary = res;
         this.rForm.setValue({
@@ -132,12 +145,11 @@ export class SalaryComponent implements OnInit {
     this.resetErrors();
     this.salary.payGrade = f.payGrade;
     this.salary.basicPay = f.basicPay;
-    //this.employeeService.updateSalary(this.salary)
-    this.apiService.update(this.entityEndpoint, this.salary, this.salaries)
+    this.apiService.update(globals.SALARY_ENDPOINT, this.salary, this.salaries.data)
       .subscribe(
         (res) => {
           if (this.showList) {
-            this.salaries = res;
+            this.salaries.data = res;
           }
           this.success = 'Updated successfully'; // to be decomissioned
           // Inform the user
@@ -152,12 +164,11 @@ export class SalaryComponent implements OnInit {
 
   deleteSalary(id) {
     this.resetErrors();
-    //this.employeeService.deleteSalary(id)
-    this.apiService.delete(this.entityEndpoint, id, this.salaries)
+    this.apiService.delete(globals.SALARY_ENDPOINT, id, this.salaries.data)
       .subscribe(
         (res: Salary[]) => {
           if (this.showList) {
-            this.salaries = res;
+            this.salaries.data = res;
           }
           this.success = 'Deleted successfully'; // to be decomissioned
           // Inform the user

@@ -1,9 +1,9 @@
-//FINISH CLASS: IMPLEMENT COUNTRY DROPDOWN
+//FINISH CLASS: GLOBAL VAR FOR COUNTRY ENDPOINT
 import { Component, OnInit, Injector, ViewChild } from '@angular/core';
 import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
 import { CustomValidators } from '../../services/custom_validators';
 import { FormService } from '../../services/form';
-import { DataService } from '../data.service';
+import { UtilitiesService } from '../../services/utilities.service';
 import { NotificationService } from '../../services/notification.service';
 import { Costcentre } from '../costcentre/costcentre'; // For dropdown
 import { Observable } from 'rxjs';//////////////////////////////////////////////////
@@ -15,7 +15,8 @@ import { Employee } from '../employee/employee';
 import { Company } from './company';
 import { CompanyService } from '../company/company.service';
 import { Country } from '../countries/country';
-import { CountryService } from '../countries/country.service';
+import { ApiService } from 'src/app/admin/api.service';
+import * as globals from 'src/app/globals';
 
 
 @Component({
@@ -54,10 +55,10 @@ export class CompanyComponent implements OnInit {
 
     constructor(private injector: Injector,
         private companyService: CompanyService,
-        private dataService: DataService,
+        private utilitiesService: UtilitiesService,
         private fb: FormBuilder,
         public formService: FormService,
-        public countryService: CountryService) {
+        public apiService: ApiService) {
 
         this.rForm = fb.group({
             name: [null, [Validators.required, Validators.minLength(1), Validators.maxLength(50), CustomValidators.validateCharacters]],
@@ -91,7 +92,7 @@ export class CompanyComponent implements OnInit {
     }
 
     getCountries(): void {
-        this.countries = this.countryService.getAllCountries();
+        this.countries = this.apiService.getAll('/countries');
     }
 
     private filterCountries(value: string | Country) {
@@ -111,7 +112,8 @@ export class CompanyComponent implements OnInit {
     }
 
     getCompany(): void {
-        this.companyService.getAllCompanies().subscribe(
+        //this.companyService.getAllCompanies().subscribe(
+        this.apiService.getAll(globals.COMPANY_ENDPOINT).subscribe(
             (res: Company[]) => {//Does this have to be an array?
                 if (res.length > 0) {
                     this.company = res[0];
@@ -139,7 +141,7 @@ export class CompanyComponent implements OnInit {
         address['line1'] = f.line1;
         address['line2'] = f.line2;
         address['postalCode'] = f.postalCode;
-        address['country'] = this.dataService.generateQuickIdObject(f.country);
+        address['country'] = this.utilitiesService.generateQuickIdObject(f.country);
         this.company.address = address;
         
         this.companyService.storeCompany(this.company)
@@ -159,7 +161,7 @@ export class CompanyComponent implements OnInit {
         this.company.address['line1'] = f.line1;
         this.company.address['line2'] = f.line2;
         this.company.address['postalCode'] = f.postalCode;
-        this.company.address['country'] = this.dataService.generateQuickIdObject(f.country); //.id???
+        this.company.address['country'] = this.utilitiesService.generateQuickIdObject(f.country); //.id???
         this.companyService.updateCompany(this.company)
           .subscribe(
             (res) => {
