@@ -172,7 +172,7 @@ export class ManageEmployeeComponent implements OnInit {
   }
   // for dropdown
   getDepartments(): void {
-    this.apiService.getAll('/departments').subscribe(
+    this.apiService.getAll(globals.DEPARTMENT_ENDPOINT).subscribe(
       (res: Department[]) => {
         this.departments = res;
       },
@@ -185,9 +185,8 @@ export class ManageEmployeeComponent implements OnInit {
 
   // for dropdown
   getPositions(): void {
-    this.apiService.getAll('/positions').subscribe(
+    this.apiService.getAll(globals.POSITION_ENDPOINT).subscribe(
       (res: Position[]) => {
-        // alert('Positions comp: ' + JSON.stringify(res));
         this.positions = res;
       },
       (err) => {

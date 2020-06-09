@@ -13,7 +13,6 @@ import { MatAutocompleteTrigger } from '@angular/material';//...................
 import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material'; //pagination
 import { Employee } from '../employee/employee';
 import { Company } from './company';
-import { CompanyService } from '../company/company.service';
 import { Country } from '../countries/country';
 import { ApiService } from 'src/app/admin/api.service';
 import * as globals from 'src/app/globals';
@@ -54,7 +53,6 @@ export class CompanyComponent implements OnInit {
     subscription: Subscription;
 
     constructor(private injector: Injector,
-        private companyService: CompanyService,
         private utilitiesService: UtilitiesService,
         private fb: FormBuilder,
         public formService: FormService,
@@ -92,7 +90,7 @@ export class CompanyComponent implements OnInit {
     }
 
     getCountries(): void {
-        this.countries = this.apiService.getAll('/countries');
+        this.countries = this.apiService.getAll(globals.COUNTRY_ENDPOINT);
     }
 
     private filterCountries(value: string | Country) {
@@ -143,8 +141,19 @@ export class CompanyComponent implements OnInit {
         address['postalCode'] = f.postalCode;
         address['country'] = this.utilitiesService.generateQuickIdObject(f.country);
         this.company.address = address;
+
+        this.apiService.saveOnly(globals.COMPANY_ENDPOINT,this.company)
+          .subscribe(
+                (res: boolean) => {
+                    if (res) {
+                        this.notifier.showSaved(); 
+                    } else {
+                        this.notifier.showGenericError();
+                    }
+                }
+            );
         
-        this.companyService.storeCompany(this.company)
+        /*this.companyService.storeCompany(this.company)
           .subscribe(
             (res: Company) => {
               this.notifier.showSaved(); 
@@ -152,7 +161,7 @@ export class CompanyComponent implements OnInit {
               // no need to reset form
               //this.rForm.reset();
             }
-        );
+        );*/
     }
 
     updateCompany(f) {
@@ -162,18 +171,31 @@ export class CompanyComponent implements OnInit {
         this.company.address['line2'] = f.line2;
         this.company.address['postalCode'] = f.postalCode;
         this.company.address['country'] = this.utilitiesService.generateQuickIdObject(f.country); //.id???
-        this.companyService.updateCompany(this.company)
+        
+        this.apiService.updateOnly(globals.COMPANY_ENDPOINT,this.company)
+          .subscribe(
+            (res: boolean) => {
+                if (res) {
+                    this.notifier.showSaved(); 
+                } else {
+                    this.notifier.showGenericError();
+                }
+            }
+        );
+        
+        /*this.companyService.updateCompany(this.company)
           .subscribe(
             (res) => {
               this.notifier.showSaved();
               this.company = res;
               //this.rForm.reset();
             }
-        );
+        );*/
     }
 
     companyEdit(id) {
-        this.companyService.getCompany(id).subscribe(
+        //this.companyService.getCompany(id).subscribe(
+        this.apiService.getById(globals.COMPANY_ENDPOINT, id).subscribe(
           (res: Company) => {
             this.company = res;
             this.rForm.setValue({
