@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Employee } from '../admin/employee/employee';
 import { EmployeeService } from '../admin/employee.service';
-import { UserService } from '../services/user.service';
-import { DataService } from '../admin/data.service';
+import { UtilitiesService } from '../services/utilities.service';
+import { MatAutocompleteTrigger } from '@angular/material';
+import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -13,8 +14,12 @@ import { DataService } from '../admin/data.service';
 export class UserListComponent implements OnInit {
   title = 'payroll-system';
 
-  employees: Employee[];
-  showList = false;
+  employees: MatTableDataSource<Employee>;
+  displayedColumns: string[] = ['firstName', 'lastName', 'emailAddress', 'manage'];
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
+  subscription: Subscription;
 
   error = '';
   success = '';
@@ -25,8 +30,7 @@ export class UserListComponent implements OnInit {
   updateMode = false;
 
   constructor(private employeeService: EmployeeService,
-              private userService: UserService,
-              private dataService: DataService) {
+              private utilitiesService: UtilitiesService) {
   }
 
   ngOnInit() {
@@ -36,20 +40,12 @@ export class UserListComponent implements OnInit {
   getEmployees(): any {
     this.employeeService.getAll().subscribe(
       (res: Employee[]) => {
-        this.employees = res;
-        this.showList = true; // added
+        this.employees = new MatTableDataSource(res);
+        this.employees.paginator = this.paginator;
+        this.employees.sort = this.sort;
       }
     );
   }
-  /*No longer used
-  userExists(empId): any {
-    this.userService.userExists(empId).subscribe(
-      (res: Boolean) => {
-        alert(empId + ' : ' + res)
-        return res;
-      }
-    );
-  }*/
 
   getEmployee(id): void {
     this.employeeService.getEmployee(id).subscribe(
@@ -57,5 +53,31 @@ export class UserListComponent implements OnInit {
         this.employee = res;
       }
     );
+  }
+
+  encryptParams(EmpId, userId?): string{
+    if (EmpId && userId) {
+      return this.utilitiesService.Encrypt(userId + ' ' + EmpId);
+    } else if (EmpId && !userId) {
+      return this.utilitiesService.Encrypt(EmpId);
+    } else return null;
+  }
+
+  getUserObject(empId, userId?){
+    if (empId && userId) {
+      let params = {empId:this.encryptParams(empId), userId:this.encryptParams(userId)};
+      return params;
+    } else if (empId && !userId) {
+      let params = {empId:this.encryptParams(empId)};
+      return params;
+    }
+  }
+  
+  applyFilter(filterValue: string) {
+    this.employees.filter = filterValue.trim().toLowerCase();
+
+    if (this.employees.paginator) {
+      this.employees.paginator.firstPage();
+    }
   }
 }

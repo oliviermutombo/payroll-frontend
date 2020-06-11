@@ -13,20 +13,20 @@
                 <div class="form-row">
                    <div class="form-group col-md-6">
                       <label>First Name</label>
-                      <input type="text" class="form-control" formControlName="firstname" placeholder="First Name" readonly>
-                      <span class="text-danger" *ngIf="!rForm.controls['firstname'].valid && rForm.controls['firstname'].touched">{{ formErrors.firstname }}</span>
+                      <input type="text" class="form-control" formControlName="firstName" placeholder="First Name" readonly>
+                      <span class="text-danger" *ngIf="!rForm.controls['firstName'].valid && rForm.controls['firstName'].touched">{{ formErrors.firstName }}</span>
                    </div>
                    <div class="form-group col-md-6">
                       <label>Surname</label>
-                      <input type="text" class="form-control" formControlName="surname" placeholder="Surname" readonly>
-                      <span class="text-danger" *ngIf="!rForm.controls['surname'].valid && rForm.controls['surname'].touched">{{ formErrors.surname }}</span>
+                      <input type="text" class="form-control" formControlName="lastName" placeholder="Surname" readonly>
+                      <span class="text-danger" *ngIf="!rForm.controls['lastName'].valid && rForm.controls['lastName'].touched">{{ formErrors.lastName }}</span>
                    </div>
                 </div>
                 <div class="form-row">
                    <div class="form-group col-md-6">
                       <label>Email address</label>
-                      <input type="email" class="form-control" formControlName="emailaddress" placeholder="email@example.com" readonly>
-                      <span class="text-danger" *ngIf="!rForm.controls['emailaddress'].valid && rForm.controls['emailaddress'].touched">{{ formErrors.emailaddress }}</span>
+                      <input type="email" class="form-control" formControlName="emailAddress" placeholder="email@example.com" readonly>
+                      <span class="text-danger" *ngIf="!rForm.controls['emailAddress'].valid && rForm.controls['emailAddress'].touched">{{ formErrors.emailAddress }}</span>
                    </div>
                 </div>
                 <div class="form-row">

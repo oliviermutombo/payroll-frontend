@@ -3,6 +3,6 @@ export class PayrollPeriod {
     id: any;
 
     constructor(
-      period: string,
+      period?: string,
       id?: number) {}
   }

@@ -16,6 +16,8 @@ import { ManageEmployeeComponent } from './admin/employee/manage-employee.compon
 import { DeductionComponent } from './admin/deduction/deduction.component';
 import { PayrollPeriodComponent } from './admin/payrollPeriod/payrollPeriod.component';
 import { PayrollComponent } from './admin/payroll/payroll.component';
+import { CountryComponent } from './admin/countries/country.component';
+import { CompanyComponent } from './admin/company/company.component';
 import { UserListComponent } from './user/user-list.component';
 import { ManageUserComponent } from  './user/manage-user.component';
 
@@ -36,6 +38,13 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './services/auth-request';
 
 import { GlobalErrorHandlerService } from './services/global-error-handler.service';
+
+//pagination
+import { AngularmaterialModule } from './material/angularmaterial/angularmaterial.module';
+import { PositionService } from './admin/position/position.service';
+
+import { MatAutocompleteModule, MatInputModule } from '@angular/material';
+
 
 let schemas: any[] = [];
 schemas.push(CUSTOM_ELEMENTS_SCHEMA);
@@ -58,6 +67,8 @@ schemas.push(CUSTOM_ELEMENTS_SCHEMA);
     PayslipComponent,
     UserListComponent,
     ManageUserComponent,
+    CountryComponent,
+    CompanyComponent,
     GlobalErrorComponent,
     PageNotFoundComponent
   ],
@@ -68,12 +79,16 @@ schemas.push(CUSTOM_ELEMENTS_SCHEMA);
     ReactiveFormsModule,
     BrowserAnimationsModule,
     MatSnackBarModule,
+    AngularmaterialModule, //pagination
+    MatAutocompleteModule,
+    MatInputModule,
     AppRoutingModule
   ],
   providers: [ 
     UserService,
     CustomValidators,
     FormService,
+    PositionService, //pagination
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

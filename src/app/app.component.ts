@@ -30,6 +30,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+    //alert('########### APP.COMP... INIT');
   }
 
   hasRole(_role) {
@@ -39,4 +40,5 @@ export class AppComponent implements OnInit {
   logout() {
     this.userService.logout();
   }
+
 }

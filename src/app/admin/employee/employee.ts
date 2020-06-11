@@ -1,48 +1,50 @@
 export class Employee {
   id: any;
-  empcode: any;
-  firstname: any;
-  surname: any;
+  empCode: any;
+  firstName: any;
+  middleName: any;//NEWLY ADDED, ADD LOGIC
+  lastName: any;
   dob: any;
-  passportno: any;
-  idnumber: any;
-  paygrade: any;
-  basicpay: any;
+  passportNumber: any;
+  idNumber: any;
+  payGrade: any;
+  basicPay: any;
   department: any;
   position: any;
-  emailaddress: any;
-  taxnumber: any;
-  hiredate: any;
+  emailAddress: any;
+  taxNumber: any;
+  hireDate: any;
   address1: any;
   address2: any;
-  postalcode: any;
+  postalCode: any;
   country: any;
-  phonenumber: any;
-  bankname: any;
-  bankaccount: any;
-  bankbranch: any;
+  phoneNumber: any;
+  bankName: any;
+  bankAccount: any;
+  bankBranch: any;
     constructor(
-        empcode: string,
-        firstname: string,
-        surname: string,
+        empCode: string,
+        firstName: string,
+        middleName: string,
+        lastName: string,
         userid: string,
         dob: string,
-        idnumber: string,
-        passportno: string,
-        paygrade: number,
-        basicpay: number,
+        idNumber: string,
+        passportNumber: string,
+        payGrade: number,
+        basicPay: number,
         department: number,
         position: number,
-        emailaddress: string,
-        taxnumber: string,
-        hiredate: string,
+        emailAddress: string,
+        taxNumber: string,
+        hireDate: string,
         address1: string,
         address2: string,
-        postalcode: string,
+        postalCode: string,
         country: string,
-        phonenumber: string,
-        bankname: string,
-        bankaccount: string,
-        bankbranch: string,
+        phoneNumber: string,
+        bankName: string,
+        bankAccount: string,
+        bankBranch: string,
         id?: number) {}
   }

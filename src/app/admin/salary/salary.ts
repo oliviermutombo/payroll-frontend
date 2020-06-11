@@ -1,10 +1,10 @@
 export class Salary {
-  paygrade: any;
-  basicpay: any;
+  payGrade: any;
+  basicPay: any;
   id: any;
 
     constructor(
-        paygrade: string,
-        basicpay: number,
+        payGrade?: string,
+        basicPay?: number,
         id?: number) {}
   }

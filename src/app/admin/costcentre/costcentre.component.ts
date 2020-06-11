@@ -1,12 +1,18 @@
-import { Component, OnInit, Injector } from '@angular/core';
+import { Component, OnInit, Injector, ViewChild } from '@angular/core';
 import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
 import { Costcentre } from './costcentre';
-import { CostcentreService } from './costcentre.service';
-
+import { Employee } from '../employee/employee';
+import { DataService } from '../data.service';
 import { CustomValidators } from '../../services/custom_validators';
 import { FormService } from '../../services/form';
-
 import { NotificationService } from '../../services/notification.service';
+import { Observable } from 'rxjs';
+import { startWith, map, switchMap } from 'rxjs/operators';/////////////////////////////////
+import { Subscription } from 'rxjs';
+import { MatAutocompleteTrigger } from '@angular/material';
+import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material'; //pagination
+import { ApiService } from 'src/app/admin/api.service';
+import * as globals from 'src/app/globals';
 
 @Component({
   selector: 'app-costcentre',
@@ -16,13 +22,19 @@ import { NotificationService } from '../../services/notification.service';
 
 export class CostcentreComponent implements OnInit {
   title = 'payroll-system';
-  costcentres: Costcentre[];
+  costcentres: MatTableDataSource<Costcentre>;
   error = '';
   success = '';
 
-  parentMessage = 'message from parent';
-
   costcentre = new Costcentre('', '');
+  allEmployees: Observable<Employee[]>;
+  filteredEmployees: Observable<Employee[]>;
+
+  displayedColumns: string[] = ['name', 'owner', 'manageColumn'];
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
+  subscription: Subscription;
 
   rForm: FormGroup;
   showList = false;
@@ -36,7 +48,12 @@ export class CostcentreComponent implements OnInit {
     owner: '',
   };
 
-  constructor(private injector: Injector, private costcentreService: CostcentreService, private fb: FormBuilder, public formService: FormService) {
+  constructor(private injector: Injector,
+              private apiService: ApiService,
+              private dataService: DataService,
+              private fb: FormBuilder,
+              public formService: FormService) {
+                
     this.rForm = fb.group({
       name: [null, [Validators.required, Validators.minLength(1), Validators.maxLength(50), CustomValidators.validateCharacters]],
       owner: [null]
@@ -50,6 +67,12 @@ export class CostcentreComponent implements OnInit {
   notifier = this.injector.get(NotificationService);
 
   ngOnInit() {
+    this.getEmployees();
+    this.filteredEmployees = this.theowner.valueChanges
+    .pipe(
+      startWith(''),
+      switchMap(value => this.filterEmployees(value))
+    );
     if (this.showList) {
       this.getCostcentres();
     }
@@ -66,16 +89,31 @@ export class CostcentreComponent implements OnInit {
       this.showList = false;
     }
   }
-  getCostcentres(): void { // UPDATE TO POINT TO DATA SERVICE INSTEAD
-    this.costcentreService.getAllCostcentres().subscribe(
+
+  getEmployees(): void {
+    this.allEmployees = this.dataService.getAllEmployees();
+  }
+
+  applyFilter(filterValue: string) {
+    this.costcentres.filter = filterValue.trim().toLowerCase();
+
+    if (this.costcentres.paginator) {
+      this.costcentres.paginator.firstPage();
+    }
+  }
+  
+  getCostcentres(): void {
+    this.apiService.getAll(globals.COSTCENTRE_ENDPOINT).subscribe(
       (res: Costcentre[]) => {
-        this.costcentres = res;
+        this.costcentres = new MatTableDataSource(res);
+        this.costcentres.paginator = this.paginator;
+        this.costcentres.sort = this.sort;
       }
     );
   }
 
-  getCostcentre(id): void { // UPDATE TO POINT TO DATA SERVICE INSTEAD
-    this.costcentreService.getCostcentre(id).subscribe(
+  getCostcentre(id): void {
+    this.apiService.getById(globals.COSTCENTRE_ENDPOINT, id).subscribe(
       (res: Costcentre) => {
         this.costcentre = res;
       }
@@ -84,17 +122,22 @@ export class CostcentreComponent implements OnInit {
 
   addCostcentre(f) {
     this.resetErrors();
+    let costcentre = new Costcentre();
+    costcentre.name = f.name;
+    if (f.owner) { //Only populating relevant fields (which will be used to update view list and save api call cost)
+      costcentre.owner = {};
+      costcentre.owner.id = f.owner.id;
+      costcentre.owner.firstName = f.owner.firstName;
+      costcentre.owner.lastName = f.owner.lastName;
+    }
 
-    this.costcentre.name = f.name;
-    this.costcentre.owner = f.owner;
-
-    this.costcentreService.storeCostcentre(this.costcentre)
+    this.apiService.save(globals.COSTCENTRE_ENDPOINT, costcentre, (this.costcentres) ? this.costcentres.data : null)
       .subscribe(
         (res: Costcentre[]) => {
           // Update the list of costcentres
           if (this.showList) {
             // Above Condition added to make the list available on demand. service will only populate list if requested.
-            this.costcentres = res;
+            this.costcentres.data = res; // Impelement a list refresh rather
           }
           // Inform the user
           this.success = 'Created successfully';
@@ -107,12 +150,12 @@ export class CostcentreComponent implements OnInit {
   }
 
   costcentreEdit(id) {
-    this.costcentreService.getCostcentre(id).subscribe(
+    this.apiService.getById(globals.COSTCENTRE_ENDPOINT, id).subscribe(
       (res: Costcentre) => {
         this.costcentre = res;
         this.rForm.setValue({
           name: this.costcentre.name,
-          owner: this.costcentre.owner,
+          owner: (this.costcentre.owner != null) ? this.costcentre.owner : null//"this.costcentre.owner",
         });
       }
     );
@@ -123,14 +166,21 @@ export class CostcentreComponent implements OnInit {
   updateCostcentre(f) {
     this.resetErrors();
     this.costcentre.name = f.name;
-    this.costcentre.owner = f.owner;
-    this.costcentreService.updateCostcentre(this.costcentre)
+    if (f.owner) { //Only populating relevant fields (which will be used to update view list and save api call cost)
+      this.costcentre.owner = {};
+      this.costcentre.owner.id = f.owner.id;
+      this.costcentre.owner.firstName = f.owner.firstName;
+      this.costcentre.owner.lastName = f.owner.lastName;
+    }
+
+    this.apiService.update(globals.COSTCENTRE_ENDPOINT, this.costcentre, this.costcentres.data)
       .subscribe(
         (res) => {
           if (this.showList) {
-            this.costcentres = res;
+            this.costcentres.data = res;
           }
           this.success = 'Updated successfully';
+          this.costcentre = new Costcentre();
           this.notifier.showSaved();
           this.updateMode = false;
           this.rForm.reset();
@@ -140,11 +190,11 @@ export class CostcentreComponent implements OnInit {
 
   deleteCostcentre(id) {
     this.resetErrors();
-    this.costcentreService.deleteCostcentre(id)
+    this.apiService.delete(globals.COSTCENTRE_ENDPOINT, id, this.costcentres.data)
       .subscribe(
         (res: Costcentre[]) => {
           if (this.showList) {
-            this.costcentres = res;
+            this.costcentres.data = res; // Impelement a list refresh rather
           }
           this.success = 'Deleted successfully';
           this.notifier.showDeleted();
@@ -152,6 +202,54 @@ export class CostcentreComponent implements OnInit {
           this.rForm.reset();
         }
       );
+  }
+
+  ngAfterViewInit() {
+    this._subscribeToClosingActions();
+  }
+
+  ngOnDestroy() {
+    if (this.subscription && !this.subscription.closed) {
+      this.subscription.unsubscribe();
+    }
+  }
+
+  private _subscribeToClosingActions(): void {
+    if (this.subscription && !this.subscription.closed) {
+      this.subscription.unsubscribe();
+    }
+
+    this.subscription = this.trigger.panelClosingActions
+      .subscribe(e => {
+        if (!e || !e.source) {
+          console.log(this.trigger)
+          console.log(e)
+          this.rForm.controls.owner.setValue(null);
+        }
+      },
+      err => this._subscribeToClosingActions(),
+      () => this._subscribeToClosingActions());
+  }
+
+  private filterEmployees(value: string | Employee) {
+    let filterValue = '';
+    if (value) {
+      filterValue = typeof value === 'string' ? value.toLowerCase() : value.firstName.toLowerCase();
+      return this.allEmployees.pipe(
+        //map(employees => employees.filter(employee => employee.firstName.toLowerCase().includes(filterValue)))
+        map(employees => employees.filter(employee => employee.firstName.toLowerCase().includes(filterValue) || employee.lastName.toLowerCase().includes(filterValue)))
+      );
+    } else {
+      return this.allEmployees;
+    }
+  }
+
+  get theowner() {
+    return this.rForm.get('owner');
+  }
+
+  displayFn(employee?: Employee): string | undefined {
+    return employee ? employee.firstName + ' ' + employee.lastName : undefined;
   }
 
   private resetErrors() {

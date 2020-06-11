@@ -5,6 +5,8 @@ import { Router } from '@angular/router';
 import { CustomValidators } from '../services/custom_validators';
 import { FormService } from '../services/form';
 
+export const AUTH_TOKEN: string = 'jwt_token';
+
 @Component({
     selector: 'app-login',
     templateUrl: './login.component.html'
@@ -43,19 +45,28 @@ export class LoginComponent implements OnInit {
         };
     }
 
-    login(f) {
+    /*login(f) {
         this.resetErrors();
         //this.userService.login({'email': f.email, 'password': f.password});
         let submittedUser = {'email': f.email, 'password': f.password};
         this.userService.login(submittedUser).subscribe(
             (res: any) => {
                 
-            }/*,
-            (err) => {
-                alert ('Ereur yangoyo: ' + JSON.stringify(err));
-                this.error = err;
-            }*/
+            }//,
+            //(err) => {
+            //    alert ('Ereur yangoyo: ' + JSON.stringify(err));
+            //    this.error = err;
+            //}
         );
+    } v0 */
+
+    login(f) {
+        this.resetErrors();
+        let requestBody = new URLSearchParams();
+        requestBody.set('username', f.email);
+        requestBody.set('password', f.password);
+        requestBody.set('grant_type', 'password');
+        this.userService.login(requestBody);
     }
     
     refreshToken() {

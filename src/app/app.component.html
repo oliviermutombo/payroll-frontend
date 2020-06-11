@@ -83,8 +83,10 @@
                                 <a class="nav-link nav-user-img" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="assets/images/avatar-user.png" alt="" class="user-avatar-md rounded-circle"></a>
                                 <div class="dropdown-menu dropdown-menu-right nav-user-dropdown" aria-labelledby="navbarDropdownMenuLink2">
                                     <div class="nav-user-info">
-                                        <h5 class="mb-0 text-white nav-user-name">{{ userService.currentUserValue.name }}</h5>
-                                        <span class="status"></span><span class="ml-2">{{ userService.currentUserValue.role }}</span>
+                                        <!--<h5 class="mb-0 text-white nav-user-name">{{ userService.currentUserValue.name }}</h5>
+                                        <span class="status"></span><span class="ml-2">{{ userService.currentUserValue.role }}</span> v0 -->
+                                        <h5 class="mb-0 text-white nav-user-name">{{ userService.getUserDisplayName() }}</h5>
+                                        <span class="status"></span><span class="ml-2">{{ userService.currentUserValue.roles }}</span>
                                     </div>
                                     <a class="dropdown-item" href="#"><i class="fas fa-user mr-2"></i>Account</a>
                                     <a class="dropdown-item" href="#"><i class="fas fa-cog mr-2"></i>Setting</a>
@@ -107,7 +109,7 @@
                                 <li class="nav-divider">
                                     Menu
                                 </li>
-                                <li class="nav-item " *ngIf="hasRole('systemAdmin')">
+                                <li class="nav-item " *ngIf="hasRole('ROLE_ADMIN')">
                                     <a class="nav-link active" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-1" aria-controls="submenu-1"><i class="fa fa-fw fa-unlock-alt"></i>System administration<span class="badge badge-success">6</span></a>
                                     <div id="submenu-1" class="collapse submenu">
                                         <ul class="nav flex-column">
@@ -120,7 +122,7 @@
                                         </ul>
                                     </div>
                                 </li>
-                                <li class="nav-item " *ngIf="hasRole('employeeAdmin')">
+                                <li class="nav-item " *ngIf="hasRole('ROLE_EMPLOYEE_ADMIN')">
                                     <a class="nav-link active" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-2" aria-controls="submenu-2"><i class="fa fa-fw fa-unlock-alt"></i>Employees administration<span class="badge badge-success">6</span></a>
                                     <div id="submenu-2" class="collapse submenu">
                                         <ul class="nav flex-column">
@@ -139,7 +141,7 @@
                                         </ul>
                                     </div>
                                 </li>
-                                <li class="nav-item " *ngIf="hasRole('payrollAdmin')">
+                                <li class="nav-item " *ngIf="hasRole('ROLE_PAYROLL_ADMIN')">
                                     <a class="nav-link active" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-3" aria-controls="submenu-3"><i class="fa fa-fw fa-unlock-alt"></i>Payroll Administration<span class="badge badge-success">6</span></a>
                                     <div id="submenu-3" class="collapse submenu">
                                         <ul class="nav flex-column">
@@ -161,7 +163,7 @@
                                         </ul>
                                     </div>
                                 </li>
-                                <li class="nav-item" *ngIf="hasRole('employee')">
+                                <li class="nav-item" *ngIf="hasRole('ROLE_EMPLOYEE')">
                                     <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-4" aria-controls="submenu-4"><i class="fa fa-fw fa-user"></i>Employee tools</a>
                                     <div id="submenu-4" class="collapse submenu">
                                         <ul class="nav flex-column">
@@ -177,6 +179,19 @@
                                             <li class="nav-item">
                                                 <a class="nav-link" href="#">Book leave</a>
                                             </li>-->
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="nav-item " *ngIf="hasRole('ROLE_ADMIN')">
+                                    <a class="nav-link active" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-4" aria-controls="submenu-4"><i class="fa fa-fw fa-unlock-alt"></i>System settings<span class="badge badge-success">6</span></a>
+                                    <div id="submenu-4" class="collapse submenu">
+                                        <ul class="nav flex-column">
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="/company_details">Company details</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="/countries">Manage countries</a>
+                                            </li>
                                         </ul>
                                     </div>
                                 </li>

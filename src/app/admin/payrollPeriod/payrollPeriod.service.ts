@@ -5,13 +5,14 @@ import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
 import { PayrollPeriod } from './payrollPeriod';
+import { environment } from './../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PayrollPeriodService {
 
-  baseUrl = 'http://localhost:8000/api';
+  baseUrl = environment.apiUrl;
   // baseUrl = 'http://localhost:51480/api'; // debungging
   payrollPeriodUrl = this.baseUrl + '/payrollPeriod';
   payrollPeriodManageUrl = this.baseUrl + '/payrollPeriod/manage';

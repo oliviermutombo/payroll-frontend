@@ -4,6 +4,9 @@ import { Location } from '@angular/common';
 import { Employee } from './employee';
 import { Salary } from '../salary/salary'
 import { EmployeeService } from '../employee.service';
+import { ApiService } from 'src/app/admin/api.service';
+import { UtilitiesService } from '../../services/utilities.service';
+import * as globals from 'src/app/globals';
 
 @Component({
   selector: 'app-employee-details',
@@ -24,11 +27,16 @@ export class EmployeeDetailsComponent implements OnInit{
 
     employee: Employee;
     salary: Salary;
+
+    encryptedEmpId = '';
+
     // employee: {};
 
     constructor(
       private route: ActivatedRoute,
       private employeeService: EmployeeService,
+      private apiService: ApiService,
+      private utilitiesService: UtilitiesService,
       private location: Location
     ) {}
 
@@ -36,10 +44,11 @@ export class EmployeeDetailsComponent implements OnInit{
       this.getEmployee();
     }
 
-
     getEmployee(): void {
-      const id = +this.route.snapshot.paramMap.get('id');
-      this.employeeService.getEmployee(id)
+      this.encryptedEmpId = this.route.snapshot.paramMap.get('id');
+      const id = +this.utilitiesService.Decrypt(this.encryptedEmpId);
+      //this.employeeService.getEmployee(id)
+      this.apiService.getById(globals.EMPLOYEE_ENDPOINT, id)
         .subscribe(
           employee => this.employee = employee/*,
           (err) => {
@@ -70,7 +79,8 @@ export class EmployeeDetailsComponent implements OnInit{
     deleteEmployee(id) {
       this.resetErrors();
       this.employee = null;
-      this.employeeService.delete(id)
+      //this.employeeService.delete(id)
+      this.apiService.deleteOnly(globals.EMPLOYEE_ENDPOINT, id)
         .subscribe(
           (res: boolean) => {
             this.success = 'Deleted successfully';

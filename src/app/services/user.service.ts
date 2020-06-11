@@ -1,16 +1,15 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpErrorResponse} from '@angular/common/http';
 import * as jwt_decode from 'jwt-decode';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, BehaviorSubject, Subject, ReplaySubject } from 'rxjs';
+import { map, mergeMap, take } from 'rxjs/operators';
+import { environment } from './../../environments/environment';
 
 //guard
 
 import { User } from '../user/user'
 
 export const AUTH_TOKEN: string = 'jwt_token';
-
-
  
 // @Injectable()
 @Injectable({
@@ -18,17 +17,20 @@ export const AUTH_TOKEN: string = 'jwt_token';
 })
 export class UserService {
 
-  
-  isSytemAdmin = true;
+  baseUrl = environment.apiUrl;
+  apiVersion = environment.apiVersion;
 
-  baseUrl = 'http://localhost:8000/api';
-  loginUrl = this.baseUrl + '/obtain-token/';
+  //loginUrl = this.baseUrl + '/obtain-token/'; //v0
+  loginUrl = this.baseUrl + '/oauth/token';
+  userUrl = this.baseUrl + this.apiVersion + '/users';
+  existsUrl = this.userUrl + '/exists';
+
+
   tokenRefreshUrl = this.baseUrl + '/api-token-refresh/';
-  createUrl = this.baseUrl + '/create-user';
-  getUrl = this.baseUrl + '/get-user';
-  updateUrl = this.baseUrl + '/update-user';
-  deleteUrl = this.baseUrl + '/delete-user';
-  existsUrl = this.baseUrl + '/user-exists';
+  //createUrl = this.baseUrl + '/create-user';
+  //getUrl = this.baseUrl + '/get-user';
+  //updateUrl = this.baseUrl + '/update-user';
+  //deleteUrl = this.baseUrl + '/delete-user';
  
   // http options used for making API calls
   private httpOptions: any;
@@ -38,9 +40,9 @@ export class UserService {
  
   // the token expiration date
   public token_expires: Date;
- 
-  // the email of the logged in user
-  public email: string;
+
+  // v1
+  public userObj = new User();
  
   // error messages received from the login attempt.
   public error: any = [];
@@ -50,7 +52,8 @@ export class UserService {
   public tokenExpired = false;
 
   //guard
-  private currentUserSubject: BehaviorSubject<User>;
+  //private currentUserSubject: BehaviorSubject<User>;
+  public currentUserSubject: BehaviorSubject<User>;
   public currentUser: Observable<User>;
  
   constructor(private http: HttpClient) {
@@ -58,19 +61,24 @@ export class UserService {
     this.currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('currentUser')));
     this.currentUser = this.currentUserSubject.asObservable();
 
-    this.httpOptions = {
-      headers: new HttpHeaders({'Content-Type': 'application/json'})
-    };
+    var apiUsername = environment.apiUsername;
+    var apiPassword = environment.apiPassword;
 
-    //roles
-    this.isSytemAdmin = true;
-    //alert('this.currentUser: ' + JSON.stringify(this.currentUser.source._value.role));
-    //alert('this.currentUser: ' + JSON.stringify(this.currentUser));
+    this.httpOptions = {
+      headers: new HttpHeaders({'Content-Type': 'application/x-www-form-urlencoded',
+                      'Authorization': 'Basic ' + btoa(apiUsername + ':' + apiPassword),
+                      observe:'response'
+                })
+    };
   }
 
-  public hasRole(_role) { //preferred technique because it pulls value from Observalable/BehaviorSubject
-    let rolesArr = this.currentUser.source['_value'].role;
-    //alert('rolesArr!: ' + JSON.stringify(rolesArr));
+  public hasRole(_role) {
+    let userdetails = this.currentUser.source['_value'];
+    let rolesArr = null;
+    if (userdetails) {
+      rolesArr = this.currentUser.source['_value'].roles;
+    }
+    
     if (rolesArr) {
       if (rolesArr.indexOf(_role) > -1){
         return true;
@@ -81,19 +89,63 @@ export class UserService {
 
   //guard
   public get currentUserValue(): User {
-    //alert('this.currentUserSubject.value: ' + JSON.stringify(this.currentUserSubject.value))
     return this.currentUserSubject.value;
   }
 
-  login(user: any):  Observable<any> {
-    return this.http.post<any>(this.loginUrl, JSON.stringify(user), this.httpOptions)
-    .pipe(map((userData) => {
-      if (userData && userData['token']) {
-        this.updateData(userData);
-      }
-      return userData;
-    }));
+  login(requestBody: any){
+    this.http.post<any>(this.loginUrl, requestBody.toString(), this.httpOptions)
+    .pipe(
+      map( tokenResponseObj => {
+        return this.setUserData(tokenResponseObj);
+      }),
+      mergeMap( username => this.http.get<any>(`${this.userUrl}/username/${username}`)),
+      take(1)
+    ).subscribe( userdetails => {
+      this.updateUderData(userdetails);
+    });
   }
+
+  private setUserData(userData): string {
+
+    if (userData && userData['access_token']) {
+
+      let token = userData['access_token'];
+      const token_parts = token.split(/\./);
+      const token_decoded = JSON.parse(window.atob(token_parts[1]));
+      this.token_expires = new Date(token_decoded.exp * 1000);
+      
+      this.userObj.username = token_decoded.user_name;
+      this.userObj.roles = token_decoded.authorities;
+
+      localStorage.setItem(AUTH_TOKEN, token);
+      localStorage.setItem('token_expiry', String(new Date(token_decoded.exp * 1000)));
+
+      //save to local storage
+      localStorage.setItem('currentUser', JSON.stringify(this.userObj));
+      //guard
+      this.currentUserSubject.next(this.userObj);
+      
+    }
+    return this.userObj.username; // now saving the username in userDetailsObj - Update it.
+  }
+
+  private updateUderData(userData): void {
+    this.userObj.firstName = userData.result.firstName;
+    this.userObj.lastName = userData.result.lastName;
+    //save to local storage
+    localStorage.setItem('currentUser', JSON.stringify(this.userObj));
+    //guard
+    this.currentUserSubject.next(this.userObj);
+  }
+
+  public getUserDisplayName() {
+    let displayName = this.currentUserValue.username;
+    if ((this.currentUserValue.firstName) && (this.currentUserValue.lastName)) {
+      displayName = this.currentUserValue.firstName + ' ' + this.currentUserValue.lastName;
+    }
+    return displayName;
+  }
+
   // Refreshes the JWT token, to extend the time the user is logged in
   public refreshToken() {
     this.tokenExpired = true;
@@ -102,7 +154,7 @@ export class UserService {
     this.http.post(this.tokenRefreshUrl, JSON.stringify({token: this.getToken()}), this.httpOptions).subscribe(
       userData => {
         alert('Token finally refreshed');
-        this.updateData(userData);
+        this.setUserData(userData);
         this.tokenExpired = false;
       }/*,
       err => {
@@ -112,9 +164,8 @@ export class UserService {
   }
  
   public logout() {
-    // this.token = null;
     this.token_expires = null; // to be removed eventually
-    this.email = null;
+    this.userObj = new User();//Do not set to null - rather empty object
 
     //guard
     localStorage.removeItem('currentUser');
@@ -122,34 +173,9 @@ export class UserService {
 
     // clear local storage (Not really important anymore after guard)
     localStorage.clear();
-    //this.success = 'Successfully logged out';
-    //alert ('Successfully logged out');
-  }
- 
-  public updateData(userData) {
-    // this.token = token;
-    let token = userData.token;
-    this.error = [];
- 
-    // decode the token to read the email and expiration timestamp
-    //const token_parts = this.token.split(/\./);
-    const token_parts = token.split(/\./);
-    const token_decoded = JSON.parse(window.atob(token_parts[1]));
-    this.token_expires = new Date(token_decoded.exp * 1000);
-    this.email = token_decoded.email;
-
-    //save to local storage
-    //guard
-    localStorage.setItem('currentUser', JSON.stringify(userData));
-    this.currentUserSubject.next(userData);
-
-    //May have to decomission the below since they're now saved in currentUser
-    localStorage.setItem(AUTH_TOKEN, token);
-    localStorage.setItem('email', token_decoded.email);
-    localStorage.setItem('token_expiry', String(new Date(token_decoded.exp * 1000)));
   }
 
-  public getLoggedInDetails(): string { // TEST
+  public getLoggedInDetails(): string { // TEST (To be removed - only tested in costcentre)
     return localStorage.getItem('email') + '. Token expires at:' + localStorage.getItem('token_expiry');
   }
 
@@ -178,16 +204,12 @@ export class UserService {
   }
 
   public isAuthenticated(): boolean {
-    // get the token
     const token = this.getToken();
-    // return a boolean reflecting 
-    // whether or not the token is expired
-    // alert('Has token expired? : ' + this.isTokenExpired(token));
     return !this.isTokenExpired(token);
   }
 
   create(newuser: any): Observable<boolean> {
-    return this.http.post<any>(`${this.createUrl}/`, newuser)
+    return this.http.post<any>(`${this.userUrl}/`, newuser)
       .pipe(map((res) => {
         if (res) {
           return res;
@@ -197,15 +219,43 @@ export class UserService {
       }));
   }
 
-  getUser(employeeId): Observable<any> { //NOTE THAT THIS IS THE EMPLOYEE ID and NOT USER ID. 
+  /*getUser(employeeId): Observable<any> { //NOTE THAT THIS IS THE EMPLOYEE ID and NOT USER ID. 
     return this.http.get<any>(`${this.getUrl}/${employeeId}`)
       .pipe(map((res) => {
         return res;
       }));
+  } v0*/
+
+  getUser(id): Observable<any> {
+    return this.http.get<any>(`${this.userUrl}/${id}`)
+      .pipe(map((res) => {
+        return res;
+      }));
+  }
+  
+  getUserByUsername(username): Observable<any> { // Currently not used
+    //alert('Trace - getUserByUsername');
+    return this.http.get<any>(`${this.userUrl}/username/${username}`)
+      .pipe(map((res) => {
+        //alert('res: ' + JSON.stringify(res));
+        return res;
+      }));
   }
 
-  updateUser(user: any): Observable<boolean> {
-    return this.http.put<any>(`${this.updateUrl}/${user.employee}`, user) //NOTE THAT THIS IS THE EMPLOYEE ID and NOT USER ID. 
+  /*updateUser(user: any): Observable<boolean> {
+    return this.http.put<any>(`${this.userUrl}/${user.employee}`, user) //NOTE THAT THIS IS THE EMPLOYEE ID and NOT USER ID. 
+      .pipe(map((res) => {
+        if (res) {
+          return true;
+        } else {
+          return false;
+        }
+      })/*,
+      catchError(this.handleError)star-here/);
+  }*/
+
+  updateUser(user: any): Observable<boolean> {//TO-BE-COMPLETED.
+    return this.http.patch<any>(`${this.userUrl}`, user)
       .pipe(map((res) => {
         if (res) {
           return true;
@@ -217,7 +267,7 @@ export class UserService {
   }
 
   deleteUser(id: number): Observable<boolean> {
-    return this.http.delete(`${this.deleteUrl}/${id}`)
+    return this.http.delete(`${this.userUrl}/${id}`)
       .pipe(map(res => {
         if (res) {
           return true;
@@ -227,11 +277,10 @@ export class UserService {
       }));
   }
 
-  userExists(id: number): Observable<Boolean> {
-    return this.http.get(`${this.existsUrl}/${id}`)
+  userExists(employee: any): Observable<Boolean> {//Currently not used - no need for it anymore since employee now returns this info.
+    return this.http.post(`${this.existsUrl}`, employee)
       .pipe(map(res => {
-        //alert('res: ' + JSON.stringify(res));
-        return res['response'];
+        return res['result'];
       }));
   }
  

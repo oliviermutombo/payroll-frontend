@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { environment } from './../../environments/environment';
 
 //////////////////////////////////////////////// open
 import { Observable, throwError } from 'rxjs';
@@ -10,6 +10,7 @@ import { Department } from './department/department';
 import { Position } from './position/position';
 import { PayrollPeriod } from './payrollPeriod/payrollPeriod';
 import { Deduction } from './deduction/deduction';
+import { Employee } from './employee/employee';
 //////////////////////////////////////////////// close
 
 @Injectable({
@@ -17,19 +18,21 @@ import { Deduction } from './deduction/deduction';
 })
 export class DataService {
 
-  private messageSource = new BehaviorSubject('default message');
-  currentMessage = this.messageSource.asObservable();
-  baseUrl = 'http://localhost:8000/api';
+  baseUrl = environment.baseUrl;
 
-  costcentreUrl = this.baseUrl + '/costcentre';
+  employeeUrl = this.baseUrl + '/employees';
+  employee: Employee;
+  employees: Employee[];
+
+  costcentreUrl = this.baseUrl + '/costcentres';
   costcentre: Costcentre;
   costcentres: Costcentre[];
 
-  departmentUrl = this.baseUrl + '/department';
+  departmentUrl = this.baseUrl + '/departments';
   department: Department;
   departments: Department[];
 
-  positionUrl = this.baseUrl + '/position';
+  positionUrl = this.baseUrl + '/positions';
   position: Position;
   positions: Position[];
 
@@ -43,8 +46,12 @@ export class DataService {
 
   constructor(private http: HttpClient) { }//
 
-  changeMessage(message: string) {
-    this.messageSource.next(message);
+  getAllEmployees(): Observable<Employee[]> {
+    return this.http.get<Employee[]>(`${this.employeeUrl}/`).pipe(
+      map((res) => {
+        this.employees = res;
+        return this.employees;
+    }));
   }
 
   getAllCostcentres(): Observable<Costcentre[]> {

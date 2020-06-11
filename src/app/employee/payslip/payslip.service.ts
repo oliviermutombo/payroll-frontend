@@ -4,12 +4,14 @@ import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
 import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
+import { environment } from './../../../environments/environment';
+
 @Injectable({
     providedIn: 'root'
   })
   export class PayslipService {
 
-    baseUrl = 'http://localhost:8000/api';
+    baseUrl = environment.apiUrl;
     payslipUrl = this.baseUrl + '/payslip';
 
     payslip = {};

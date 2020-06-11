@@ -7,17 +7,19 @@ import { map, catchError } from 'rxjs/operators';
 import { Employee } from './employee/employee';
 import { Salary } from './salary/salary';
 
+import { environment } from './../../environments/environment';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class EmployeeService {
 
-  baseUrl = 'http://localhost:8000/api';
-  salaryUrl = this.baseUrl + '/salary';
-  salaryManageUrl = this.baseUrl + '/salary/manage';
-  employeeUrl = this.baseUrl + '/employee';
-  employeePartialUrl = this.baseUrl + '/employee/partial';
+  baseUrl = environment.baseUrl;
+  salaryUrl = this.baseUrl + '/salaries';
+  
+  employeeUrl = this.baseUrl + '/employees';
+  //employeePartialUrl = this.baseUrl + '/employee/partial';
   employees: Employee[];
   employee: Employee;
   salaries: Salary[];
@@ -69,7 +71,7 @@ export class EmployeeService {
   }
 
   update(employee: Employee): Observable<boolean> {
-    return this.http.put<Employee>(`${this.employeeUrl}/${employee.id}`, employee)
+    return this.http.patch<Employee>(`${this.employeeUrl}/${employee.id}`, employee)
     // The below stuff are just to update the views if they're displayed at the same time. double check if really needed.
       .pipe(map((res) => {
         // RETURN SUCCESS MESSAGE HERE?
@@ -82,6 +84,8 @@ export class EmployeeService {
       catchError(this.handleError)*/);
   }
 
+  /*
+  NO LONGER USED
   updatePartial(employee: Employee): Observable<boolean> {
     return this.http.put<Employee>(`${this.employeePartialUrl}/${employee.id}`, employee)
       .pipe(map((res) => {
@@ -91,7 +95,7 @@ export class EmployeeService {
           return false;
         }
       }));
-  }
+  }*/
 
   delete(id: number): Observable<boolean> {
     return this.http.delete(`${this.employeeUrl}/${id}`)
@@ -129,7 +133,7 @@ export class EmployeeService {
   }
 
   storeSalary(salary: Salary): Observable<Salary[]> {
-    return this.http.post<Salary>(`${this.salaryManageUrl}/`, salary)
+    return this.http.post<Salary>(`${this.salaryUrl}/`, salary)
       .pipe(map((res) => {
         if (this.salaries) {
           // Above Condition added to make the list available on demand. can't populate list if not requested (or it throws an error)
@@ -141,15 +145,15 @@ export class EmployeeService {
   }
 
   updateSalary(salary: Salary): Observable<Salary[]> {
-    return this.http.put<Salary>(`${this.salaryManageUrl}/${salary.id}`, salary)
+    return this.http.patch<Salary>(`${this.salaryUrl}/${salary.id}`, salary)
     // The below stuff are just to update the views if they're displayed at the same time. double check if really needed.
       .pipe(map((res) => {
         const theSalary = this.salaries.find((item) => {
           return +item.id === +salary.id;
         });
         if (theSalary) {
-          theSalary.paygrade = salary.paygrade;
-          theSalary.basicpay = +salary.basicpay;
+          theSalary.payGrade = salary.payGrade;
+          theSalary.basicPay = +salary.basicPay;
         }
         return this.salaries;
       })/*,
@@ -157,7 +161,7 @@ export class EmployeeService {
   }
 
   deleteSalary(id: number): Observable<Salary[]> {
-    return this.http.delete(`${this.salaryManageUrl}/${id}`)
+    return this.http.delete(`${this.salaryUrl}/${id}`)
     // The below stuff are just to update the views if they're displayed at the same time. double check if really needed.
       .pipe(map(res => {
         const filteredSalaries = this.salaries.filter((salary) => {

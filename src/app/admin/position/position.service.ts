@@ -1,3 +1,4 @@
+//NO LONGER USED BUT DOUBLE CHECK BEFORE DELETING
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 
@@ -5,16 +6,16 @@ import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
 import { Position } from './position';
+import { environment } from './../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PositionService {
 
-  baseUrl = 'http://localhost:8000/api';
-  // baseUrl = 'http://localhost:51480/api'; // debungging
-  positionUrl = this.baseUrl + '/position';
-  positionManageUrl = this.baseUrl + '/position/manage';
+  baseUrl = environment.baseUrl;
+
+  positionUrl = this.baseUrl + '/positions';
   positions: Position[];
   position: Position; // Added this one
 
@@ -46,7 +47,7 @@ export class PositionService {
   }
 
   storePosition(position: Position): Observable<Position[]> {
-    return this.http.post<Position>(`${this.positionManageUrl}/`, position)
+    return this.http.post<Position>(`${this.positionUrl}/`, position)
       .pipe(map((res) => {
         if (this.positions) {
           // Above Condition added to make the list available on demand. can't populate list if not requested (or it throws an error)
@@ -57,7 +58,7 @@ export class PositionService {
   }
 
   updatePosition(position: Position): Observable<Position[]> {
-    return this.http.put<Position>(`${this.positionManageUrl}/${position.id}`, position)
+    return this.http.patch<Position>(`${this.positionUrl}/${position.id}`, position)
     // The below stuff are just to update the views if they're displayed at the same time. double check if really needed.
       .pipe(map((res) => {
         const thePosition = this.positions.find((item) => {
@@ -71,7 +72,7 @@ export class PositionService {
   }
 
   deletePosition(id: number): Observable<Position[]> {
-    return this.http.delete(`${this.positionManageUrl}/${id}`)
+    return this.http.delete(`${this.positionUrl}/${id}`)
     // The below stuff are just to update the views if they're displayed at the same time. double check if really needed.
       .pipe(map(res => {
         const filteredPositions = this.positions.filter((position) => {

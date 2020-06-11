@@ -1,6 +1,6 @@
 export enum Role {
-    systemAdmin = 'systemAdmin',
-    payrollAdmin = 'payrollAdmin',
-    employeeAdmin = 'employeeAdmin',
-    employee = 'employee'
+    ROLE_ADMIN = 'ROLE_ADMIN',
+    ROLE_PAYROLL_ADMIN = 'ROLE_PAYROLL_ADMIN',
+    ROLE_EMPLOYEE_ADMIN = 'ROLE_EMPLOYEE_ADMIN',
+    ROLE_EMPLOYEE = 'ROLE_EMPLOYEE'
   }

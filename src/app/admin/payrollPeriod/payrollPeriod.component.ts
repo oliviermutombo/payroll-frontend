@@ -92,10 +92,10 @@ export class PayrollPeriodComponent implements OnInit {
 
   addPayrollPeriod(f) {
     this.resetErrors();
+    let payrollPeriod = new PayrollPeriod();
+    payrollPeriod.period = f.period;
 
-    this.payrollPeriod.period = f.period;
-
-    this.payrollPeriodService.storePayrollPeriod(this.payrollPeriod)
+    this.payrollPeriodService.storePayrollPeriod(payrollPeriod)
       .subscribe(
         (res: PayrollPeriod[]) => {
           // Update the list of payrollPeriods
@@ -135,6 +135,7 @@ export class PayrollPeriodComponent implements OnInit {
             this.payrollPeriods = res;
           }
           this.success = 'Updated successfully';
+          this.payrollPeriod = new PayrollPeriod();
           this.notifier.showSaved();
           this.updateMode = false;
           this.rForm.reset();

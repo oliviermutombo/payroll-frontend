@@ -6,16 +6,16 @@ import { map, catchError } from 'rxjs/operators';
 
 import { UserService } from '../../services/user.service';
 import { Costcentre } from './costcentre';
+import { environment } from './../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CostcentreService {
 
-  baseUrl = 'http://localhost:8000/api';
-  // baseUrl = 'http://localhost:51480/api'; // debungging
-  costcentreUrl = this.baseUrl + '/costcentre';
-  costcentreManageUrl = this.baseUrl + '/costcentre/manage';
+  baseUrl = environment.baseUrl;
+  costcentreUrl = this.baseUrl + '/costcentres';
+  
   costcentres: Costcentre[];
   costcentre: Costcentre; // Added this one
 
@@ -27,7 +27,8 @@ export class CostcentreService {
     alert('this.userService.getLoggedInDetails(): ' + this.userService.getLoggedInDetails());
   }
 
-  /*private handleError(error: HttpErrorResponse) {
+  /*/TO COMMENT - NOT USED
+  private handleError(error: HttpErrorResponse) {
     if (error.status === 401) {
       this.error = 'Your sessions has expired!';
       this.userService.logout(); // important to .bind(this) when calling handleError to use service context.
@@ -58,7 +59,7 @@ export class CostcentreService {
   }
 
   storeCostcentre(costcentre: Costcentre): Observable<Costcentre[]> {
-    return this.http.post<Costcentre>(`${this.costcentreManageUrl}/`, costcentre)
+    return this.http.post<Costcentre>(`${this.costcentreUrl}/`, costcentre)
       .pipe(map((res) => {
         if (this.costcentres) {
           // Above Condition added to make the list available on demand. can't populate list if not requested (or it throws an error)
@@ -69,7 +70,7 @@ export class CostcentreService {
   }
 
   updateCostcentre(costcentre: Costcentre): Observable<Costcentre[]> {
-    return this.http.put<Costcentre>(`${this.costcentreManageUrl}/${costcentre.id}`, costcentre)
+    return this.http.patch<Costcentre>(`${this.costcentreUrl}/${costcentre.id}`, costcentre)
     // The below stuff are just to update the views if they're displayed at the same time. double check if really needed.
       .pipe(map((res) => {
         const theCostcentre = this.costcentres.find((item) => {
@@ -79,12 +80,13 @@ export class CostcentreService {
           theCostcentre.name = costcentre.name;
           theCostcentre.owner = +costcentre.owner;
         }
+        //alert('updateCostcentre - this.costcentres\n' + JSON.stringify(this.costcentres));
         return this.costcentres;
       }));
   }
 
   deleteCostcentre(id: number): Observable<Costcentre[]> {
-    return this.http.delete(`${this.costcentreManageUrl}/${id}`)
+    return this.http.delete(`${this.costcentreUrl}/${id}`)
     // The below stuff are just to update the views if they're displayed at the same time. double check if really needed.
       .pipe(map(res => {
         const filteredCostcentres = this.costcentres.filter((costcentre) => {

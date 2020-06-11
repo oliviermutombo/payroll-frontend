@@ -1,10 +1,13 @@
-import { Component, OnInit, Injector } from '@angular/core';
+import { Component, OnInit, Injector, ViewChild } from '@angular/core';
 import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
 import { Position } from './position';
 import { PositionService } from './position.service';
+import { ApiService } from 'src/app/admin/api.service';
+import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material'; //pagination
 import { NotificationService } from '../../services/notification.service';
 import { CustomValidators } from '../../services/custom_validators';
 import { FormService } from '../../services/form';
+import * as globals from 'src/app/globals';
 
 @Component({
   selector: 'app-position',
@@ -13,8 +16,17 @@ import { FormService } from '../../services/form';
 })
 
 export class PositionComponent implements OnInit {
-  title = 'payroll-system';
-  positions: Position[];
+
+  //
+  allPostion:Position[];
+  positions: MatTableDataSource<Position>;
+  displayedColumns: string[] = ['name','manageColumn'];
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
+  //
+
+  title = 'payroll-system Positions';
+  //positions: Position[];
   error = '';
   success = '';
 
@@ -32,6 +44,7 @@ export class PositionComponent implements OnInit {
 
   constructor(private injector: Injector,
     private positionService: PositionService,
+    private apiService: ApiService,
     private fb: FormBuilder,
     public formService: FormService) {
 
@@ -43,7 +56,7 @@ export class PositionComponent implements OnInit {
       this.formErrors = this.formService.validateForm(this.rForm, this.formErrors, true);
     });
   }
-
+  
   notifier = this.injector.get(NotificationService);
 
   ngOnInit() {
@@ -63,16 +76,27 @@ export class PositionComponent implements OnInit {
       this.showList = false;
     }
   }
-  getPositions(): void { // UPDATE TO POINT TO DATA SERVICE INSTEAD
-    this.positionService.getAllPositions().subscribe(
+
+  applyFilter(filterValue: string) {
+    this.positions.filter = filterValue.trim().toLowerCase();
+
+    if (this.positions.paginator) {
+      this.positions.paginator.firstPage();
+    }
+  }
+
+  getPositions(): void {
+    this.apiService.getAll(globals.POSITION_ENDPOINT).subscribe(
       (res: Position[]) => {
-        this.positions = res;
+        this.positions = new MatTableDataSource(res);
+        this.positions.paginator = this.paginator;
+        this.positions.sort = this.sort;
       }
     );
   }
 
-  getPosition(id): void { // UPDATE TO POINT TO DATA SERVICE INSTEAD
-    this.positionService.getPosition(id).subscribe(
+  getPosition(id): void {
+    this.apiService.getById(globals.POSITION_ENDPOINT, id).subscribe(
       (res: Position) => {
         this.position = res;
       }
@@ -82,15 +106,16 @@ export class PositionComponent implements OnInit {
   addPosition(f) {
     this.resetErrors();
 
-    this.position.name = f.name;
+    let position = new Position();
+    position.name = f.name;
 
-    this.positionService.storePosition(this.position)
+    this.apiService.save(globals.POSITION_ENDPOINT, position, (this.positions) ? this.positions.data : null)
       .subscribe(
         (res: Position[]) => {
           // Update the list of positions
           if (this.showList) {
             // Above Condition added to make the list available on demand. service will only populate list if requested.
-            this.positions = res;
+            this.positions.data = res; // Implement a list refresh rather
           }
           // Inform the user
           this.success = 'Created successfully';
@@ -102,7 +127,7 @@ export class PositionComponent implements OnInit {
   }
 
   positionEdit(id) {
-    this.positionService.getPosition(id).subscribe(
+    this.apiService.getById(globals.POSITION_ENDPOINT, id).subscribe(
       (res: Position) => {
         this.position = res;
         this.rForm.setValue({
@@ -117,13 +142,14 @@ export class PositionComponent implements OnInit {
   updatePosition(f) {
     this.resetErrors();
     this.position.name = f.name;
-    this.positionService.updatePosition(this.position)
+    this.apiService.update(globals.POSITION_ENDPOINT, this.position, this.positions.data)
       .subscribe(
         (res) => {
           if (this.showList) {
-            this.positions = res;
+            this.positions.data = res; // Implement a list refresh rather
           }
           this.success = 'Updated successfully';
+          this.position = new Position();
           this.notifier.showSaved();
           this.updateMode = false;
           this.rForm.reset();
@@ -133,11 +159,11 @@ export class PositionComponent implements OnInit {
 
   deletePosition(id) {
     this.resetErrors();
-    this.positionService.deletePosition(id)
+    this.apiService.delete(globals.POSITION_ENDPOINT, id, this.positions.data)
       .subscribe(
         (res: Position[]) => {
           if (this.showList) {
-            this.positions = res;
+            this.positions.data = res; // Impelement a list refresh rather
           }
           this.success = 'Deleted successfully';
           this.notifier.showDeleted();

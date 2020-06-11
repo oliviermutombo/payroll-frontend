@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Injector } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
@@ -8,7 +8,9 @@ import { UserService } from '../services/user.service'
 import { CustomValidators } from '../services/custom_validators';
 import { FormService } from '../services/form';
 import { DataService } from '../admin/data.service';
-import { NotificationService } from '../services/notification.service'
+import { NotificationService } from '../services/notification.service';
+import { Role } from '../user/role';
+import { UtilitiesService } from '../services/utilities.service';
 
 @Component({
   templateUrl: './manage-user.component.html'
@@ -20,18 +22,19 @@ export class ManageUserComponent implements OnInit {
 
   // Create de default constructor if possible.
   employee : any;// = new Employee('TestEmpCode', 'TestFirst', 'TestLast', '', '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', '');
+
   user = {
     'id': null,
-    'firstname' : '',
-    'lastname' : '',
+    'firstName' : '',
+    'lastName' : '',
     'email' : '',
+    'username' : '',
     'employee': null,
     'password' : '12345', // Temporary
-    'is_system_admin' : false,
-    'is_payroll_admin' : false,
-    'is_employee_admin' : false,
-    'is_employee' : false
+    'role' : []
   };
+
+  empIdToEdit = 0;//////////////////////////////////
 
   rForm: FormGroup;
   showList = false;
@@ -39,57 +42,72 @@ export class ManageUserComponent implements OnInit {
   post: any;
 
   public formErrors = {
-    firstname: '',
-    surname: '',
-    emailaddress: '',
+    firstName: '',
+    lastName: '',
+    emailAddress: '',
     is_system_admin: '',
     is_payroll_admin: '',
     is_employee_admin: '',
     is_employee: ''
   };
+  
+stripRole(role) {
+  return role.replace('ROLE_','');
+}
 
-  checkSysAdmin($isChecked): void {
+  /* These role sets do not get triggered on updatemode - only on create mode*/
+ checkSysAdmin($isChecked): void {
+  if(!this.updateMode) {
     if ($isChecked) {
-      this.user.is_system_admin = true;
+      this.user.role = this.utilitiesService.addToArray(this.user.role, this.stripRole(Role.ROLE_ADMIN));
     } else {
-      this.user.is_system_admin = false;
+      this.user.role = this.user.role.filter(item => item !== this.stripRole(Role.ROLE_ADMIN));
     }
   }
-  checkPayrollAdmin($isChecked): void {
+}
+checkPayrollAdmin($isChecked): void {
+  if(!this.updateMode) {
     if ($isChecked) {
-      this.user.is_payroll_admin = true;
+      this.user.role = this.utilitiesService.addToArray(this.user.role, this.stripRole(Role.ROLE_PAYROLL_ADMIN));
     } else {
-      this.user.is_payroll_admin = false;
+      this.user.role = this.user.role.filter(item => item !== this.stripRole(Role.ROLE_PAYROLL_ADMIN));
     }
   }
-  checkEmployeeAdmin($isChecked): void {
+}
+checkEmployeeAdmin($isChecked): void {
+  if(!this.updateMode) {
     if ($isChecked) {
-      this.user.is_employee_admin = true;
+      this.user.role = this.utilitiesService.addToArray(this.user.role, this.stripRole(Role.ROLE_EMPLOYEE_ADMIN));
     } else {
-      this.user.is_employee_admin = false;
+      this.user.role = this.user.role.filter(item => item !== this.stripRole(Role.ROLE_EMPLOYEE_ADMIN));
     }
   }
-  checkEmployee($isChecked): void {
+}
+checkEmployee($isChecked): void {
+  if(!this.updateMode) {
     if ($isChecked) {
-      this.user.is_employee = true;
+      this.user.role = this.utilitiesService.addToArray(this.user.role, this.stripRole(Role.ROLE_EMPLOYEE));
     } else {
-      this.user.is_employee = false;
+      this.user.role = this.user.role.filter(item => item !== this.stripRole(Role.ROLE_EMPLOYEE));
     }
   }
+}
 
-  constructor(private employeeService: EmployeeService,
+  constructor(private injector: Injector,
+              private employeeService: EmployeeService,
               private userService: UserService,
               private dataService: DataService,
               private fb: FormBuilder,
               private route: ActivatedRoute,
               private location: Location,
               private notification: NotificationService,
+              private utilitiesService: UtilitiesService,
               public formService: FormService) { // TRY PRIVATE
 
     this.rForm = fb.group({
-      firstname: [null, [Validators.required, Validators.minLength(1), Validators.maxLength(50), CustomValidators.validateCharacters]],
-      surname: [null, [Validators.required, Validators.minLength(2), Validators.maxLength(50), CustomValidators.validateCharacters]],
-      emailaddress: [null, [Validators.required, Validators.email]],
+      firstName: [null, [Validators.required, Validators.minLength(1), Validators.maxLength(50), CustomValidators.validateCharacters]],
+      lastName: [null, [Validators.required, Validators.minLength(2), Validators.maxLength(50), CustomValidators.validateCharacters]],
+      emailAddress: [null, [Validators.required, Validators.email]],
       is_system_admin: [null],
       is_payroll_admin: [null],
       is_employee_admin: [null],
@@ -104,21 +122,37 @@ export class ManageUserComponent implements OnInit {
     });
   }
 
+  notifier = this.injector.get(NotificationService);
+
   ngOnInit() {
+    
     this.getEmployeeToEdit();
   }
 
-  getEmployeeToEdit(): void { // to add/edit user
-    const id = +this.route.snapshot.paramMap.get('id');//add
-    const _id = +this.route.snapshot.paramMap.get('_id');//edit
-    if (id>0){
+  getEmployeeToEdit(): void {
+
+    const queryParams = this.route.snapshot.queryParams
+    //const routeParams = this.route.snapshot.params;
+    //let empId = this.route.snapshot.paramMap.get('empId');
+    //let userId = this.route.snapshot.paramMap.get('userId');
+
+    let empId = queryParams['empId'];
+    let userId = queryParams.userId;
+
+    if (empId && !userId) {
+      //empId = decodeURIComponent(empId);
       this.updateMode = false;
-      this.populateForm(id);
-      //this.userEdit(id);
-    } else if (_id>0) {
+      let decryptedEmpId = this.utilitiesService.Decrypt(empId);
+      this.populateForm(+decryptedEmpId);
+
+    }else if (userId && empId) {
+      //userId = decodeURIComponent(userId);
       this.updateMode = true;
-      this.populateFormToEdit(_id);
+      let decryptedUserId = +this.utilitiesService.Decrypt(userId);
+      this.empIdToEdit = +this.utilitiesService.Decrypt(empId);
+      this.populateFormToEdit(decryptedUserId);
     }
+    
   }
 
   goBack(): void {
@@ -134,54 +168,66 @@ export class ManageUserComponent implements OnInit {
   }
 
   addUser(f) {
-    this.user.firstname = f.firstname;
-    this.user.lastname = f.surname;
-    this.user.email = f.emailaddress;
-    this.user.employee = this.employee.id;
-    // though they're also updated on class level:
-    this.user.is_employee = (f.is_employee) ? true:false;
-    this.user.is_employee_admin = (f.is_employee_admin) ? true:false;
-    this.user.is_payroll_admin = (f.is_payroll_admin) ? true:false;
-    this.user.is_system_admin = (f.is_system_admin) ? true:false;
-    this.userService.create(this.user)
-      .subscribe(
-        (res: any) => {
-          if (res) {
-            this.notification.showSaved();
+    this.user.firstName = f.firstName;
+    this.user.lastName = f.lastName;
+    this.user.email = f.emailAddress;
+    this.user.username = f.emailAddress;
+    this.user.employee = this.utilitiesService.generateQuickIdObject(this.employee.id);
+    if (this.user.role.length == 0) {
+        this.notification.showError('No role(s) selected!');
+    } else {
+      this.userService.create(this.user)
+        .subscribe(
+          (res: any) => {
+            if (res) {
+              this.notification.showSaved();
+            }
+            // Reset the form
+            this.rForm.reset();
           }
-          // Reset the form
-          this.rForm.reset();
-        }
-      );
+        );
+    }
   }
 
   updateUser(f) {
-    // Find a way to log out that user to force his token refresh or maybe wait for token refresh? latter is better.
-    // This is a partial update. no need to put all fields
-    this.user.is_employee = f.is_employee;
-    this.user.is_employee_admin = f.is_employee_admin;
-    this.user.is_payroll_admin = f.is_payroll_admin;
-    this.user.is_system_admin = f.is_system_admin;
-    this.userService.updateUser(this.user)
-      .subscribe(
-        (res) => {
-          this.notification.showSaved();
-        }
-      );
+    this.user.employee = this.utilitiesService.generateQuickIdObject(this.empIdToEdit)
+    this.user.role = this.getEditedRoles(f);
+    
+    if (this.user.role.length == 0) {
+      this.notification.showError('No role(s) selected!');
+    } else {
+      this.userService.updateUser(this.user)
+        .subscribe(
+          (res) => {
+            this.notification.showSaved();
+          }
+        );
+    }
+  }
+
+  getEditedRoles(f){
+    /* role sets for updatemode */
+    let rolesArr = [];
+    if (f.is_system_admin) this.utilitiesService.addToArray(rolesArr, this.stripRole(Role.ROLE_ADMIN));
+    if (f.is_payroll_admin) this.utilitiesService.addToArray(rolesArr, this.stripRole(Role.ROLE_PAYROLL_ADMIN));
+    if (f.is_employee_admin) this.utilitiesService.addToArray(rolesArr, this.stripRole(Role.ROLE_EMPLOYEE_ADMIN));
+    if (f.is_employee) this.utilitiesService.addToArray(rolesArr, this.stripRole(Role.ROLE_EMPLOYEE));
+    return rolesArr;
   }
 
   populateForm(id){
     this.employeeService.getEmployee(id).subscribe(
       (res: any) => {
+        //alert('populateForm(id)\n' + JSON.stringify(res));
         this.employee = res;
         this.rForm.setValue({
-          firstname: this.employee.firstname,
-          surname: this.employee.surname,
-          emailaddress: this.employee.emailaddress,
+          firstName: this.employee.firstName,
+          lastName: this.employee.lastName,
+          emailAddress: this.employee.emailAddress,
           is_system_admin: null,
           is_payroll_admin: null,
           is_employee_admin: null,
-          is_employee: true // set to true by default.
+          is_employee: null // set to true by default.
         });
       }
     );
@@ -190,33 +236,28 @@ export class ManageUserComponent implements OnInit {
   populateFormToEdit(id){
     this.userService.getUser(id).subscribe(
       (res: any) => {
-        this.user = res;
+        this.user = res.result;
         this.rForm.setValue({
-          firstname: this.user.firstname,
-          surname: this.user.lastname,
-          emailaddress: this.user.email,
-          is_system_admin: this.user.is_system_admin,
-          is_payroll_admin: this.user.is_payroll_admin,
-          is_employee_admin: this.user.is_employee_admin,
-          is_employee: this.user.is_employee
-          //is_system_admin.setValue( true )
+          firstName: this.user.firstName,
+          lastName: this.user.lastName,
+          emailAddress: this.user.email,
+          is_system_admin: this.hasRole(this.user['roles'], this.stripRole(Role.ROLE_ADMIN)),
+          is_payroll_admin: this.hasRole(this.user['roles'], this.stripRole(Role.ROLE_PAYROLL_ADMIN)),
+          is_employee_admin: this.hasRole(this.user['roles'], this.stripRole(Role.ROLE_EMPLOYEE_ADMIN)),
+          is_employee: this.hasRole(this.user['roles'], this.stripRole(Role.ROLE_EMPLOYEE))
         });
       }
     );
   }
 
-  /*updateEmployee(partialEmployee) {
-    this.employeeService.updatePartial(partialEmployee)
-      .subscribe(
-        (res) => {
-          // No need to notify here
-        },
-        (err) => {
-          this.notification.showError('Seems the user reference was not updated on the employee table.\n Double check and delete user then recreate if necessary!');
-        }
-      );
-    window.scroll(0, 0);
-  }*/
+  hasRole(Obj: any, role: string) {
+    let s = Obj.find(r=>r.name == role);
+    if(this.utilitiesService.isObject(s)){
+      if (s['name']==role) return true;//Second If is not needed
+    }
+    //return JSON.stringify(s);
+    return false;
+  }
 
   deleteUser(id) {
     this.userService.deleteUser(id)

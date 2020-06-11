@@ -13,60 +13,63 @@
          <div class="card-body">
             <form [formGroup]="rForm" (ngSubmit)="!updateMode ? addEmployee(rForm.value) : updateEmployee(rForm.value)">
                <div class="form-row">
-                  <div class="form-group col-md-6">
+                  <div class="form-group col-md-4">
                      <label>First Name</label>
-                     <input type="text" class="form-control" formControlName="firstname" placeholder="First Name">
-                     <span class="text-danger" *ngIf="!rForm.controls['firstname'].valid && rForm.controls['firstname'].touched">{{ formErrors.firstname }}</span>
+                     <input type="text" class="form-control" formControlName="firstName" placeholder="First Name">
+                     <span class="text-danger" *ngIf="!rForm.controls['firstName'].valid && rForm.controls['firstName'].touched">{{ formErrors.firstName }}</span>
                   </div>
-                  <div class="form-group col-md-6">
+                  <div class="form-group col-md-4">
+                     <label>Middle Name</label>
+                     <input type="text" class="form-control" formControlName="middleName" placeholder="Middle Name">
+                     <span class="text-danger" *ngIf="!rForm.controls['middleName'].valid && rForm.controls['middleName'].touched">{{ formErrors.middleName }}</span>
+                  </div>
+                  <div class="form-group col-md-4">
                      <label>Surname</label>
-                     <input type="text" class="form-control" formControlName="surname" placeholder="Surname">
-                     <span class="text-danger" *ngIf="!rForm.controls['surname'].valid && rForm.controls['surname'].touched">{{ formErrors.surname }}</span>
+                     <input type="text" class="form-control" formControlName="lastName" placeholder="Surname">
+                     <span class="text-danger" *ngIf="!rForm.controls['lastName'].valid && rForm.controls['lastName'].touched">{{ formErrors.lastName }}</span>
                   </div>
                </div>
                <div class="form-row">
-                  <div class="form-group col-md-6">
+                  <div class="form-group col-md-4">
                      <label>Date of birth</label>
                      <input type="date" class="form-control" formControlName="dob">
                      <span class="text-danger" *ngIf="!rForm.controls['dob'].valid && rForm.controls['dob'].touched">{{ formErrors.dob }}</span>
                   </div>
-                  <div class="form-group col-md-6">
+                  <div class="form-group col-md-4">
                      <label>ID Number</label>
-                     <input type="text" class="form-control" formControlName="idnumber" placeholder="ID Number">
-                     <span class="text-danger" *ngIf="!rForm.controls['idnumber'].valid && rForm.controls['idnumber'].touched">{{ formErrors.idnumber }}</span>
+                     <input type="text" class="form-control" formControlName="idNumber" placeholder="ID Number">
+                     <span class="text-danger" *ngIf="!rForm.controls['idNumber'].valid && rForm.controls['idNumber'].touched">{{ formErrors.idNumber }}</span>
                   </div>
-               </div>
-               <div class="form-row">
-                  <div class="form-group col-md-6">
+                  <div class="form-group col-md-4">
                      <label>Passport Number</label>
-                     <input type="text" class="form-control" formControlName="passportno" placeholder="If applicable">
-                     <span class="text-danger" *ngIf="!rForm.controls['passportno'].valid && rForm.controls['passportno'].touched">{{ formErrors.passportno }}</span>
-                  </div>
-                  <div class="form-group col-md-6">
-                     <label>Email address</label>
-                     <input type="email" class="form-control" formControlName="emailaddress" placeholder="email@example.com">
-                     <span class="text-danger" *ngIf="!rForm.controls['emailaddress'].valid && rForm.controls['emailaddress'].touched">{{ formErrors.emailaddress }}</span>
+                     <input type="text" class="form-control" formControlName="passportNumber" placeholder="If applicable">
+                     <span class="text-danger" *ngIf="!rForm.controls['passportNumber'].valid && rForm.controls['passportNumber'].touched">{{ formErrors.passportNumber }}</span>
                   </div>
                </div>
                <div class="form-row">
-                  <div class="form-group col-md-6">
+                  <div class="form-group col-md-4">
+                     <label>Email address</label>
+                     <input type="email" class="form-control" formControlName="emailAddress" placeholder="email@example.com">
+                     <span class="text-danger" *ngIf="!rForm.controls['emailAddress'].valid && rForm.controls['emailAddress'].touched">{{ formErrors.emailAddress }}</span>
+                  </div>
+                  <div class="form-group col-md-4">
                      <label>Pay grade</label>
-                     <select class="form-control" formControlName="paygrade" placeholder="Pay grade">
+                     <select class="form-control" formControlName="payGrade" placeholder="Pay grade">
                            <option value=null disabled selected hidden>Choose Pay grade</option>
                            <option [ngValue]="s.id" *ngFor="let s of salaries">  
-                              {{s.paygrade}} (Basic pay: R{{s.basicpay}})
+                              {{s.payGrade}} (Basic pay: R{{s.basicPay}})
                            </option>
                      </select>
-                     <span class="text-danger" *ngIf="!rForm.controls['paygrade'].valid && rForm.controls['paygrade'].touched">{{ formErrors.paygrade }}</span>
+                     <span class="text-danger" *ngIf="!rForm.controls['payGrade'].valid && rForm.controls['payGrade'].touched">{{ formErrors.payGrade }}</span>
                   </div>
-                  <div class="form-group col-md-6">
+                  <div class="form-group col-md-4">
                      <label>Basic pay</label>
-                     <input type="text" class="form-control" formControlName="basicpay" placeholder="Overrides pay grade">
-                     <span class="text-danger" *ngIf="!rForm.controls['basicpay'].valid && rForm.controls['basicpay'].touched">{{ formErrors.basicpay }}</span>
+                     <input type="text" class="form-control" formControlName="basicPay" placeholder="Overrides pay grade">
+                     <span class="text-danger" *ngIf="!rForm.controls['basicPay'].valid && rForm.controls['basicPay'].touched">{{ formErrors.basicPay }}</span>
                   </div>
                </div>
                <div class="form-row">
-                  <div class="form-group col-md-6">
+                  <div class="form-group col-md-3">
                      <label>Department</label>
                      <select class="form-control" formControlName="department" placeholder="Department">
                            <option value=null disabled selected hidden>Choose department</option>
@@ -76,7 +79,7 @@
                      </select>
                      <span class="text-danger" *ngIf="!rForm.controls['department'].valid && rForm.controls['department'].touched">{{ formErrors.department }}</span>
                   </div>
-                  <div class="form-group col-md-6">
+                  <div class="form-group col-md-3">
                      <label>Position</label>
                      <select class="form-control" formControlName="position" placeholder="Position">
                         <option value=null disabled selected hidden>Choose position</option>
@@ -86,17 +89,15 @@
                      </select>
                      <span class="text-danger" *ngIf="!rForm.controls['position'].valid && rForm.controls['position'].touched">{{ formErrors.position }}</span>
                   </div>
-               </div>
-               <div class="form-row">
-                  <div class="form-group col-md-6">
+                  <div class="form-group col-md-3">
                      <label>Tax number</label>
-                     <input type="text" class="form-control" formControlName="taxnumber" placeholder="Tax number">
-                     <span class="text-danger" *ngIf="!rForm.controls['taxnumber'].valid && rForm.controls['taxnumber'].touched">{{ formErrors.taxnumber }}</span>
+                     <input type="text" class="form-control" formControlName="taxNumber" placeholder="Tax number">
+                     <span class="text-danger" *ngIf="!rForm.controls['taxNumber'].valid && rForm.controls['taxNumber'].touched">{{ formErrors.taxNumber }}</span>
                   </div>
-                  <div class="form-group col-md-6">
+                  <div class="form-group col-md-3">
                      <label>Hire date</label>
-                     <input type="date" class="form-control" formControlName="hiredate">
-                     <span class="text-danger" *ngIf="!rForm.controls['hiredate'].valid && rForm.controls['hiredate'].touched">{{ formErrors.hiredate }}</span>
+                     <input type="date" class="form-control" formControlName="hireDate">
+                     <span class="text-danger" *ngIf="!rForm.controls['hireDate'].valid && rForm.controls['hireDate'].touched">{{ formErrors.hireDate }}</span>
                   </div>
                </div>
                <div class="form-group">
@@ -112,8 +113,8 @@
                <div class="form-row">
                   <div class="form-group col-md-2">
                      <label>Postal code</label>
-                     <input type="text" class="form-control" formControlName="postalcode" placeholder="or zip code">
-                     <span class="text-danger" *ngIf="!rForm.controls['postalcode'].valid && rForm.controls['postalcode'].touched">{{ formErrors.postalcode }}</span>
+                     <input type="text" class="form-control" formControlName="postalCode" placeholder="or zip code">
+                     <span class="text-danger" *ngIf="!rForm.controls['postalCode'].valid && rForm.controls['postalCode'].touched">{{ formErrors.postalCode }}</span>
                   </div>
                   <div class="form-group col-md-6">
                      <label>Country</label>
@@ -122,25 +123,25 @@
                   </div>
                   <div class="form-group col-md-4">
                      <label>Phone number</label>
-                     <input type="text" class="form-control" formControlName="phonenumber" placeholder="Phone number">
-                     <span class="text-danger" *ngIf="!rForm.controls['phonenumber'].valid && rForm.controls['phonenumber'].touched">{{ formErrors.phonenumber }}</span>
+                     <input type="text" class="form-control" formControlName="phoneNumber" placeholder="Phone number">
+                     <span class="text-danger" *ngIf="!rForm.controls['phoneNumber'].valid && rForm.controls['phoneNumber'].touched">{{ formErrors.phoneNumber }}</span>
                   </div>
                </div>
                <div class="form-row">
                   <div class="form-group col-md-6">
                      <label>Bank name</label>
-                     <input type="text" class="form-control" formControlName="bankname" placeholder="Name of bank">
-                     <span class="text-danger" *ngIf="!rForm.controls['bankname'].valid && rForm.controls['bankname'].touched">{{ formErrors.bankname }}</span>
+                     <input type="text" class="form-control" formControlName="bankName" placeholder="Name of bank">
+                     <span class="text-danger" *ngIf="!rForm.controls['bankName'].valid && rForm.controls['bankName'].touched">{{ formErrors.bankName }}</span>
                   </div>
                   <div class="form-group col-md-4">
                      <label>Bank account</label>
-                     <input type="text" class="form-control" formControlName="bankaccount" placeholder="Bank account">
-                     <span class="text-danger" *ngIf="!rForm.controls['bankaccount'].valid && rForm.controls['bankaccount'].touched">{{ formErrors.bankaccount }}</span>
+                     <input type="text" class="form-control" formControlName="bankAccount" placeholder="Bank account">
+                     <span class="text-danger" *ngIf="!rForm.controls['bankAccount'].valid && rForm.controls['bankAccount'].touched">{{ formErrors.bankAccount }}</span>
                   </div>
                   <div class="form-group col-md-2">
                      <label>Branch</label>
-                     <input type="text" class="form-control" formControlName="bankbranch" placeholder="or SWIFT">
-                     <span class="text-danger" *ngIf="!rForm.controls['bankbranch'].valid && rForm.controls['bankbranch'].touched">{{ formErrors.bankbranch }}</span>
+                     <input type="text" class="form-control" formControlName="bankBranch" placeholder="or SWIFT">
+                     <span class="text-danger" *ngIf="!rForm.controls['bankBranch'].valid && rForm.controls['bankBranch'].touched">{{ formErrors.bankBranch }}</span>
                   </div>
                </div>
                <div>

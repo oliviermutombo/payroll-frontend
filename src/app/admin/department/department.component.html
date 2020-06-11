@@ -20,20 +20,47 @@
                             <input type="text" class="form-control" formControlName="costcentre">
                             <span class="text-danger" *ngIf="!rForm.controls['costcentre'].valid && rForm.controls['costcentre'].touched">{{ formErrors.costcentre }}</span>
                             -->
+                            <!--
                             <select class="form-control" formControlName="costcentre" placeholder="Cost centre">
                                 <option value=null disabled selected hidden>Choose cost centre</option>
                                 <option [ngValue]="c.id" *ngFor="let c of costcentres">  
                                    {{c.name}}
                                 </option>
                             </select>
-                          <span class="text-danger" *ngIf="!rForm.controls['costcentre'].valid && rForm.controls['costcentre'].touched">{{ formErrors.costcentre }}</span>     
+                            -->
+                            <mat-form-field>
+                                <input type="text" placeholder="Select a costcentre" matInput formControlName="costcentre" [matAutocomplete]="auto">
+                                <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+                                  <mat-option *ngFor="let costcentre of filteredCostcentres | async" [value]="costcentre">
+                                    {{costcentre.name}}
+                                  </mat-option>
+                                </mat-autocomplete>
+                                <!--
+                                <mat-error *ngIf="costcentre.hasError('required')">
+                                  Costcentre required.
+                                </mat-error>
+                                -->
+                            </mat-form-field>
+                            <span class="text-danger" *ngIf="!rForm.controls['costcentre'].valid && rForm.controls['costcentre'].touched">{{ formErrors.costcentre }}</span>     
                         </div>
+                        <mat-form-field>
+                            <input type="text" placeholder="Select head of department" matInput formControlName="hod" [matAutocomplete]="Hodauto">
+                            <mat-autocomplete #Hodauto="matAutocomplete" [displayWith]="displayHodFn">
+                              <mat-option *ngFor="let employee of filteredEmployees | async" [value]="employee">
+                                {{employee.firstName}} {{employee.lastName}}  [{{employee.empCode}}]
+                              </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                        <span class="text-danger" *ngIf="!rForm.controls['hod'].valid && rForm.controls['hod'].touched">{{ formErrors.hod }}</span>
+                        <div><input type="submit" class="btn btn-primary btn-sm" value="Save" [disabled]="!rForm.valid"></div>
+                        <!--
                         <div class="form-group">
                             <label>Head of deparment</label>
                             <input type="text" class="form-control" formControlName="hod">
                             <span class="text-danger" *ngIf="!rForm.controls['hod'].valid && rForm.controls['hod'].touched">{{ formErrors.hod }}</span>
                         </div>
                         <div><input type="submit" class="btn btn-primary btn-sm" value="Save" [disabled]="!rForm.valid"></div>
+                        -->
                     </div>
                 </form>
                 <div class="custom-control custom-checkbox">
@@ -41,6 +68,41 @@
                     <label class="custom-control-label" for="show-list">Show all departments</label>
                 </div>
             </div>
+            <div class="card-body" *ngIf="showList">
+                <!--<div class="table-responsive" *ngIf="departments?.length > 0">-->
+                    <div class="table-responsive">
+                        <mat-form-field>
+                            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+                        </mat-form-field>
+                        <div class="mat-elevation-z8">
+                            <table mat-table [dataSource]="departments" matSort class="mat-table">
+                                <ng-container matColumnDef="name">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Department</th>
+                                    <td mat-cell *matCellDef="let dpt"> {{dpt.name}} </td>
+                                </ng-container>
+                                <ng-container matColumnDef="hod">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Head Of Department</th>
+                                    <td mat-cell *matCellDef="let dpt"><span *ngIf="dpt.hod">{{ dpt.hod['firstName'] }} {{ dpt.hod['lastName'] }}</span></td>
+                                </ng-container>
+                                <ng-container matColumnDef="costcentre">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Cost centre</th>
+                                    <td mat-cell *matCellDef="let dpt"><span *ngIf="dpt.costcentre">{{ dpt.costcentre['name'] }}</span></td>
+                                </ng-container>
+                                <ng-container matColumnDef="manageColumn">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Manage</th>
+                                    <td mat-cell *matCellDef="let dpt">
+                                        <button class="btn btn-primary btn-xs" (click)="departmentEdit(dpt.id)" >Update</button>&nbsp;
+                                        <button class="btn btn-danger btn-xs" (click)="deleteDepartment(dpt.id)" >Remove</button>
+                                    </td>
+                                </ng-container>
+                                <tr mat-header-row *matHeaderRowDef="displayedColumns" class="mat-table-header-row"></tr>
+                                <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="mat-table-row"></tr>
+                            </table>
+                            <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+                        </div>
+                    </div>
+            </div>
+            <!--
             <div class="card-body" *ngIf="showList">
                 <div class="table-responsive" *ngIf="departments?.length > 0">
                     <span>
@@ -54,8 +116,7 @@
                             </tr>
                             <tr *ngFor="let d of departments">
                                 <td>{{d.name}}</td>
-                                <!--<td>{{d.costcentre}}</td>-->
-                                <td>{{d.costcentre.name}}</td>
+                                <td><span *ngIf="d.costcentre">{{d.costcentre.name}}</span></td>
                                 <td>{{d.hod}}</td>
                                 <td><button class="btn btn-primary btn-xs" (click)="departmentEdit(d.id)" >Update</button></td>
                                 <td><button class="btn btn-danger btn-xs" (click)="deleteDepartment(d.id)" >Delete</button></td>
@@ -65,6 +126,7 @@
                 </div>
                 <div class="alert" *ngIf="departments?.length <= 0">Nothing to show</div>
             </div>
+            -->
         </div>
     </div>
 </div>

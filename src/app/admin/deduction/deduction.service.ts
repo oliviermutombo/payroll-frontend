@@ -5,13 +5,14 @@ import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
 import { Deduction } from './deduction';
+import { environment } from './../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DeductionService {
 
-  baseUrl = 'http://localhost:8000/api';
+  baseUrl = environment.apiUrl;
   deductionUrl = this.baseUrl + '/deduction';
   employeedeductionUrl = this.deductionUrl + '/emp';
   deductionManageUrl = this.baseUrl + '/deduction/manage';
