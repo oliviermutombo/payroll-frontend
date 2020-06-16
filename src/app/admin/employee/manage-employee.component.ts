@@ -1,27 +1,31 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, QueryList, ViewChildren} from '@angular/core';
+import { MatAutocompleteTrigger } from '@angular/material';
+import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material'; //REMOVE
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
 import { Employee } from './employee';
-import { Salary} from '../salary/salary'; // For dropdown
+import { Salary} from '../salary/salary';
 import { CustomValidators } from '../../services/custom_validators';
 import { FormService } from '../../services/form';
 import { ApiService } from 'src/app/admin/api.service';
-import { Department } from '../department/department'; // For dropdown
-import { Position } from '../position/position'; // For dropdown
+import { Department } from '../department/department';
+import { Position } from '../position/position';
 import { UtilitiesService } from '../../services/utilities.service';
+import { Observable } from 'rxjs';
+import { Subscription } from 'rxjs';
 import * as globals from 'src/app/globals';
+import { Country } from '../countries/country';
+import { map, startWith, switchMap } from 'rxjs/operators';
+
+
+//test
+
+//
 
 @Component({
-  // selector: 'app-root', // WHAT MUST THE SELECTOR BE???
+  //selector: 'app-root', // WHAT MUST THE SELECTOR BE???
   selector: 'app-manage-employee',
-  /*template: `
-    <h3>Parent</h3>
-    <h2>The master parent is sending is: {{master}}</h2>
-    <app-employee-details 
-      [betizparam] = "master">
-    </app-employee-details>
-  `,*/
   templateUrl: './manage-employee.component.html',
   styleUrls: ['./manage-employee.component.css']
 })
@@ -32,9 +36,19 @@ export class ManageEmployeeComponent implements OnInit {
 
   title = 'payroll-system';
   employees: Employee[];
-  salaries: Salary[]; // For dropdown
-  departments: Department[]; // For dropdown
-  positions: Position[]; // For dropdown
+
+  //<Dropdown_Stuff>
+  salaries: Observable<Salary[]>;
+  filteredSalaries: Observable<Salary[]>;
+  departments: Observable<Department[]>;
+  filteredDepartments: Observable<Department[]>;
+  positions: Observable<Position[]>;
+  filteredPositions: Observable<Position[]>;
+  countries: Observable<Country[]>;
+  filteredCountries: Observable<Country[]> = new Observable<Country[]>();
+
+  //</Dropdown_Stuff>
+
   error = '';
   success = '';
 
@@ -90,6 +104,9 @@ export class ManageEmployeeComponent implements OnInit {
     bankAccount: '',
     bankBranch: ''
   };
+  
+  @ViewChildren(MatAutocompleteTrigger) triggerCollection:  QueryList<MatAutocompleteTrigger>;
+  subscription: Subscription;
 
   constructor(private apiService: ApiService,
               private fb: FormBuilder,
@@ -131,9 +148,32 @@ export class ManageEmployeeComponent implements OnInit {
   }
 
   ngOnInit() {
+    //<Dropdown_Stuff>
     this.getSalaries();
+    this.filteredSalaries = this.thesalary.valueChanges
+    .pipe(
+      startWith(''),
+      switchMap(value => this.filterSalaries(value))
+    );
     this.getDepartments();
+    this.filteredDepartments = this.thedepartment.valueChanges
+    .pipe(
+      startWith(''),
+      switchMap(value => this.filterDepartments(value))
+    );
     this.getPositions();
+    this.filteredPositions = this.theposition.valueChanges
+    .pipe(
+      startWith(''),
+      switchMap(value => this.filterPositions(value))
+    );
+    this.getCountries();
+    this.filteredCountries = this.thecountry.valueChanges
+    .pipe(
+      startWith(''),
+      switchMap(value => this.filterCountries(value))
+    );
+    //</Dropdown_Stuff>
     this.getEmployeeToEdit();
   }
 
@@ -152,44 +192,6 @@ export class ManageEmployeeComponent implements OnInit {
         this.employees = res;
       },
       (err) => {
-        this.error = err;
-      }
-    );
-  }
-
-  // below is for dropdown
-  getSalaries(): void {
-    //this.employeeService.getAllSalaries().subscribe(
-    this.apiService.getAll(globals.SALARY_ENDPOINT).subscribe(
-      (res: Salary[]) => {
-        this.salaries = res;
-      },
-      (err) => {
-        this.error = err;
-      }
-    );
-  }
-  // for dropdown
-  getDepartments(): void {
-    this.apiService.getAll(globals.DEPARTMENT_ENDPOINT).subscribe(
-      (res: Department[]) => {
-        this.departments = res;
-      },
-      (err) => {
-        alert('error: ' + JSON.stringify(err));
-        this.error = err;
-      }
-    );
-  }
-
-  // for dropdown
-  getPositions(): void {
-    this.apiService.getAll(globals.POSITION_ENDPOINT).subscribe(
-      (res: Position[]) => {
-        this.positions = res;
-      },
-      (err) => {
-        alert('error: ' + JSON.stringify(err));
         this.error = err;
       }
     );
@@ -273,10 +275,10 @@ export class ManageEmployeeComponent implements OnInit {
           idNumber: this.employee.idNumber,
           passportNumber: this.employee.passportNumber,
           emailAddress: this.employee.emailAddress,
-          payGrade: (this.employee.payGrade != null) ? this.employee.payGrade.id : null, // very import otherwise null breaks things
+          payGrade: (this.employee.payGrade != null) ? this.employee.payGrade : null, // very import otherwise null breaks things
           basicPay: this.employee.basicPay,
-          department: (this.employee.department != null) ? this.employee.department.id : null, // very important to have the condition
-          position: (this.employee.position != null) ? this.employee.position.id : null,
+          department: (this.employee.department != null) ? this.employee.department : null, // very important to have the condition
+          position: (this.employee.position != null) ? this.employee.position : null,
           taxNumber: this.employee.taxNumber,
           hireDate: this.employee.hireDate,
           address1: this.employee.address1,
@@ -349,4 +351,153 @@ export class ManageEmployeeComponent implements OnInit {
     this.success = '';
     this.error   = '';
   }
+
+  //<Dropdown_Stuff>
+  // below is for dropdown
+  getSalaries(): void {
+    this.salaries = this.apiService.getAll(globals.SALARY_ENDPOINT);
+  }
+  getDepartments(): void {
+    this.departments = this.apiService.getAll(globals.DEPARTMENT_ENDPOINT);
+  }
+  getPositions(): void {
+    this.positions = this.apiService.getAll(globals.POSITION_ENDPOINT);
+  }
+  getCountries(): void {
+    this.countries = this.apiService.getAll(globals.COUNTRY_ENDPOINT);
+  }
+  ngAfterViewInit() {
+    this._subscribeToClosingActions();
+  }
+
+  ngOnDestroy() {
+    if (this.subscription && !this.subscription.closed) {
+      this.subscription.unsubscribe();
+    }
+  }
+
+  private _subscribeToClosingActions(): void {
+    if (this.subscription && !this.subscription.closed) {
+      this.subscription.unsubscribe();
+    }
+
+    this.subscription = this.triggerCollection.toArray()[0].panelClosingActions
+      .subscribe(e => {
+        if (!e || !e.source) {
+          console.log(this.triggerCollection)
+          console.log(e)
+          this.rForm.controls.payGrade.setValue(null);
+        }
+      },
+      err => this._subscribeToClosingActions(),
+      () => this._subscribeToClosingActions());
+
+    this.subscription = this.triggerCollection.toArray()[1].panelClosingActions
+    .subscribe(e => {
+      if (!e || !e.source) {
+        console.log(this.triggerCollection)
+        console.log(e)
+        this.rForm.controls.department.setValue(null);
+      }
+    },
+    err => this._subscribeToClosingActions(),
+    () => this._subscribeToClosingActions());
+
+    this.subscription = this.triggerCollection.toArray()[2].panelClosingActions
+    .subscribe(e => {
+      if (!e || !e.source) {
+        console.log(this.triggerCollection)
+        console.log(e)
+        this.rForm.controls.position.setValue(null);
+      }
+    },
+    err => this._subscribeToClosingActions(),
+    () => this._subscribeToClosingActions());
+
+    this.subscription = this.triggerCollection.toArray()[3].panelClosingActions
+    .subscribe(e => {
+      if (!e || !e.source) {
+        console.log(this.triggerCollection)
+        console.log(e)
+        this.rForm.controls.country.setValue(null);
+      }
+    },
+    err => this._subscribeToClosingActions(),
+    () => this._subscribeToClosingActions());
+  }
+
+  private filterSalaries(value: string | Salary) {
+    let filterValue = '';
+    if (value) {
+      filterValue = typeof value === 'string' ? value.toLowerCase() : value.payGrade.toLowerCase();
+      return this.salaries.pipe(
+        map(salaries => salaries.filter(salary => salary.payGrade.toLowerCase().includes(filterValue) || salary.basicPay.toString().toLowerCase().includes(filterValue)))
+      );
+    } else {
+      return this.salaries;
+    }
+  }
+  displaySalaryFn(salary?: Salary): string | undefined {
+    return salary ? salary.payGrade + ' (Basic pay: R' + salary.basicPay + ')' : undefined;
+  }
+
+  private filterDepartments(value: string | Department) {
+    let filterValue = '';
+    if (value) {
+      filterValue = typeof value === 'string' ? value.toLowerCase() : value.name.toLowerCase();
+      return this.departments.pipe(
+        map(departments => departments.filter(department => department.name.toLowerCase().includes(filterValue)))
+      );
+    } else {
+      return this.departments;
+    }
+  }
+  displayDepartmentFn(department?: Department): string | undefined {
+    return department ? department.name : undefined;
+  }
+
+  private filterPositions(value: string | Position) {
+    let filterValue = '';
+    if (value) {
+      filterValue = typeof value === 'string' ? value.toLowerCase() : value.name.toLowerCase();
+      return this.positions.pipe(
+        map(positions => positions.filter(position => position.name.toLowerCase().includes(filterValue)))
+      );
+    } else {
+      return this.positions;
+    }
+  }
+  displayPositionFn(position?: Position): string | undefined {
+    return position ? position.name : undefined;
+  }
+
+  private filterCountries(value: string | Country) {
+    let filterValue = '';
+    if (value) {
+      filterValue = typeof value === 'string' ? value.toLowerCase() : value.name.toLowerCase();
+      return this.countries.pipe(
+        map(countries => countries.filter(country => country.name.toLowerCase().includes(filterValue)))
+      );
+    } else {
+      return this.countries;
+    }
+  }
+  displayCountryFn(country?: Country): string | undefined {
+    return country ? country.name : undefined;
+  }
+
+  get thesalary() {
+    return this.rForm.get('payGrade');
+  }
+  get thedepartment() {
+    return this.rForm.get('department');
+  }
+  get theposition() {
+    return this.rForm.get('position');
+  }
+  get thecountry() {
+    return this.rForm.get('country');
+  }
+  //</Dropdown_Stuff>
 }
+

@@ -1,4 +1,4 @@
-import { Component, OnInit, Injector, ViewChild } from '@angular/core';
+import { Component, OnInit, Injector, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
 import { Department } from './department';
 import { CustomValidators } from '../../services/custom_validators';
@@ -54,7 +54,7 @@ export class DepartmentComponent implements OnInit {
     hod: ''
   };
 
-  @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
+  @ViewChildren(MatAutocompleteTrigger) triggerCollection: QueryList<MatAutocompleteTrigger>;
 
   subscription: Subscription;
 
@@ -286,12 +286,23 @@ export class DepartmentComponent implements OnInit {
       this.subscription.unsubscribe();
     }
 
-    this.subscription = this.trigger.panelClosingActions
+    this.subscription = this.triggerCollection.toArray()[0].panelClosingActions
       .subscribe(e => {
         if (!e || !e.source) {
-          console.log(this.trigger)
-          console.log(e)
+          //console.log(this.triggerCollection.toArray()[0])
+          //console.log(e)
           this.rForm.controls.costcentre.setValue(null);
+        }
+      },
+      err => this._subscribeToClosingActions(),
+      () => this._subscribeToClosingActions());
+
+      this.subscription = this.triggerCollection.toArray()[1].panelClosingActions
+      .subscribe(e => {
+        if (!e || !e.source) {
+          //console.log(this.triggerCollection.toArray()[1])
+          //console.log(e)
+          this.rForm.controls.hod.setValue(null);
         }
       },
       err => this._subscribeToClosingActions(),

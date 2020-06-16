@@ -54,39 +54,63 @@
                   </div>
                   <div class="form-group col-md-4">
                      <label>Pay grade</label>
-                     <select class="form-control" formControlName="payGrade" placeholder="Pay grade">
+                     <mat-form-field>
+                        <input type="text" placeholder="Choose Pay grade" matInput formControlName="payGrade" [matAutocomplete]="payGradeAuto">
+                        <mat-autocomplete #payGradeAuto="matAutocomplete" [displayWith]="displaySalaryFn">
+                           <mat-option *ngFor="let payGrade of filteredSalaries | async" [value]="payGrade">
+                              {{payGrade.payGrade}} (Basic pay: R{{payGrade.basicPay}})
+                           </mat-option>
+                        </mat-autocomplete>
+                     </mat-form-field>
+                     <!--<select class="form-control" formControlName="payGrade" placeholder="Pay grade">
                            <option value=null disabled selected hidden>Choose Pay grade</option>
                            <option [ngValue]="s.id" *ngFor="let s of salaries">  
                               {{s.payGrade}} (Basic pay: R{{s.basicPay}})
                            </option>
-                     </select>
+                     </select>-->
                      <span class="text-danger" *ngIf="!rForm.controls['payGrade'].valid && rForm.controls['payGrade'].touched">{{ formErrors.payGrade }}</span>
                   </div>
                   <div class="form-group col-md-4">
                      <label>Basic pay</label>
-                     <input type="text" class="form-control" formControlName="basicPay" placeholder="Overrides pay grade">
+                     <input type="text" class="form-control" formControlName="basicPay" placeholder="Overrides Pay grade amount">
                      <span class="text-danger" *ngIf="!rForm.controls['basicPay'].valid && rForm.controls['basicPay'].touched">{{ formErrors.basicPay }}</span>
                   </div>
                </div>
                <div class="form-row">
                   <div class="form-group col-md-3">
                      <label>Department</label>
-                     <select class="form-control" formControlName="department" placeholder="Department">
+                     <mat-form-field>
+                        <input type="text" placeholder="Choose Department" matInput formControlName="department" [matAutocomplete]="departmentAuto">
+                        <mat-autocomplete #departmentAuto="matAutocomplete" [displayWith]="displayDepartmentFn">
+                          <mat-option *ngFor="let department of filteredDepartments | async" [value]="department">
+                           {{department.name}}
+                          </mat-option>
+                        </mat-autocomplete>
+                     </mat-form-field>
+                     <!--<select class="form-control" formControlName="department" placeholder="Department">
                            <option value=null disabled selected hidden>Choose department</option>
                            <option [ngValue]="d.id" *ngFor="let d of departments">  
                               {{d.name}}
                            </option>
-                     </select>
+                     </select>-->
                      <span class="text-danger" *ngIf="!rForm.controls['department'].valid && rForm.controls['department'].touched">{{ formErrors.department }}</span>
                   </div>
                   <div class="form-group col-md-3">
                      <label>Position</label>
-                     <select class="form-control" formControlName="position" placeholder="Position">
+                     <mat-form-field>
+                        <input type="text" placeholder="Choose Position" matInput formControlName="position" [matAutocomplete]="positionAuto">
+                        <mat-autocomplete #positionAuto="matAutocomplete" [displayWith]="displayPositionFn">
+                          <mat-option *ngFor="let position of filteredPositions | async" [value]="position">
+                           {{position.name}}
+                          </mat-option>
+                        </mat-autocomplete>
+                     </mat-form-field>
+                     <!--<select class="form-control" formControlName="position" placeholder="Position">
                         <option value=null disabled selected hidden>Choose position</option>
                         <option [ngValue]="p.id" *ngFor="let p of positions">  
                            {{p.name}}
                         </option>
-                     </select>
+                     </select>-->
                      <span class="text-danger" *ngIf="!rForm.controls['position'].valid && rForm.controls['position'].touched">{{ formErrors.position }}</span>
                   </div>
                   <div class="form-group col-md-3">
@@ -118,7 +142,15 @@
                   </div>
                   <div class="form-group col-md-6">
                      <label>Country</label>
-                     <input type="text" class="form-control" formControlName="country">
+                     <!--<input type="text" class="form-control" formControlName="country">-->
+                     <mat-form-field>
+                        <input type="text" placeholder="Choose Country" matInput formControlName="country" [matAutocomplete]="CountryAuto">
+                        <mat-autocomplete #CountryAuto="matAutocomplete" [displayWith]="displayCountryFn">
+                          <mat-option *ngFor="let country of filteredCountries | async" [value]="country">
+                           {{country.name}}
+                          </mat-option>
+                        </mat-autocomplete>
+                     </mat-form-field>
                      <span class="text-danger" *ngIf="!rForm.controls['country'].valid && rForm.controls['country'].touched">{{ formErrors.country }}</span>
                   </div>
                   <div class="form-group col-md-4">
