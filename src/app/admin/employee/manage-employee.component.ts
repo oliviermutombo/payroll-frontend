@@ -4,7 +4,6 @@ import { Location } from '@angular/common';
 import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
 import { Employee } from './employee';
 import { Salary} from '../salary/salary'; // For dropdown
-import { EmployeeService } from '../employee.service';
 import { CustomValidators } from '../../services/custom_validators';
 import { FormService } from '../../services/form';
 import { ApiService } from 'src/app/admin/api.service';
@@ -92,8 +91,7 @@ export class ManageEmployeeComponent implements OnInit {
     bankBranch: ''
   };
 
-  constructor(private employeeService: EmployeeService,
-              private apiService: ApiService,
+  constructor(private apiService: ApiService,
               private fb: FormBuilder,
               private route: ActivatedRoute,
               private location: Location,
@@ -161,7 +159,8 @@ export class ManageEmployeeComponent implements OnInit {
 
   // below is for dropdown
   getSalaries(): void {
-    this.employeeService.getAllSalaries().subscribe(
+    //this.employeeService.getAllSalaries().subscribe(
+    this.apiService.getAll(globals.SALARY_ENDPOINT).subscribe(
       (res: Salary[]) => {
         this.salaries = res;
       },

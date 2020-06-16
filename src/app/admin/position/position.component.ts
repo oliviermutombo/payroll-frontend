@@ -1,7 +1,6 @@
 import { Component, OnInit, Injector, ViewChild } from '@angular/core';
 import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
 import { Position } from './position';
-import { PositionService } from './position.service';
 import { ApiService } from 'src/app/admin/api.service';
 import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material'; //pagination
 import { NotificationService } from '../../services/notification.service';
@@ -43,7 +42,6 @@ export class PositionComponent implements OnInit {
   };
 
   constructor(private injector: Injector,
-    private positionService: PositionService,
     private apiService: ApiService,
     private fb: FormBuilder,
     public formService: FormService) {

@@ -1,10 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from './admin/data.service';
 import { UserService } from './services/user.service';
-import { CostcentreService } from './admin/costcentre/costcentre.service';
-import { DepartmentService } from './admin/department/department.service';
-import { PositionService } from './admin/position/position.service';
-import { EmployeeService } from './admin/employee.service';
+//import { PositionService } from './admin/position/position.service';
+//import { EmployeeService } from './admin/employee.service';
 
 import { Router } from '@angular/router';
 
@@ -20,10 +18,8 @@ export class AppComponent implements OnInit {
   success = '';
 
   constructor(private userService: UserService,
-              private costcentreService: CostcentreService,
-              private departmentService: DepartmentService,
-              private positionService: PositionService,
-              private employeeService: EmployeeService,
+              //private positionService: PositionService,
+              //private employeeService: EmployeeService,
               private router: Router) {
     
               //this.userService.hasRole('');

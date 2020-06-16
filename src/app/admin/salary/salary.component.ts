@@ -2,7 +2,6 @@ import { Component, OnInit, Injector, ViewChild } from '@angular/core';
 import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
 
 import { Salary } from './salary';
-import { EmployeeService } from '../employee.service';
 import { ApiService } from 'src/app/admin/api.service';
 import { NotificationService } from '../../services/notification.service'; // new
 import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material'; //pagination

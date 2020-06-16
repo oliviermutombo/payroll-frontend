@@ -13,7 +13,7 @@ import { environment } from './../../environments/environment';
 @Injectable({
   providedIn: 'root'
 })
-export class EmployeeService {
+export class EmployeeService {/*
 
   baseUrl = environment.baseUrl;
   salaryUrl = this.baseUrl + '/salaries';
@@ -27,16 +27,6 @@ export class EmployeeService {
 
   constructor(private http: HttpClient) { }
 
-  /*private handleError(error: HttpErrorResponse) {
-    console.log(error);
-    if (error.status == 404) {
-      return throwError('Not found!');
-    }
-    else {
-      //alert('FOR DEBUGGING PURPOSE ONLY\n' + JSON.stringify(error));
-      return throwError('Error! something went wrong.\n FOR DEBUGGING PURPOSE ONLY\n' + JSON.stringify(error));
-    }
-  }*/
   // <EMPLOYEE>
 
   getAll(): Observable<Employee[]> {
@@ -44,8 +34,7 @@ export class EmployeeService {
       map((res) => {
         this.employees = res;
         return this.employees;
-    })/*,
-    catchError(this.handleError)*/);
+    }));
   }
 
   getEmployee(id): Observable<Employee> {
@@ -53,8 +42,7 @@ export class EmployeeService {
       .pipe(map((res) => {
         this.employee = res;
         return this.employee;
-      })/*,
-      catchError(this.handleError)*/);
+      }));
   }
 
   store(employee: Employee): Observable<boolean> {
@@ -66,8 +54,7 @@ export class EmployeeService {
         } else {
           return false;
         }
-      })/*,
-      catchError(this.handleError)*/);
+      }));
   }
 
   update(employee: Employee): Observable<boolean> {
@@ -80,22 +67,8 @@ export class EmployeeService {
         } else {
           return false;
         }
-      })/*,
-      catchError(this.handleError)*/);
-  }
-
-  /*
-  NO LONGER USED
-  updatePartial(employee: Employee): Observable<boolean> {
-    return this.http.put<Employee>(`${this.employeePartialUrl}/${employee.id}`, employee)
-      .pipe(map((res) => {
-        if (res) {
-          return true;
-        } else {
-          return false;
-        }
       }));
-  }*/
+  }
 
   delete(id: number): Observable<boolean> {
     return this.http.delete(`${this.employeeUrl}/${id}`)
@@ -108,8 +81,7 @@ export class EmployeeService {
         } else {
           return false;
         }
-      })/*,
-      catchError(this.handleError)*/);
+      }));
   }
 
   // <SALARY>
@@ -119,8 +91,7 @@ export class EmployeeService {
       map((res) => {
         this.salaries = res;
         return this.salaries;
-    })/*,
-    catchError(this.handleError)*/);
+    }));
   }
 
   getSalary(id): Observable<Salary> {
@@ -128,8 +99,7 @@ export class EmployeeService {
       .pipe(map((res) => {
         this.salary = res;
         return this.salary;
-      })/*,
-      catchError(this.handleError)*/);
+      }));
   }
 
   storeSalary(salary: Salary): Observable<Salary[]> {
@@ -140,8 +110,7 @@ export class EmployeeService {
           this.salaries.push(res);
         }
         return this.salaries;
-      })/*,
-      catchError(this.handleError)*/);
+      }));
   }
 
   updateSalary(salary: Salary): Observable<Salary[]> {
@@ -156,8 +125,7 @@ export class EmployeeService {
           theSalary.basicPay = +salary.basicPay;
         }
         return this.salaries;
-      })/*,
-      catchError(this.handleError)*/);
+      }));
   }
 
   deleteSalary(id: number): Observable<Salary[]> {
@@ -168,7 +136,6 @@ export class EmployeeService {
           return salary.id !== +id;
         });
         return this.salaries = filteredSalaries;
-      })/*,
-      catchError(this.handleError)*/);
+      }));
   }
-}
+*/}

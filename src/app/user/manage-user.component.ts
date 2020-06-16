@@ -3,14 +3,14 @@ import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
 import { Employee } from '../admin/employee/employee';
-import { EmployeeService } from '../admin/employee.service';
+import { ApiService } from 'src/app/admin/api.service';
 import { UserService } from '../services/user.service'
 import { CustomValidators } from '../services/custom_validators';
 import { FormService } from '../services/form';
-import { DataService } from '../admin/data.service';
 import { NotificationService } from '../services/notification.service';
 import { Role } from '../user/role';
 import { UtilitiesService } from '../services/utilities.service';
+import * as globals from 'src/app/globals';
 
 @Component({
   templateUrl: './manage-user.component.html'
@@ -94,9 +94,8 @@ checkEmployee($isChecked): void {
 }
 
   constructor(private injector: Injector,
-              private employeeService: EmployeeService,
+              private apiService: ApiService,
               private userService: UserService,
-              private dataService: DataService,
               private fb: FormBuilder,
               private route: ActivatedRoute,
               private location: Location,
@@ -160,7 +159,8 @@ checkEmployee($isChecked): void {
   }
 
   getEmployee(id): void {
-    this.employeeService.getEmployee(id).subscribe(
+    //this.employeeService.getEmployee(id).subscribe(
+    this.apiService.getById(globals.EMPLOYEE_ENDPOINT, id).subscribe(
       (res: Employee) => {
         this.employee = res;
       }
@@ -216,7 +216,8 @@ checkEmployee($isChecked): void {
   }
 
   populateForm(id){
-    this.employeeService.getEmployee(id).subscribe(
+    //this.employeeService.getEmployee(id).subscribe(
+    this.apiService.getById(globals.EMPLOYEE_ENDPOINT, id).subscribe(
       (res: any) => {
         //alert('populateForm(id)\n' + JSON.stringify(res));
         this.employee = res;
@@ -234,7 +235,8 @@ checkEmployee($isChecked): void {
   }
 
   populateFormToEdit(id){
-    this.userService.getUser(id).subscribe(
+    //this.userService.getUser(id).subscribe(
+    this.apiService.getById(globals.USER_ENDPOINT, id).subscribe(
       (res: any) => {
         this.user = res.result;
         this.rForm.setValue({
@@ -266,6 +268,16 @@ checkEmployee($isChecked): void {
           this.notification.showDeleted();
         }
       );
+      /*this.apiService.deleteOnly(globals.USER_ENDPOINT, id)
+      .subscribe(
+        (res: boolean) => {
+          if (res) {
+            this.notification.showDeleted();
+          } else {
+            this.notifier.showGenericError();
+           }
+        }
+      );*/
     this.user = null;
     this.rForm.reset();
   }

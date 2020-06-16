@@ -1,7 +1,6 @@
 import { Component, OnInit, Injector, ViewChild } from '@angular/core';
 import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
 import { Department } from './department';
-import { DepartmentService } from './department.service';
 import { CustomValidators } from '../../services/custom_validators';
 import { FormService } from '../../services/form';
 import { DataService } from '../data.service';
@@ -60,7 +59,6 @@ export class DepartmentComponent implements OnInit {
   subscription: Subscription;
 
   constructor(private injector: Injector,
-              private departmentService: DepartmentService,
               private dataService: DataService,
               private apiService: ApiService,
               private fb: FormBuilder,
@@ -101,7 +99,8 @@ export class DepartmentComponent implements OnInit {
     }
   }
   getEmployees(): void {
-    this.allEmployees = this.dataService.getAllEmployees();
+    //this.allEmployees = this.dataService.getAllEmployees();
+    this.allEmployees = this.apiService.getAll(globals.EMPLOYEE_ENDPOINT);
   }
 
   showHideList($isChecked): void {
@@ -125,7 +124,8 @@ export class DepartmentComponent implements OnInit {
   }
   
   getCostcentres(): void {
-    this.allCostcentres = this.dataService.getAllCostcentres();
+    //this.allCostcentres = this.dataService.getAllCostcentres();
+    this.allCostcentres = this.apiService.getAll(globals.COSTCENTRE_ENDPOINT);
   }
 
   getDepartments(): void {

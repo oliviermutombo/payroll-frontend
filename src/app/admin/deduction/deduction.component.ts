@@ -5,7 +5,8 @@ import { DeductionService } from './deduction.service';
 import { NotificationService } from '../../services/notification.service';
 import { CustomValidators } from '../../services/custom_validators';
 import { FormService } from '../../services/form';
-import { EmployeeService } from '../employee.service'
+import { ApiService } from 'src/app/admin/api.service';
+import * as globals from 'src/app/globals';
 
 @Component({
   selector: 'app-deduction',
@@ -49,7 +50,7 @@ export class DeductionComponent implements OnInit {
 
   constructor(private injector: Injector,
     private deductionService: DeductionService,
-    private employeeService: EmployeeService,
+    private apiService: ApiService,
     private fb: FormBuilder,
     public formService: FormService) {
 
@@ -137,7 +138,8 @@ export class DeductionComponent implements OnInit {
   }
   // for dropdown
   getEmployees(): void {
-    this.employeeService.getAll().subscribe(
+    //this.employeeService.getAll().subscribe(
+    this.apiService.getAll(globals.EMPLOYEE_ENDPOINT).subscribe(
       (res: any) => {
         this.employees = res;
       }

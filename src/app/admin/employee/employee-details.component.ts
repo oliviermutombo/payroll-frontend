@@ -2,8 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { Employee } from './employee';
-import { Salary } from '../salary/salary'
-import { EmployeeService } from '../employee.service';
+import { Salary } from '../salary/salary';
 import { ApiService } from 'src/app/admin/api.service';
 import { UtilitiesService } from '../../services/utilities.service';
 import * as globals from 'src/app/globals';
@@ -34,7 +33,6 @@ export class EmployeeDetailsComponent implements OnInit{
 
     constructor(
       private route: ActivatedRoute,
-      private employeeService: EmployeeService,
       private apiService: ApiService,
       private utilitiesService: UtilitiesService,
       private location: Location
@@ -63,7 +61,8 @@ export class EmployeeDetailsComponent implements OnInit{
 
     getSalary(id): Salary {
       
-      this.employeeService.getSalary(id).subscribe(
+      //this.employeeService.getSalary(id).subscribe(
+      this.apiService.getById(globals.SALARY_ENDPOINT, id).subscribe(
         (res: Salary) => {
           this.salary = res;
         }/*,

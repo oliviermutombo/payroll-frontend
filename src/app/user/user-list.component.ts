@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Employee } from '../admin/employee/employee';
-import { EmployeeService } from '../admin/employee.service';
 import { ApiService } from 'src/app/admin/api.service';
 import { UtilitiesService } from '../services/utilities.service';
 import { MatAutocompleteTrigger } from '@angular/material';
