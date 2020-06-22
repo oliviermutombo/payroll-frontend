@@ -21,18 +21,26 @@ import { BehaviorSubject } from 'rxjs';
         if (arr==undefined) arr = [];
         arr.push(x);
         return arr;
-      }
+    }
+
+    allPropertiesNull(obj) {
+        for (var key in obj) {
+            if (obj[key] !== null && obj[key] != "")
+                return false;
+        }
+        return true;
+    }
     
-      getUpdateObject(orig, current) {//Move to a util class
+    getUpdateObject(orig, current) {//Move to a util class
         var changes = {};
-    
+
         for (var prop in orig) {
             if (prop.indexOf("$") != 0 && orig[prop] !== current[prop]) {
                 changes[prop] = current[prop];
             }
         }
         return changes ;
-      };
+    };
     
     /*private messageSource = new BehaviorSubject('default message');
     currentMessage = this.messageSource.asObservable();

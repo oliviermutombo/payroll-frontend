@@ -1,50 +1,62 @@
 export class Employee {
   id: any;
+  title: any;//
+  gender: any;//
+  active: any;//
+  employeeType: any;//
   empCode: any;
   firstName: any;
-  middleName: any;//NEWLY ADDED, ADD LOGIC
+  middleName: any;
   lastName: any;
   dob: any;
+  maritalStatus: any;//
   passportNumber: any;
+  nationality: any;//
   idNumber: any;
   payGrade: any;
   basicPay: any;
+  hourlyRate: any;//
   department: any;
   position: any;
   emailAddress: any;
   taxNumber: any;
   hireDate: any;
-  address1: any;
-  address2: any;
-  postalCode: any;
-  country: any;
-  phoneNumber: any;
-  bankName: any;
-  bankAccount: any;
-  bankBranch: any;
+  leaveDate: any;//
+  address: any;
+  phone: any;//
+  extension: any;//
+  personalEmail: any;//
+  manager: any;//
+  bankingDetails: any;//
     constructor(
-        empCode: string,
-        firstName: string,
-        middleName: string,
-        lastName: string,
-        userid: string,
-        dob: string,
-        idNumber: string,
-        passportNumber: string,
-        payGrade: number,
-        basicPay: number,
-        department: number,
-        position: number,
-        emailAddress: string,
-        taxNumber: string,
-        hireDate: string,
-        address1: string,
-        address2: string,
-        postalCode: string,
-        country: string,
-        phoneNumber: string,
-        bankName: string,
-        bankAccount: string,
-        bankBranch: string,
+        title?: number,///
+        gender?: number,///
+        active?: any,///
+        employeeType?: number,///
+        empCode?: string,
+        firstName?: string,
+        middleName?: string,
+        lastName?: string,
+        userid?: string,
+        dob?: string,
+        maritalStatus?: any,////
+        idNumber?: string,
+        passportNumber?: string,
+        nationality?: number,///
+        payGrade?: number,
+        basicPay?: number,
+        hourlyRate?: number,///
+        department?: number,
+        position?: number,
+        emailAddress?: string,
+        taxNumber?: string,
+        hireDate?: string,
+        leaveDate?: string,///
+        address?: string,
+        phone?: number,///
+        extension?: string,///
+        bankingDetails?: number,///
+        personalEmail?: string,///
+        manager?: number,///
         id?: number) {}
   }

@@ -34,7 +34,7 @@ export class ManageEmployeeComponent implements OnInit {
 
   master = 'Message from parent'; // Test
 
-  title = 'payroll-system';
+  //title = 'payroll-system';
   employees: Employee[];
 
   //<Dropdown_Stuff>
@@ -45,15 +45,21 @@ export class ManageEmployeeComponent implements OnInit {
   positions: Observable<Position[]>;
   filteredPositions: Observable<Position[]>;
   countries: Observable<Country[]>;
-  filteredCountries: Observable<Country[]> = new Observable<Country[]>();
+  filteredCountries: Observable<Country[]>;
+  allEmployees: Observable<Employee[]>;
+  filteredEmployees: Observable<Employee[]>;
+
+  employeeTypes: [];
+  genders: [];
+  titles: [];
 
   //</Dropdown_Stuff>
 
   error = '';
   success = '';
 
-  // Create de default constructor if possible.
-  employee = new Employee('', '', '', '', '', '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', '');
+  //employee = new Employee('', '', '', '', '', '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', '');
+  employee = new Employee();
 
   rForm: FormGroup;
   showList = false;
@@ -76,10 +82,21 @@ export class ManageEmployeeComponent implements OnInit {
   address2 = '';
   postalCode = '';
   country = '';
-  phoneNumber = '';
-  bankName = '';
-  bankAccount = '';
-  bankBranch = '';
+  title = 0;
+  gender = 0;
+  active = 0;
+  employeeType = 0;
+  maritalStatus = 0;
+  nationality = 0;
+  hourlyRate = 0;
+  leaveDate = 0;
+  phone = 0;
+  extension = '';
+  personalEmail = '';
+  manager = 0;
+  bankingDetails = 0;
+
+
 
   public formErrors = {
     firstName: '',
@@ -99,10 +116,23 @@ export class ManageEmployeeComponent implements OnInit {
     address2: '',
     postalCode: '',
     country: '',
-    phoneNumber: '',
+    title: '',
+    gender: '',
+    active: '',
+    employeeType: '',
+    maritalStatus: '',
+    nationality: '',
+    hourlyRate: '',
+    leaveDate: '',
+    cellNumber: '',
+    homeNumber: '',
+    extension: '',
+    personalEmail: '',
+    manager: '',
     bankName: '',
     bankAccount: '',
-    bankBranch: ''
+    bankBranch: '',
+    bankSwift: '',
   };
   
   @ViewChildren(MatAutocompleteTrigger) triggerCollection:  QueryList<MatAutocompleteTrigger>;
@@ -133,10 +163,23 @@ export class ManageEmployeeComponent implements OnInit {
       address2: [null, [Validators.minLength(1), Validators.maxLength(50)]],
       postalCode: [null, [Validators.minLength(1), Validators.maxLength(50)]],
       country: [null, [Validators.minLength(1), Validators.maxLength(50)]],
-      phoneNumber: [null, [Validators.minLength(1), Validators.maxLength(50)]],
+      cellNumber: [null, [Validators.minLength(1), Validators.maxLength(15)]],
+      homeNumber: [null, [Validators.minLength(1), Validators.maxLength(15)]],
       bankName: [null, [Validators.minLength(1), Validators.maxLength(50)]],
       bankAccount: [null, [Validators.minLength(1), Validators.maxLength(50)]],
       bankBranch: [null, [Validators.minLength(1), Validators.maxLength(50)]],
+      bankSwift: [null, [Validators.minLength(1), Validators.maxLength(20)]],
+      title: [null, [Validators.minLength(1), Validators.maxLength(10)]],
+      gender: [null, [Validators.minLength(1), Validators.maxLength(10)]],
+      active: [null, [Validators.minLength(1), Validators.maxLength(10)]],
+      employeeType: [null, [Validators.minLength(1), Validators.maxLength(20)]],
+      maritalStatus: [null, [Validators.minLength(1), Validators.maxLength(10)]],
+      nationality: [null, [Validators.minLength(1), Validators.maxLength(50)]],
+      hourlyRate: [null, [Validators.minLength(1), Validators.maxLength(50)]],
+      leaveDate: [null, [Validators.minLength(1), Validators.maxLength(50)]],
+      extension: [null, [Validators.minLength(1), Validators.maxLength(15)]],
+      personalEmail: [null, [Validators.minLength(1), Validators.maxLength(50)]],
+      manager: [null, [Validators.minLength(1), Validators.maxLength(50)]],
     });
 
     // on each value change we call the validateForm function
@@ -173,6 +216,16 @@ export class ManageEmployeeComponent implements OnInit {
       startWith(''),
       switchMap(value => this.filterCountries(value))
     );
+    this.getEmployees();
+    this.filteredEmployees = this.theManager.valueChanges
+    .pipe(
+      startWith(''),
+      switchMap(value => this.filterEmployees(value))
+    );
+
+    this.getEmployeeTypes();
+    this.getGenders();
+    this.getTitles();
     //</Dropdown_Stuff>
     this.getEmployeeToEdit();
   }
@@ -185,6 +238,7 @@ export class ManageEmployeeComponent implements OnInit {
     }
   }
 
+  /*FIND WHERE THIS IMPLEMENTATION IS USED! IF NOWHERE, REMOVE
   getEmployees(): void {
     //this.employeeService.getAll().subscribe(
     this.apiService.getAll(globals.EMPLOYEE_ENDPOINT).subscribe(
@@ -195,7 +249,7 @@ export class ManageEmployeeComponent implements OnInit {
         this.error = err;
       }
     );
-  }
+  }*/
 
   goBack(): void {
     this.location.back();
@@ -231,29 +285,60 @@ export class ManageEmployeeComponent implements OnInit {
     this.employee.position = this.utilitiesService.generateQuickIdObject(f.position);//f.position;
     this.employee.taxNumber = f.taxNumber;
     this.employee.hireDate = f.hireDate;
-    this.employee.address1 = f.address1;
-    this.employee.address2 = f.address2;
-    this.employee.postalCode = f.postalCode;
-    this.employee.country = f.country;
-    this.employee.phoneNumber = f.phoneNumber;
-    this.employee.bankName = f.bankName;
-    this.employee.bankAccount = f.bankAccount;
-    this.employee.bankBranch = f.bankBranch;
 
-    //this.employeeService.store(this.employee)
+    this.employee.active = true;
+    this.employee.title = (f.title) ? this.utilitiesService.generateQuickIdObject(f.title) : null;//id?
+    this.employee.gender = (f.gender) ? this.utilitiesService.generateQuickIdObject(f.gender) : null;//.id?
+    this.employee.employeeType = (f.employeeType) ? this.utilitiesService.generateQuickIdObject(f.employeeType) : null;//.id?
+    this.employee.maritalStatus = (f.maritalStatus) ? f.maritalStatus : null;//.id?
+    this.employee.nationality = (f.nationality) ? this.utilitiesService.generateQuickIdObject(f.nationality) : null;
+    this.employee.hourlyRate = f.hourlyRate;
+    this.employee.leaveDate = f.leaveDate;
+    this.employee.extension = f.extension;
+    this.employee.personalEmail = f.personalEmail;
+    this.employee.manager = (f.manager) ? this.utilitiesService.generateQuickIdObject(f.manager) : null;////////////
+
+    let phone = {};
+        phone['home'] = f.homeNumber;
+        phone['cell'] = f.cellNumber;
+    if (!this.utilitiesService.allPropertiesNull(phone)) {
+      this.employee.phone = phone;
+    }
+
+    let bankingDetails = {};
+        bankingDetails['bank_name'] = f.bankName;
+        bankingDetails['bank_account'] = f.bankAccount;
+        bankingDetails['branch_code'] = f.bankBranch;
+        bankingDetails['swift_code'] = f.bankSwift;
+    if (!this.utilitiesService.allPropertiesNull(bankingDetails)) {
+      this.employee.bankingDetails = bankingDetails;
+    }
+        
+    let address = {};
+        address['line1'] = f.address1;
+        address['line2'] = f.address2;
+        address['postalCode'] = f.postalCode;
+        address['country'] = this.utilitiesService.generateQuickIdObject(f.country);
+    if (!this.utilitiesService.allPropertiesNull(address))
+    {
+      if ((address['line1']) && (address['country']))
+        this.employee.address = address;
+      else {
+        alert('If the address is supplied, please make sure it is valid or remove it entirely.');//KEEP THIS ALERT - IT IS INTENDED
+        return;
+      }
+    } // else address is null, it will be discarded.
+    
+    //alert('Adding\n' + JSON.stringify(this.employee));
+    console.log(this.employee);
     this.apiService.saveOnly(globals.EMPLOYEE_ENDPOINT, this.employee)
       .subscribe(
         (res: boolean) => {
-          // Update the list of cars
-          // this.employees = res;
-
-          // Inform the user
           if (res) {
             this.success = 'Created successfully';
           } else {
             this.error = 'An error occured';
           }
-
           // Reset the form
           this.rForm.reset();
         },
@@ -281,14 +366,14 @@ export class ManageEmployeeComponent implements OnInit {
           position: (this.employee.position != null) ? this.employee.position : null,
           taxNumber: this.employee.taxNumber,
           hireDate: this.employee.hireDate,
-          address1: this.employee.address1,
-          address2: this.employee.address2,
-          postalCode: this.employee.postalCode,
-          country: (this.employee.country != null) ? this.employee.country : null,//this.employee.country,
-          phoneNumber: this.employee.phoneNumber,
-          bankName: (this.employee.bankName != null) ? this.employee.bankName : null,//this.employee.bankName,
-          bankAccount: (this.employee.bankAccount != null) ? this.employee.bankAccount : null,//this.employee.bankAccount,
-          bankBranch: (this.employee.bankBranch != null) ? this.employee.bankBranch : null,//this.employee.bankBranch
+          address1: (this.employee.address != null) ? this.employee.address.line1 : null,
+          address2: (this.employee.address != null) ? this.employee.address.line2 : null,
+          postalCode: (this.employee.address != null) ? this.employee.address.postalCode : null,
+          country: (this.employee.address != null) ? this.employee.address.country : null,
+          //phoneNumber: this.employee.phoneNumber,
+          //bankName: (this.employee.bankName != null) ? this.employee.bankName : null,//this.employee.bankName,
+          //bankAccount: (this.employee.bankAccount != null) ? this.employee.bankAccount : null,//this.employee.bankAccount,
+          //bankBranch: (this.employee.bankBranch != null) ? this.employee.bankBranch : null,//this.employee.bankBranch
         });
       },
       (err) => {
@@ -313,20 +398,33 @@ export class ManageEmployeeComponent implements OnInit {
     this.employee.position = this.utilitiesService.generateQuickIdObject(f.position);//check behaviour when null
     this.employee.taxNumber = f.taxNumber;
     this.employee.hireDate = f.hireDate;
-    this.employee.address1 = f.address1;
-    this.employee.address2 = f.address2;
-    this.employee.postalCode = f.postalCode;
-    this.employee.country = f.country;
-    this.employee.phoneNumber = f.phoneNumber;
-    this.employee.bankName = f.bankName;
-    this.employee.bankAccount = f.bankAccount;
-    this.employee.bankBranch = f.bankBranch;
+    //this.employee.phoneNumber = f.phoneNumber;
+    //this.employee.bankName = f.bankName;
+    //this.employee.bankAccount = f.bankAccount;
+    //this.employee.bankBranch = f.bankBranch;
 
-    //this.employeeService.update(this.employee)
+    let address = {};
+        address['line1'] = f.address1;
+        address['line2'] = f.address2;
+        address['postalCode'] = f.postalCode;
+        address['country'] = this.utilitiesService.generateQuickIdObject(f.country);
+
+    if (!this.utilitiesService.allPropertiesNull(address))
+    {
+      if ((address['line1']) && (address['country']))
+        this.employee.address = address;
+      else {
+        alert('If the address is supplied, please make sure it is valid or remove it entirely.');//KEEP THIS ALERT - IT IS INTENDED
+        return;
+      }
+    } else {
+      this.employee.address = null;//Do not discared but set it to null
+      //this.employee.address = address;// Do not do this - it will add a null record and won't even ovewrite existing.
+    }
+
     this.apiService.updateOnly(globals.EMPLOYEE_ENDPOINT, this.employee)
       .subscribe(
         (res) => {
-          // this.employees = res;
           this.success = 'Updated successfully';
         },
         (err) => this.error = err
@@ -366,6 +464,30 @@ export class ManageEmployeeComponent implements OnInit {
   getCountries(): void {
     this.countries = this.apiService.getAll(globals.COUNTRY_ENDPOINT);
   }
+  getEmployees(): void {
+    this.allEmployees = this.apiService.getAll(globals.EMPLOYEE_ENDPOINT);
+  }
+  getEmployeeTypes(): void {
+    this.apiService.getAll(globals.EMPLOYEE_TYPE_ENDPOINT).subscribe(
+      (res: []) => {
+        this.employeeTypes = res;
+      }
+    );
+  }
+  getGenders(): void {
+    this.apiService.getAll(globals.GENDER_ENDPOINT).subscribe(
+      (res: []) => {
+        this.genders = res;
+      }
+    );
+  }
+  getTitles(): void {
+    this.apiService.getAll(globals.TITLES_ENDPOINT).subscribe(
+      (res: []) => {
+        this.titles = res;
+      }
+    );
+  }
   ngAfterViewInit() {
     this._subscribeToClosingActions();
   }
@@ -386,7 +508,7 @@ export class ManageEmployeeComponent implements OnInit {
         if (!e || !e.source) {
           console.log(this.triggerCollection)
           console.log(e)
-          this.rForm.controls.payGrade.setValue(null);
+          this.rForm.controls.nationality.setValue(null);
         }
       },
       err => this._subscribeToClosingActions(),
@@ -397,7 +519,7 @@ export class ManageEmployeeComponent implements OnInit {
       if (!e || !e.source) {
         console.log(this.triggerCollection)
         console.log(e)
-        this.rForm.controls.department.setValue(null);
+        this.rForm.controls.country.setValue(null);
       }
     },
     err => this._subscribeToClosingActions(),
@@ -408,7 +530,7 @@ export class ManageEmployeeComponent implements OnInit {
       if (!e || !e.source) {
         console.log(this.triggerCollection)
         console.log(e)
-        this.rForm.controls.position.setValue(null);
+        this.rForm.controls.department.setValue(null);
       }
     },
     err => this._subscribeToClosingActions(),
@@ -419,7 +541,29 @@ export class ManageEmployeeComponent implements OnInit {
       if (!e || !e.source) {
         console.log(this.triggerCollection)
         console.log(e)
-        this.rForm.controls.country.setValue(null);
+        this.rForm.controls.position.setValue(null);
+      }
+    },
+    err => this._subscribeToClosingActions(),
+    () => this._subscribeToClosingActions());
+    
+    this.subscription = this.triggerCollection.toArray()[4].panelClosingActions
+    .subscribe(e => {
+      if (!e || !e.source) {
+        console.log(this.triggerCollection)
+        console.log(e)
+        this.rForm.controls.manager.setValue(null);
+      }
+    },
+    err => this._subscribeToClosingActions(),
+    () => this._subscribeToClosingActions());
+
+    this.subscription = this.triggerCollection.toArray()[5].panelClosingActions
+    .subscribe(e => {
+      if (!e || !e.source) {
+        console.log(this.triggerCollection)
+        console.log(e)
+        this.rForm.controls.payGrade.setValue(null);
       }
     },
     err => this._subscribeToClosingActions(),
@@ -486,6 +630,21 @@ export class ManageEmployeeComponent implements OnInit {
     return country ? country.name : undefined;
   }
 
+  private filterEmployees(value: string | Employee) {
+    let filterValue = '';
+    if (value) {
+      filterValue = typeof value === 'string' ? value.toLowerCase() : value.firstName.toLowerCase();
+      return this.allEmployees.pipe(
+        map(employees => employees.filter(employee => employee.firstName.toLowerCase().includes(filterValue) || employee.lastName.toLowerCase().includes(filterValue)))
+      );
+    } else {
+      return this.allEmployees;
+    }
+  }
+  displayManagerFn(employee?: Employee): string | undefined {
+    return employee ? employee.firstName + ' ' + employee.lastName : undefined;
+  }
+
   get thesalary() {
     return this.rForm.get('payGrade');
   }
@@ -497,6 +656,9 @@ export class ManageEmployeeComponent implements OnInit {
   }
   get thecountry() {
     return this.rForm.get('country');
+  }
+  get theManager() {
+    return this.rForm.get('manager');
   }
   //</Dropdown_Stuff>
 }
