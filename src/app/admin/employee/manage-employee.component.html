@@ -12,15 +12,16 @@
          </div>
          <div class="card-body">
             <form [formGroup]="rForm" (ngSubmit)="!updateMode ? addEmployee(rForm.value) : updateEmployee(rForm.value)">
-               <div class="form-row" style="text-align:right;">
+               <!--<div class="form-row" style="text-align:right;">
                   <div class="form-group col-md-12">
                      <label>Status</label>
                      <select class="form-control" formControlName="active">
-                        <option value=null disabled selected hidden>Status</option>
-                        <option>placeholder</option>
+                        <option value=true>Active</option>
+                        <option value=false>Inactive</option>
                      </select>
                   </div>
-               </div>
+               </div>-->
+               <div *ngIf="updateMode"><input type="checkbox" formControlName="active"><span> Active</span></div>
                <span style="text-align: center;"><h4>Personal details</h4></span>
                <div class="form-row">
                   <div class="form-group col-md-4">
@@ -41,15 +42,10 @@
                         </option>
                      </select>
                   </div>
-                  <div class="form-group col-md-4">
-                     <label>Personal Email address</label>
-                     <input type="email" class="form-control" formControlName="personalEmail" placeholder="email@example.com">
-                     <span class="text-danger" *ngIf="!rForm.controls['personalEmail'].valid && rForm.controls['personalEmail'].touched">{{ formErrors.personalEmail }}</span>
-                  </div>
                </div>
                <div class="form-row">
                   <div class="form-group col-md-4">
-                     <label>First Name</label>
+                     <label>First Name*</label>
                      <input type="text" class="form-control" formControlName="firstName" placeholder="First Name">
                      <span class="text-danger" *ngIf="!rForm.controls['firstName'].valid && rForm.controls['firstName'].touched">{{ formErrors.firstName }}</span>
                   </div>
@@ -59,14 +55,14 @@
                      <span class="text-danger" *ngIf="!rForm.controls['middleName'].valid && rForm.controls['middleName'].touched">{{ formErrors.middleName }}</span>
                   </div>
                   <div class="form-group col-md-4">
-                     <label>Surname</label>
+                     <label>Surname*</label>
                      <input type="text" class="form-control" formControlName="lastName" placeholder="Surname">
                      <span class="text-danger" *ngIf="!rForm.controls['lastName'].valid && rForm.controls['lastName'].touched">{{ formErrors.lastName }}</span>
                   </div>
                </div>
                <div class="form-row">
                   <div class="form-group col-md-4">
-                     <label>Date of birth</label>
+                     <label>Date of birth*</label>
                      <input type="date" class="form-control" formControlName="dob">
                      <span class="text-danger" *ngIf="!rForm.controls['dob'].valid && rForm.controls['dob'].touched">{{ formErrors.dob }}</span>
                   </div>
@@ -84,10 +80,6 @@
                <div class="form-row">
                   <div class="form-group col-md-4">
                      <label>Nationality</label>
-                     <!--<select class="form-control" formControlName="nationality">
-                        <option value=null disabled selected hidden>Choose Nationality</option>
-                        <option>placeholder</option>
-                     </select>-->
                      <mat-form-field>
                         <input type="text" placeholder="Choose" matInput formControlName="nationality" [matAutocomplete]="nationalityAuto">
                         <mat-autocomplete #nationalityAuto="matAutocomplete" [displayWith]="displayCountryFn">
@@ -101,11 +93,16 @@
                   <div class="form-group col-md-4"><label>Marital Status</label>
                      <select class="form-control" formControlName="maritalStatus">
                         <option value=null disabled selected hidden>Choose</option>
-                        <option value=true>Unmarried</option>
-                        <option value=false>Married</option>
+                        <option value=false>Unmarried</option>
+                        <option value=true>Married</option>
                         <option value=null>Not Specified</option>
                      </select>
                      <span class="text-danger" *ngIf="!rForm.controls['maritalStatus'].valid && rForm.controls['maritalStatus'].touched">{{ formErrors.maritalStatus }}</span>
+                  </div>
+                  <div class="form-group col-md-4">
+                     <label>Personal Email address</label>
+                     <input type="email" class="form-control" formControlName="personalEmail" placeholder="email@example.com">
+                     <span class="text-danger" *ngIf="!rForm.controls['personalEmail'].valid && rForm.controls['personalEmail'].touched">{{ formErrors.personalEmail }}</span>
                   </div>
                </div>
                <span style="text-align: center;"><h4>Contact details</h4></span>
@@ -163,7 +160,7 @@
                      </select>
                   </div>
                   <div class="form-group col-md-4">
-                     <label>Company Email address</label>
+                     <label>Company Email address*</label>
                      <input type="email" class="form-control" formControlName="emailAddress" placeholder="Used to sign-in">
                      <span class="text-danger" *ngIf="!rForm.controls['emailAddress'].valid && rForm.controls['emailAddress'].touched">{{ formErrors.emailAddress }}</span>
                   </div>
@@ -175,7 +172,7 @@
                </div>
                <div class="form-row">
                   <div class="form-group col-md-4">
-                     <label>Department</label>
+                     <label>Department*</label>
                      <mat-form-field>
                         <input type="text" placeholder="Choose" matInput formControlName="department" [matAutocomplete]="departmentAuto">
                         <mat-autocomplete #departmentAuto="matAutocomplete" [displayWith]="displayDepartmentFn">
@@ -184,16 +181,10 @@
                           </mat-option>
                         </mat-autocomplete>
                      </mat-form-field>
-                     <!--<select class="form-control" formControlName="department" placeholder="Department">
-                           <option value=null disabled selected hidden>Choose</option>
-                           <option [ngValue]="d.id" *ngFor="let d of departments">  
-                              {{d.name}}
-                           </option>
-                     </select>-->
                      <span class="text-danger" *ngIf="!rForm.controls['department'].valid && rForm.controls['department'].touched">{{ formErrors.department }}</span>
                   </div>
                   <div class="form-group col-md-4">
-                     <label>Position</label>
+                     <label>Position*</label>
                      <mat-form-field>
                         <input type="text" placeholder="Choose" matInput formControlName="position" [matAutocomplete]="positionAuto">
                         <mat-autocomplete #positionAuto="matAutocomplete" [displayWith]="displayPositionFn">
@@ -202,12 +193,6 @@
                           </mat-option>
                         </mat-autocomplete>
                      </mat-form-field>
-                     <!--<select class="form-control" formControlName="position" placeholder="Position">
-                        <option value=null disabled selected hidden>Choose</option>
-                        <option [ngValue]="p.id" *ngFor="let p of positions">  
-                           {{p.name}}
-                        </option>
-                     </select>-->
                      <span class="text-danger" *ngIf="!rForm.controls['position'].valid && rForm.controls['position'].touched">{{ formErrors.position }}</span>
                   </div>
                   <div class="form-group col-md-4">
@@ -229,7 +214,7 @@
                </div>
                <div class="form-row">
                   <div class="form-group col-md-4">
-                     <label>Pay grade</label>
+                     <label>Pay grade*</label>
                      <mat-form-field>
                         <input type="text" placeholder="Choose" matInput formControlName="payGrade" [matAutocomplete]="payGradeAuto">
                         <mat-autocomplete #payGradeAuto="matAutocomplete" [displayWith]="displaySalaryFn">
@@ -238,12 +223,6 @@
                            </mat-option>
                         </mat-autocomplete>
                      </mat-form-field>
-                     <!--<select class="form-control" formControlName="payGrade" placeholder="Pay grade">
-                           <option value=null disabled selected hidden>Choose</option>
-                           <option [ngValue]="s.id" *ngFor="let s of salaries">  
-                              {{s.payGrade}} (Basic pay: R{{s.basicPay}})
-                           </option>
-                     </select>-->
                      <span class="text-danger" *ngIf="!rForm.controls['payGrade'].valid && rForm.controls['payGrade'].touched">{{ formErrors.payGrade }}</span>
                   </div>
                   <div class="form-group col-md-4">
@@ -264,7 +243,7 @@
                      <span class="text-danger" *ngIf="!rForm.controls['taxNumber'].valid && rForm.controls['taxNumber'].touched">{{ formErrors.taxNumber }}</span>
                   </div>
                   <div class="form-group col-md-4">
-                     <label>Hire date</label>
+                     <label>Hire date*</label>
                      <input type="date" class="form-control" formControlName="hireDate">
                      <span class="text-danger" *ngIf="!rForm.controls['hireDate'].valid && rForm.controls['hireDate'].touched">{{ formErrors.hireDate }}</span>
                   </div>
@@ -288,7 +267,7 @@
                   </div>
                   <div class="form-group col-md-2">
                      <label>Branch code</label>
-                     <input type="text" class="form-control" formControlName="bankBranch" placeholder="or SWIFT">
+                     <input type="text" class="form-control" formControlName="bankBranch" placeholder="Branch code">
                      <span class="text-danger" *ngIf="!rForm.controls['bankBranch'].valid && rForm.controls['bankBranch'].touched">{{ formErrors.bankBranch }}</span>
                   </div>
                   <div class="form-group col-md-2">

@@ -155,31 +155,31 @@ export class ManageEmployeeComponent implements OnInit {
       emailAddress: [null, [Validators.required, Validators.email]], // THIS FIELD WAS FORGOTTEN. CATER FOR IT.
       payGrade: [null, [Validators.required]],
       basicPay: [null, [CustomValidators.numberOrDecimal]],
-      department: [null, [Validators.required, Validators.minLength(1), Validators.maxLength(50)]],
-      position: [null, [Validators.required, Validators.minLength(1), Validators.maxLength(50)]],
+      department: [null, [Validators.required]],
+      position: [null, [Validators.required]],
       taxNumber: [null, [Validators.minLength(1), Validators.maxLength(50)]],
       hireDate: [null, [Validators.required]],
       address1: [null, [Validators.minLength(1), Validators.maxLength(50)]],
       address2: [null, [Validators.minLength(1), Validators.maxLength(50)]],
-      postalCode: [null, [Validators.minLength(1), Validators.maxLength(50)]],
-      country: [null, [Validators.minLength(1), Validators.maxLength(50)]],
+      postalCode: [null, [Validators.minLength(1), Validators.maxLength(10)]],
+      country: [null],
       cellNumber: [null, [Validators.minLength(1), Validators.maxLength(15)]],
       homeNumber: [null, [Validators.minLength(1), Validators.maxLength(15)]],
       bankName: [null, [Validators.minLength(1), Validators.maxLength(50)]],
       bankAccount: [null, [Validators.minLength(1), Validators.maxLength(50)]],
       bankBranch: [null, [Validators.minLength(1), Validators.maxLength(50)]],
       bankSwift: [null, [Validators.minLength(1), Validators.maxLength(20)]],
-      title: [null, [Validators.minLength(1), Validators.maxLength(10)]],
-      gender: [null, [Validators.minLength(1), Validators.maxLength(10)]],
-      active: [null, [Validators.minLength(1), Validators.maxLength(10)]],
-      employeeType: [null, [Validators.minLength(1), Validators.maxLength(20)]],
-      maritalStatus: [null, [Validators.minLength(1), Validators.maxLength(10)]],
-      nationality: [null, [Validators.minLength(1), Validators.maxLength(50)]],
+      title: [null],
+      gender: [null],
+      active: [null],
+      employeeType: [null],
+      maritalStatus: [null],
+      nationality: [null],
       hourlyRate: [null, [Validators.minLength(1), Validators.maxLength(50)]],
-      leaveDate: [null, [Validators.minLength(1), Validators.maxLength(50)]],
+      leaveDate: [null],
       extension: [null, [Validators.minLength(1), Validators.maxLength(15)]],
-      personalEmail: [null, [Validators.minLength(1), Validators.maxLength(50)]],
-      manager: [null, [Validators.minLength(1), Validators.maxLength(50)]],
+      personalEmail: [null, [Validators.email]],
+      manager: [null],
     });
 
     // on each value change we call the validateForm function
@@ -311,7 +311,12 @@ export class ManageEmployeeComponent implements OnInit {
         bankingDetails['branch_code'] = f.bankBranch;
         bankingDetails['swift_code'] = f.bankSwift;
     if (!this.utilitiesService.allPropertiesNull(bankingDetails)) {
-      this.employee.bankingDetails = bankingDetails;
+      if ((bankingDetails['bank_name']) && (bankingDetails['bank_name']))
+        this.employee.bankingDetails = bankingDetails;
+      else {
+        alert('If banking details are supplied, please make sure to include bank name and account number or remove it entirely.');//KEEP THIS ALERT - IT IS INTENDED
+        return;
+      }
     }
         
     let address = {};
@@ -370,10 +375,24 @@ export class ManageEmployeeComponent implements OnInit {
           address2: (this.employee.address != null) ? this.employee.address.line2 : null,
           postalCode: (this.employee.address != null) ? this.employee.address.postalCode : null,
           country: (this.employee.address != null) ? this.employee.address.country : null,
-          //phoneNumber: this.employee.phoneNumber,
-          //bankName: (this.employee.bankName != null) ? this.employee.bankName : null,//this.employee.bankName,
-          //bankAccount: (this.employee.bankAccount != null) ? this.employee.bankAccount : null,//this.employee.bankAccount,
-          //bankBranch: (this.employee.bankBranch != null) ? this.employee.bankBranch : null,//this.employee.bankBranch
+
+          active: this.employee.active,
+          title: (this.employee.title != null) ? this.employee.title.id : null,
+          gender: (this.employee.gender != null) ? this.employee.gender.id : null,
+          employeeType: (this.employee.employeeType != null) ? this.employee.employeeType.id : null,
+          maritalStatus: this.employee.maritalStatus,
+          nationality: this.employee.nationality,
+          hourlyRate: this.employee.hourlyRate,
+          leaveDate: this.employee.leaveDate,
+          extension: this.employee.extension,
+          personalEmail: this.employee.personalEmail,
+          manager: this.employee.manager,
+          homeNumber: (this.employee.phone != null) ? this.employee.phone.home : null,
+          cellNumber: (this.employee.phone != null) ? this.employee.phone.cell : null,
+          bankName: (this.employee.bankingDetails != null) ? this.employee.bankingDetails.bank_name : null,
+          bankAccount: (this.employee.bankingDetails != null) ? this.employee.bankingDetails.bank_account : null,
+          bankBranch: (this.employee.bankingDetails != null) ? this.employee.bankingDetails.branch_code : null,
+          bankSwift: (this.employee.bankingDetails != null) ? this.employee.bankingDetails.swift_code : null,
         });
       },
       (err) => {
@@ -398,10 +417,42 @@ export class ManageEmployeeComponent implements OnInit {
     this.employee.position = this.utilitiesService.generateQuickIdObject(f.position);//check behaviour when null
     this.employee.taxNumber = f.taxNumber;
     this.employee.hireDate = f.hireDate;
-    //this.employee.phoneNumber = f.phoneNumber;
-    //this.employee.bankName = f.bankName;
-    //this.employee.bankAccount = f.bankAccount;
-    //this.employee.bankBranch = f.bankBranch;
+
+    this.employee.active = f.active;
+    this.employee.title = (f.title) ? this.utilitiesService.generateQuickIdObject(f.title) : null;
+    this.employee.gender = (f.gender) ? this.utilitiesService.generateQuickIdObject(f.gender) : null;
+    this.employee.employeeType = (f.employeeType) ? this.utilitiesService.generateQuickIdObject(f.employeeType) : null;
+    this.employee.maritalStatus = (f.maritalStatus) ? f.maritalStatus : null;
+    this.employee.nationality = (f.nationality) ? this.utilitiesService.generateQuickIdObject(f.nationality) : null;
+    this.employee.hourlyRate = f.hourlyRate;
+    this.employee.leaveDate = f.leaveDate;
+    this.employee.extension = f.extension;
+    this.employee.personalEmail = f.personalEmail;
+    this.employee.manager = (f.manager) ? this.utilitiesService.generateQuickIdObject(f.manager) : null;
+
+    let phone = {};
+        phone['home'] = f.homeNumber;
+        phone['cell'] = f.cellNumber;
+    if (!this.utilitiesService.allPropertiesNull(phone))
+      this.employee.phone = phone;
+    else 
+    this.employee.phone = null;
+
+    let bankingDetails = {};
+        bankingDetails['bank_name'] = f.bankName;
+        bankingDetails['bank_account'] = f.bankAccount;
+        bankingDetails['branch_code'] = f.bankBranch;
+        bankingDetails['swift_code'] = f.bankSwift;
+    if (!this.utilitiesService.allPropertiesNull(bankingDetails)) {
+      if ((bankingDetails['bank_name']) && (bankingDetails['bank_name']))
+        this.employee.bankingDetails = bankingDetails;
+      else {
+        alert('If banking details are supplied, please make sure to include bank name and account number or remove it entirely.');//KEEP THIS ALERT - IT IS INTENDED
+        return;
+      }
+    } else {
+      this.employee.bankingDetails = null;
+    }
 
     let address = {};
         address['line1'] = f.address1;
@@ -418,8 +469,7 @@ export class ManageEmployeeComponent implements OnInit {
         return;
       }
     } else {
-      this.employee.address = null;//Do not discared but set it to null
-      //this.employee.address = address;// Do not do this - it will add a null record and won't even ovewrite existing.
+      this.employee.address = null;//Do not discard but set it to null
     }
 
     this.apiService.updateOnly(globals.EMPLOYEE_ENDPOINT, this.employee)

@@ -16,16 +16,18 @@
                     <div class="table-responsive" *ngIf="employee.payGrade">
                         <table class="table">
                             <thead>
-                                <tr>
+                                <tr style="text-align: center;">
                                     <th scope="col">Pay Grade</th>
                                     <th scope="col">Basic Pay</th>
+                                    <th scope="col" *ngIf="employee.hourlyRate">Hourly Rate</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <th scope="row">{{employee.payGrade.payGrade}}</th>
+                                <tr style="text-align: center;">
+                                    <td scope="row">{{employee.payGrade.payGrade}}</td>
                                     <td *ngIf="employee.basicPay; else elseBlock">R{{employee.basicPay}}</td>
                                     <ng-template #elseBlock><td>R{{employee.payGrade.basicPay}}</td></ng-template>
+                                    <td scope="row" *ngIf="employee.hourlyRate">{{employee.hourlyRate}}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -34,10 +36,21 @@
             <div class="col-md-8">
                 <h3 class="mb-0">{{employee.firstName}} {{employee.middleName}} {{employee.lastName}}</h3>
                 <h4>Employee number {{employee.empCode}}</h4>
+                <span class="badge badge-success" *ngIf="employee.active; else elseBlock">Active</span>
+                <ng-template #elseBlock><span class="badge badge-danger">Inactive</span></ng-template>
                 <hr>
                 <div class="table-responsive-sm">
+                    <div><h4>Personal details</h4></div>
                     <table class="table table-striped">
                         <tbody>
+                            <tr>
+                                <td class="center"><i class="fa fa-fw fa-transgender"></i>Gender</td>
+                                <td class="left"><span *ngIf="employee.gender">{{employee.gender.value}}</span></td>
+                            </tr>
+                            <tr>
+                                <td class="center"><i class="fa fa-fw fa-chalkboard-teacher"></i>Title</td>
+                                <td class="left"><span *ngIf="employee.title">{{employee.title.name}}</span></td>
+                            </tr>
                             <tr>
                                 <td class="center"><i class="fa fa-fw fa-calendar-alt"></i>Date of birth</td>
                                 <td class="left">{{employee.dob}}</td>
@@ -46,40 +59,100 @@
                                 <td class="center"><i class="fa fa-fw fa-hashtag"></i>ID number</td>
                                 <td class="left">{{employee.idNumber}}</td>
                             </tr>
-                            <tr>
+                            <tr span *ngIf="employee.passportNumber">
                                 <td class="center"><i class="fa fa-fw fa-hashtag"></i>Passport number</td>
                                 <td class="left">{{employee.passportNumber}}</td>
                             </tr>
                             <tr>
-                                <td class="center"><i class="fa fa-fw fa-calendar-alt"></i>Date of birth</td>
-                                <td class="left">{{employee.dob}}</td>
+                                <td class="center"><i class="fa fa-fw fa-flag"></i>Nationality</td>
+                                <td class="left"><span *ngIf="employee.nationality">{{employee.nationality.name}}</span></td>
                             </tr>
-                                <tr>
+                            <tr>
+                                <td class="center"><i class="fa fa-fw fa-chalkboard-teacher"></i>Marital Status</td>
+                                <td class="left"><span *ngIf="employee.maritalStatus==true">Married</span><span *ngIf="employee.maritalStatus==false">Unmarried</span><span *ngIf="employee.maritalStatus==null">Not Specified</span></td>
+                            </tr>
+                            <tr>
+                                <td class="center"><i class="fa fa-envelope"></i>Personal Email address</td>
+                                <td class="left">{{employee.personalEmail}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                    <div><h4>Contact details</h4></div>
+                    <table class="table table-striped">
+                        <tbody>
+                            <tr>
+                                <td class="center"><i class="fa fa-fw fa-map-marker"></i>Addess</td>
+                                <td class="left">
+                                    <span *ngIf="employee.address">
+                                        {{employee.address.line1}} <br> {{employee.address.line2}} <br> {{employee.address.postalCode}}
+                                        <span *ngIf="employee.address.country"><br>{{ employee.address.country.name }}</span>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="center"><i class="fa fa-fw fa-phone"></i>Home</td>
+                                <td class="left">
+                                    <span *ngIf="employee.phone">{{ employee.phone.home }}</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="center"><i class="m-r-10 mdi mdi-cellphone-iphone"></i>Cell</td>
+                                <td class="left">
+                                    <span *ngIf="employee.phone">{{ employee.phone.cell }}</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                    <div><h4>Employee details</h4></div>
+                    <table class="table table-striped">
+                        <tbody>
+                            <tr>
+                                <td class="center"><i class="fa fa-fw fa-chalkboard-teacher"></i>Employee type</td>
+                                <td class="left"><span *ngIf="employee.employeeType">{{employee.employeeType.value}}</span></td>
+                            </tr>
+                            <tr>
                                 <td class="center"><i class="fa fa-envelope"></i>Email address</td>
                                 <td class="left">{{employee.emailAddress}}</td>
                             </tr>
-                                <tr>
+                            <tr>
+                                <td class="center"><i class="fa fa-fw fa-hashtag"></i>Extension number</td>
+                                <td class="left">{{employee.extension}}</td>
+                            </tr>
+                            <tr>
                                 <td class="center"><i class="fa fa-fw fa-hashtag"></i>Tax number</td>
                                 <td class="left">{{employee.taxNumber}}</td>
+                            </tr>
+                            <tr>
+                                <td class="center"><i class="fa fa-fw fa-user"></i>Manager</td>
+                                <td class="left"><span *ngIf="employee.manager">{{employee.manager.firstName}} {{employee.manager.lastName}}</span></td>
                             </tr>
                             <tr>
                                 <td class="center"><i class="fa fa-fw fa-calendar-alt"></i>Hire date</td>
                                 <td class="left">{{employee.hireDate}}</td>
                             </tr>
-                            <tr>
-                                <td class="center"><i class="fa fa-fw fa-map-marker"></i>Addess</td>
-                                <td class="left">{{employee.address1}} <br> {{employee.address2}} <br> {{employee.postalCode}}</td>
-                            </tr>
-                            <tr>
-                                <td class="center"><i class="fa fa-fw fa-phone"></i>Phone number</td>
-                                <td class="left">{{employee.phoneNumber}}</td>
-                            </tr>
-                            <tr>
-                                <td class="center"><i class="fa fa-fw fa-money-bill-alt"></i>Banking details</td>
-                                <td class="left"><!--{{employee.bankName}} <br> {{employee.bankAccount}} <br> {{employee.bankBranch}}--></td>
+                            <tr *ngIf="employee.leaveDate">
+                                <td class="center"><i class="fa fa-fw fa-calendar-alt"></i>Leave date</td>
+                                <td class="left">{{employee.leaveDate}}</td>
                             </tr>
                         </tbody>
                     </table>
+                    <br>
+                    <div><h4>Banking details</h4></div>
+                    <table class="table table-striped">
+                        <tbody>
+                            <tr>
+                                <td class="left" *ngIf="employee.bankingDetails">
+                                    {{employee.bankingDetails.bank_name}} <br>
+                                    {{employee.bankingDetails.bank_account}} <br>
+                                    <span *ngIf="employee.bankingDetails.branch_code">Branch: {{employee.bankingDetails.branch_code}}<br></span> 
+                                    <span *ngIf="employee.bankingDetails.swift_code">Swift: {{employee.bankingDetails.swift_code}}</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br>
                     <table align="right">
                         <tr>
                             <td><input type="button" class="btn btn-primary btn-xs" value="Back" (click)="goBack()"/></td>
