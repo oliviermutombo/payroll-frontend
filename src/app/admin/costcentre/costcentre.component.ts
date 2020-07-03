@@ -5,6 +5,7 @@ import { Employee } from '../employee/employee';
 import { DataService } from '../data.service';
 import { CustomValidators } from '../../services/custom_validators';
 import { FormService } from '../../services/form';
+import { UtilitiesService } from '../../services/utilities.service';
 import { NotificationService } from '../../services/notification.service';
 import { Observable } from 'rxjs';
 import { startWith, map, switchMap } from 'rxjs/operators';/////////////////////////////////
@@ -51,6 +52,7 @@ export class CostcentreComponent implements OnInit {
   constructor(private injector: Injector,
               private apiService: ApiService,
               private dataService: DataService,
+              private utilitiesService: UtilitiesService,
               private fb: FormBuilder,
               public formService: FormService) {
                 
@@ -224,7 +226,9 @@ export class CostcentreComponent implements OnInit {
         if (!e || !e.source) {
           console.log(this.trigger)
           console.log(e)
-          this.rForm.controls.owner.setValue(null);
+          if (!this.utilitiesService.isObject(this.rForm.getRawValue().owner)) {
+            this.rForm.controls.owner.setValue(null);
+          }
         }
       },
       err => this._subscribeToClosingActions(),

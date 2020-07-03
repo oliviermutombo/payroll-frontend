@@ -556,8 +556,7 @@ export class ManageEmployeeComponent implements OnInit {
     this.subscription = this.triggerCollection.toArray()[0].panelClosingActions
       .subscribe(e => {
         if (!e || !e.source) {
-          console.log(this.triggerCollection)
-          console.log(e)
+          if (!this.utilitiesService.isObject(this.rForm.getRawValue().nationality))
           this.rForm.controls.nationality.setValue(null);
         }
       },
@@ -567,8 +566,7 @@ export class ManageEmployeeComponent implements OnInit {
     this.subscription = this.triggerCollection.toArray()[1].panelClosingActions
     .subscribe(e => {
       if (!e || !e.source) {
-        console.log(this.triggerCollection)
-        console.log(e)
+        if (!this.utilitiesService.isObject(this.rForm.getRawValue().country))
         this.rForm.controls.country.setValue(null);
       }
     },
@@ -578,8 +576,7 @@ export class ManageEmployeeComponent implements OnInit {
     this.subscription = this.triggerCollection.toArray()[2].panelClosingActions
     .subscribe(e => {
       if (!e || !e.source) {
-        console.log(this.triggerCollection)
-        console.log(e)
+        if (!this.utilitiesService.isObject(this.rForm.getRawValue().department))
         this.rForm.controls.department.setValue(null);
       }
     },
@@ -589,8 +586,7 @@ export class ManageEmployeeComponent implements OnInit {
     this.subscription = this.triggerCollection.toArray()[3].panelClosingActions
     .subscribe(e => {
       if (!e || !e.source) {
-        console.log(this.triggerCollection)
-        console.log(e)
+        if (!this.utilitiesService.isObject(this.rForm.getRawValue().position))
         this.rForm.controls.position.setValue(null);
       }
     },
@@ -600,8 +596,7 @@ export class ManageEmployeeComponent implements OnInit {
     this.subscription = this.triggerCollection.toArray()[4].panelClosingActions
     .subscribe(e => {
       if (!e || !e.source) {
-        console.log(this.triggerCollection)
-        console.log(e)
+        if (!this.utilitiesService.isObject(this.rForm.getRawValue().manager))
         this.rForm.controls.manager.setValue(null);
       }
     },
@@ -611,8 +606,7 @@ export class ManageEmployeeComponent implements OnInit {
     this.subscription = this.triggerCollection.toArray()[5].panelClosingActions
     .subscribe(e => {
       if (!e || !e.source) {
-        console.log(this.triggerCollection)
-        console.log(e)
+        if (!this.utilitiesService.isObject(this.rForm.getRawValue().payGrade))
         this.rForm.controls.payGrade.setValue(null);
       }
     },

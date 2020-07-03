@@ -13,6 +13,7 @@ import { Subscription } from 'rxjs';
 import { MatAutocompleteTrigger } from '@angular/material';//.................................
 import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material'; //pagination
 import { Employee } from '../employee/employee';
+import { UtilitiesService } from '../../services/utilities.service';
 import * as globals from 'src/app/globals';
 
 @Component({
@@ -61,6 +62,7 @@ export class DepartmentComponent implements OnInit {
   constructor(private injector: Injector,
               private dataService: DataService,
               private apiService: ApiService,
+              private utilitiesService: UtilitiesService,
               private fb: FormBuilder,
               public formService: FormService) {
 
@@ -289,9 +291,8 @@ export class DepartmentComponent implements OnInit {
     this.subscription = this.triggerCollection.toArray()[0].panelClosingActions
       .subscribe(e => {
         if (!e || !e.source) {
-          //console.log(this.triggerCollection.toArray()[0])
-          //console.log(e)
-          this.rForm.controls.costcentre.setValue(null);
+          if (!this.utilitiesService.isObject(this.rForm.getRawValue().costcentre))
+            this.rForm.controls.costcentre.setValue(null);
         }
       },
       err => this._subscribeToClosingActions(),
@@ -300,9 +301,8 @@ export class DepartmentComponent implements OnInit {
       this.subscription = this.triggerCollection.toArray()[1].panelClosingActions
       .subscribe(e => {
         if (!e || !e.source) {
-          //console.log(this.triggerCollection.toArray()[1])
-          //console.log(e)
-          this.rForm.controls.hod.setValue(null);
+          if (!this.utilitiesService.isObject(this.rForm.getRawValue().hod))
+            this.rForm.controls.hod.setValue(null);
         }
       },
       err => this._subscribeToClosingActions(),
