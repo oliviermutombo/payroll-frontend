@@ -11,40 +11,43 @@ export class GlobalErrorHandlerService implements ErrorHandler {
     constructor(private injector: Injector, private userService: UserService) { }    
 
     handleError(error: any) {
+        //alert('1');
         const notifier = this.injector.get(NotificationService); // new
         let router = this.injector.get(Router);
         console.log('URL: ' + router.url);
       
       if (error instanceof HttpErrorResponse) {
+        //alert('2');
         if (error.status === 0) {
+            //alert('2.1');
             if (error.statusText) {
                 if (error.statusText === 'Unknown Error') {
                     notifier.showError('Server not reachable.');
                 }
             }
         } 
-        else if (error.status === 404) {
-            if(!this.userService.isAuthenticated()) { //If token is not valid or password changed. log user out first.
-                this.userService.logout();
+        else if (error.status >= 400 && error.status < 500 ) {
+            //alert('2.2\n' + JSON.stringify(error));
+            if (((error.error.error) && (error.error.message === "No message available")) || (error.error.message === "")) {
+                //alert('2.2.2');
+                notifier.showError(error.error.error);
+                console.error('An error occurred:', error.error.error);
+            } else if (error.error.message) {
+                //alert('2.2.1');
+                notifier.showError(error.error.message);
+                console.error('An error occurred:', error.error.message);
+            } else if ((error.error.error) || (error.error.message === "No message available")) {
+                //alert('2.2.2');
+                notifier.showError(error.error.error);
+                console.error('An error occurred:', error.error.error);
+            } else {
+                //alert('2.2.3');
+                notifier.showError('An error occurred!');
+                console.error('An error occurred!');
             }
-            notifier.showError('Not found!'); // 404 won't always be for invalid credentials. make it generic
-        } else if (error.status === 401) {
-            if (error.error){
-                if (error.error.detail == "Signature has expired.") {
-                    alert('signature expired. refresh it.');
-                    this.userService.logout(); // Log out for now!!!
-                    //this.userService.refreshToken();
-                } else {
-                    //this.userService.logout(); // page may be on a resource that is restricted(401). do not log out here
-                    //notifier.showError('Your session expired');
-                    notifier.showError('FOR DEBUGGING PURPOSES ONLY - 401 \r\n' + JSON.stringify(error.error));
-                }
-            } else if (error.statusText) {
-                notifier.showError(error.statusText);
-            }
-        } else if (error.status === 403) {
-            notifier.showError('You are not authorised to perform this operation.'); // update thi. (maybe a token refresh is needed)
+            
         } else if (error.status === 500) {
+            //alert('2.3');
             let statusText = error.statusText;
             if (error.error){
                 if (error.error['message']){
@@ -57,6 +60,7 @@ export class GlobalErrorHandlerService implements ErrorHandler {
                 notifier.showError('FOR DEBUGGING PURPOSES ONLY - 500\n' + statusText + ' - ' + JSON.stringify(error));
             }
         } else {
+            alert('2.4');
             notifier.showError('FOR DEBUGGING PURPOSES ONLY - ' + JSON.stringify(error.error));
         }
         
@@ -64,7 +68,7 @@ export class GlobalErrorHandlerService implements ErrorHandler {
         console.error('Backend returned status code: ', error.status);
         console.error('Response body:', error.message);          	  
       } else {
-            
+            //alert('3');
             //notifier.showError('An error occurred!');
             notifier.showError('FOR DEBUGGING PURPOSES ONLY - ' + error.message);
             console.error('An error occurred:', error.message);          

@@ -130,6 +130,7 @@ export class CompanyComponent implements OnInit {
         } else {
             this.addCompany(f);
         }
+        this.utilitiesService.setCurrencySymbol(true);
     }
 
     addCompany(f) {

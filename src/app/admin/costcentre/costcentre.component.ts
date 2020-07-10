@@ -31,7 +31,7 @@ export class CostcentreComponent implements OnInit {
   allEmployees: Observable<Employee[]>;
   filteredEmployees: Observable<Employee[]>;
 
-  displayedColumns: string[] = ['name', 'owner', 'manageColumn'];
+  displayedColumns: string[] = ['name', 'description', 'owner', 'manageColumn'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
@@ -42,10 +42,12 @@ export class CostcentreComponent implements OnInit {
   updateMode = false;
   post: any;
   name = '';
+  description = '';
   owner = '';
 
   public formErrors = {
     name: '',
+    description: '',
     owner: '',
   };
 
@@ -58,6 +60,7 @@ export class CostcentreComponent implements OnInit {
                 
     this.rForm = fb.group({
       name: [null, [Validators.required, Validators.minLength(1), Validators.maxLength(50), CustomValidators.validateCharacters]],
+      description : [null, [Validators.minLength(1), Validators.maxLength(50), CustomValidators.validateCharacters]],
       owner: [null]
     });
 
@@ -126,6 +129,7 @@ export class CostcentreComponent implements OnInit {
     this.resetErrors();
     let costcentre = new Costcentre();
     costcentre.name = f.name;
+    costcentre.description = f.description;
     if (f.owner) { //Only populating relevant fields (which will be used to update view list and save api call cost)
       costcentre.owner = {};
       costcentre.owner.id = f.owner.id;
@@ -157,6 +161,7 @@ export class CostcentreComponent implements OnInit {
         this.costcentre = res;
         this.rForm.setValue({
           name: this.costcentre.name,
+          description: this.costcentre.description,
           owner: (this.costcentre.owner != null) ? this.costcentre.owner : null//"this.costcentre.owner",
         });
       }
@@ -168,6 +173,7 @@ export class CostcentreComponent implements OnInit {
   updateCostcentre(f) {
     this.resetErrors();
     this.costcentre.name = f.name;
+    this.costcentre.description = f.description;
     if (f.owner) { //Only populating relevant fields (which will be used to update view list and save api call cost)
       this.costcentre.owner = {};
       this.costcentre.owner.id = f.owner.id;

@@ -25,9 +25,9 @@
                             <tbody>
                                 <tr style="text-align: center;">
                                     <td scope="row">{{employee.payGrade.payGrade}}</td>
-                                    <td *ngIf="employee.basicPay; else elseBlock">R{{employee.basicPay}}</td>
-                                    <ng-template #elseBlock><td>R{{employee.payGrade.basicPay}}</td></ng-template>
-                                    <td scope="row" *ngIf="employee.hourlyRate">{{employee.hourlyRate}}</td>
+                                    <td *ngIf="employee.basicPay; else elseBlock">{{ utilitiesService.getCurrencySymbol() }}{{employee.basicPay}}</td>
+                                    <ng-template #elseBlock><td>{{ utilitiesService.getCurrencySymbol() }}{{employee.payGrade.basicPay}}</td></ng-template>
+                                    <td scope="row" *ngIf="employee.hourlyRate">{{ utilitiesService.getCurrencySymbol() }}{{employee.hourlyRate}}</td>
                                 </tr>
                             </tbody>
                         </table>

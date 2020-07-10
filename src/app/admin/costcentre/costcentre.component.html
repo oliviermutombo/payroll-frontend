@@ -14,6 +14,11 @@
                             <input type="text" class="form-control" formControlName="name">
                             <span class="text-danger" *ngIf="!rForm.controls['name'].valid && rForm.controls['name'].touched">{{ formErrors.name }}</span>
                         </div>
+						<div class="form-group">
+                            <label>Description</label>
+                            <input type="text" class="form-control" formControlName="description">
+                            <span class="text-danger" *ngIf="!rForm.controls['description'].valid && rForm.controls['description'].touched">{{ formErrors.description }}</span>
+                        </div>
                         <mat-form-field>
                             <input type="text" placeholder="Select cost centre owner" matInput formControlName="owner" [matAutocomplete]="auto">
                             <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
@@ -39,6 +44,10 @@
                                 <ng-container matColumnDef="name">
                                     <th mat-header-cell *matHeaderCellDef mat-sort-header>Cost centre</th>
                                     <td mat-cell *matCellDef="let cos"> {{cos.name}} </td>
+                                </ng-container>
+                                <ng-container matColumnDef="description">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+                                    <td mat-cell *matCellDef="let cos"> {{cos.description}} </td>
                                 </ng-container>
                                 <ng-container matColumnDef="owner">
                                     <th mat-header-cell *matHeaderCellDef mat-sort-header>Owner</th>
