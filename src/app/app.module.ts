@@ -23,6 +23,7 @@ import { ManageUserComponent } from  './user/manage-user.component';
 
 //emp
 import { PayslipComponent } from './employee/payslip/payslip.component';
+import { PersonalDetailsComponent } from './employee/details/personal-details.component';
 
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { GlobalErrorComponent }  from './services/global-error.component';
@@ -65,6 +66,7 @@ schemas.push(CUSTOM_ELEMENTS_SCHEMA);
     PayrollPeriodComponent,
     PayrollComponent,
     PayslipComponent,
+    PersonalDetailsComponent,
     UserListComponent,
     ManageUserComponent,
     CountryComponent,

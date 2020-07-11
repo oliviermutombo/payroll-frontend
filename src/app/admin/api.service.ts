@@ -39,6 +39,17 @@ export class ApiService {
     }
 
     /**
+     * Returns Observable<any>
+     * @param entityEndpoint
+     */
+    getSelf(entityEndpoint: string): Observable<any> {
+        return this.http.get<any>(`${this.baseUrl + entityEndpoint + '/self'}`)
+            .pipe(map((res) => {
+                return res;
+        }));
+    }
+
+    /**
      * Returns Observable<any[]>
      * For performance purposes when implementing this, make sure the result is cached
      * and returned on future requests.

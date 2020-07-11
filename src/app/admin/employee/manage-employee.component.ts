@@ -18,11 +18,6 @@ import * as globals from 'src/app/globals';
 import { Country } from '../countries/country';
 import { map, startWith, switchMap } from 'rxjs/operators';
 
-
-//test
-
-//
-
 @Component({
   //selector: 'app-root', // WHAT MUST THE SELECTOR BE???
   selector: 'app-manage-employee',
@@ -31,8 +26,6 @@ import { map, startWith, switchMap } from 'rxjs/operators';
 })
 
 export class ManageEmployeeComponent implements OnInit {
-
-  master = 'Message from parent'; // Test
 
   //title = 'payroll-system';
   employees: Employee[];

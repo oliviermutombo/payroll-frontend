@@ -168,24 +168,28 @@ checkEmployee($isChecked): void {
   }
 
   addUser(f) {
-    this.user.firstName = f.firstName;
-    this.user.lastName = f.lastName;
-    this.user.email = f.emailAddress;
-    this.user.username = f.emailAddress;
-    this.user.employee = this.utilitiesService.generateQuickIdObject(this.employee.id);
-    if (this.user.role.length == 0) {
-        this.notification.showError('No role(s) selected!');
-    } else {
-      this.userService.create(this.user)
-        .subscribe(
-          (res: any) => {
-            if (res) {
-              this.notification.showSaved();
+    if (this.employee.active){
+      this.user.firstName = f.firstName;
+      this.user.lastName = f.lastName;
+      this.user.email = f.emailAddress;
+      this.user.username = f.emailAddress;
+      this.user.employee = this.utilitiesService.generateQuickIdObject(this.employee.id);
+      if (this.user.role.length == 0) {
+          this.notification.showError('No role(s) selected!');
+      } else {
+        this.userService.create(this.user)
+          .subscribe(
+            (res: any) => {
+              if (res) {
+                this.notification.showSaved();
+              }
+              // Reset the form
+              this.rForm.reset();
             }
-            // Reset the form
-            this.rForm.reset();
-          }
-        );
+          );
+      }
+    } else {
+      this.notifier.showError('This employee is inactive!');
     }
   }
 
