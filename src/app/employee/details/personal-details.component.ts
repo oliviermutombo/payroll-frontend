@@ -110,7 +110,7 @@ import { NotificationService } from '../../services/notification.service';
         hourlyRate: [{value: '', disabled: true}],
         leaveDate: [{value: '', disabled: true}],
         extension: [{value: '', disabled: true}],
-        personalEmail: [{value: '', disabled: true}],
+        personalEmail: [null, [Validators.email]],
         manager: [{value: '', disabled: true}],
         });
 
@@ -200,6 +200,45 @@ import { NotificationService } from '../../services/notification.service';
     }
     //
     saveDetails(f) {
+        let employeeToUpdate = {};
+
+        employeeToUpdate['id'] = this.employee.id;
+        employeeToUpdate['personalEmail'] = f.personalEmail;
+
+        let phone = {};
+        phone['home'] = f.homeNumber;
+        phone['cell'] = f.cellNumber;
+        if (!this.utilitiesService.allPropertiesNull(phone)) {
+            if (this.employee.phone) phone['id'] = this.employee.phone.id;
+            employeeToUpdate['phone'] = phone;
+        } else 
+            employeeToUpdate['phone'] = null;
+
+        let address = {};
+        address['line1'] = f.address1;
+        address['line2'] = f.address2;
+        address['postalCode'] = f.postalCode;
+        address['country'] = (f.country) ? this.utilitiesService.generateQuickIdObject(f.country) : null;//important
+        //alert('f.country\n' + f.country + '\naddress\n' + JSON.stringify(address));
+        if (!this.utilitiesService.allPropertiesNull(address))
+        {
+          if ((address['line1']) && (address['country'])) {
+            if (this.employee.address) address['id'] = this.employee.address.id;//
+            employeeToUpdate['address'] = address;
+          } else {
+            alert('If the address is supplied, please make sure it is valid or remove it entirely.');//KEEP THIS ALERT - IT IS INTENDED
+            return;
+          }
+        } else {
+            employeeToUpdate['address'] = null;//Do not discard but set it to null
+        }
+
+        this.apiService.updatePersonalDetails(globals.EMPLOYEE_ENDPOINT, employeeToUpdate)
+        .subscribe(
+            (res) => {
+                this.notifier.showSaved();
+            }
+        );
 
     }
     //

@@ -9,6 +9,7 @@
           </div>
           <div class="card-body">
              <form [formGroup]="rForm" (ngSubmit)="saveDetails(rForm.value)">
+                <div><span style="color: red;">Only contact details can be updated.<br><br></span></div>
                 <div><input type="checkbox" formControlName="active"><span> Active</span></div>
                 <span style="text-align: center;"><h4>Personal details</h4></span>
                 <div class="form-row">

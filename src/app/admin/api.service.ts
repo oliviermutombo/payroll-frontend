@@ -50,6 +50,22 @@ export class ApiService {
     }
 
     /**
+     * Returns Observable<boolean> - True for updated; False for not updated.
+     * @param entityEndpoint 
+     * @param entityObject 
+     */
+    updatePersonalDetails(entityEndpoint: string, entityObject: any): Observable<Boolean> {
+        return this.http.patch<any>(`${this.baseUrl + entityEndpoint + '/self'}`, entityObject)
+        .pipe(map((res) => {
+            if (res) {
+                return true;
+              } else {
+                return false;
+              }
+        }));
+    }
+
+    /**
      * Returns Observable<any[]>
      * For performance purposes when implementing this, make sure the result is cached
      * and returned on future requests.

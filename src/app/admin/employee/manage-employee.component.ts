@@ -426,9 +426,10 @@ export class ManageEmployeeComponent implements OnInit {
     let phone = {};
         phone['home'] = f.homeNumber;
         phone['cell'] = f.cellNumber;
-    if (!this.utilitiesService.allPropertiesNull(phone))
+    if (!this.utilitiesService.allPropertiesNull(phone)) {
+      if (this.employee.phone) phone['id'] = this.employee.phone.id;//
       this.employee.phone = phone;
-    else 
+    } else 
     this.employee.phone = null;
 
     let bankingDetails = {};
@@ -437,9 +438,10 @@ export class ManageEmployeeComponent implements OnInit {
         bankingDetails['branch_code'] = f.bankBranch;
         bankingDetails['swift_code'] = f.bankSwift;
     if (!this.utilitiesService.allPropertiesNull(bankingDetails)) {
-      if ((bankingDetails['bank_name']) && (bankingDetails['bank_name']))
+      if ((bankingDetails['bank_name']) && (bankingDetails['bank_name'])) {
+        if (this.employee.bankingDetails) bankingDetails['id'] = this.employee.bankingDetails.id;//
         this.employee.bankingDetails = bankingDetails;
-      else {
+      } else {
         alert('If banking details are supplied, please make sure to include bank name and account number or remove it entirely.');//KEEP THIS ALERT - IT IS INTENDED
         return;
       }
@@ -452,12 +454,13 @@ export class ManageEmployeeComponent implements OnInit {
         address['line2'] = f.address2;
         address['postalCode'] = f.postalCode;
         address['country'] = this.utilitiesService.generateQuickIdObject(f.country);
-
+    //alert('f.country\n' + f.country + '\naddress\n' + JSON.stringify(address));
     if (!this.utilitiesService.allPropertiesNull(address))
     {
-      if ((address['line1']) && (address['country']))
+      if ((address['line1']) && (address['country'])) {
+        if (this.employee.address) address['id'] = this.employee.address.id;
         this.employee.address = address;
-      else {
+      } else {
         alert('If the address is supplied, please make sure it is valid or remove it entirely.');//KEEP THIS ALERT - IT IS INTENDED
         return;
       }
