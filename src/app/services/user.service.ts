@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpErrorResponse} from '@angular/common/http';
 import * as jwt_decode from 'jwt-decode';
-import { Observable, BehaviorSubject, Subject, ReplaySubject } from 'rxjs';
-import { map, mergeMap, take } from 'rxjs/operators';
+import { Observable, BehaviorSubject, Subject, ReplaySubject, from, of } from 'rxjs';
+import { map, mergeMap, take, switchMap } from 'rxjs/operators';
 import { environment } from './../../environments/environment';
 
 //guard
@@ -10,6 +10,7 @@ import { environment } from './../../environments/environment';
 import { User } from '../user/user'
 
 export const AUTH_TOKEN: string = 'jwt_token';
+export const REFRESH_TOKEN: string = 'refresh_token';
  
 // @Injectable()
 @Injectable({
@@ -105,6 +106,44 @@ export class UserService {
     });
   }
 
+  /*public refreshToken() {
+    this.tokenExpired = true;
+    console.log('refreshToken()');
+    this.http.post(this.loginUrl, this.httpOptions).subscribe(
+      tokenResponseObj => {
+        console.log('refreshToken() - refreshed');
+        this.setUserData(tokenResponseObj);
+        this.tokenExpired = false;
+      });
+  }*/
+
+  public refreshToken() {
+    this.tokenExpired = true;
+    console.log('refreshToken()');
+    return this.http.post(this.loginUrl, this.httpOptions).pipe(switchMap((tokenResponseObj) => {
+      let data = from(this.setUserData(tokenResponseObj));
+      return data.pipe(switchMap(() => {
+          return of(tokenResponseObj);
+      }))
+    }));
+  }
+
+  public refreshAccessToken(): Observable<any> {
+    return of("secret token");
+  }
+
+  /*public refreshAccessToken() {
+    return this.getTokenObservable().pipe(switchMap((tokens) => {
+        let headers = new HttpHeaders().set("Refreshtoken", tokens.refresh_token);
+        return this.http.get(RefreshToken, { headers: headers }).pipe(switchMap((response: UserToken) => {
+            let data = from(this.storeUserService.storeUser(response, true));
+            return data.pipe(switchMap(() => {
+                return of(response);
+            }))
+        }));
+    }));
+  }*/
+
   private setUserData(userData): string {
 
     if (userData && userData['access_token']) {
@@ -119,6 +158,13 @@ export class UserService {
 
       localStorage.setItem(AUTH_TOKEN, token);
       localStorage.setItem('token_expiry', String(new Date(token_decoded.exp * 1000)));
+
+      //refresh token
+      if (!(localStorage.getItem(REFRESH_TOKEN)) || localStorage.getItem(REFRESH_TOKEN)=='') {
+        let refresh_token = userData['refresh_token'];
+        localStorage.setItem(REFRESH_TOKEN, refresh_token);
+      }
+
 
       //save to local storage
       localStorage.setItem('currentUser', JSON.stringify(this.userObj));
@@ -147,21 +193,21 @@ export class UserService {
   }
 
   // Refreshes the JWT token, to extend the time the user is logged in
-  public refreshToken() {
+  /*public refreshToken() {
     this.tokenExpired = true;
-    alert('current token:' + this.getToken() + ' has expired. \n REFRESHING IT.');
+    alert('current token:' + this.getAccessToken() + ' has expired. \n REFRESHING IT.');
     //alert('is token expired?: ' + this.isTokenExpired());
-    this.http.post(this.tokenRefreshUrl, JSON.stringify({token: this.getToken()}), this.httpOptions).subscribe(
+    this.http.post(this.tokenRefreshUrl, JSON.stringify({token: this.getAccessToken()}), this.httpOptions).subscribe(
       userData => {
         alert('Token finally refreshed');
         this.setUserData(userData);
         this.tokenExpired = false;
-      }/*,
-      err => {
-        this.error = err['error'];
-      }*/
+      }///,
+      //err => {
+        //this.error = err['error'];
+      //}
     );
-  }
+  }*/
  
   public logout() {
     this.token_expires = null; // to be removed eventually
@@ -179,9 +225,12 @@ export class UserService {
     return localStorage.getItem('email') + '. Token expires at:' + localStorage.getItem('token_expiry');
   }
 
-  public getToken(): string {
-    //return localStorage.getItem('token');
+  public getAccessToken(): string {
     return localStorage.getItem(AUTH_TOKEN);
+  }
+
+  public getRefreshToken(): string {
+    return localStorage.getItem(REFRESH_TOKEN);
   }
 
   private getTokenExpirationDate(token: string): Date { // Kinda duplicate
@@ -195,7 +244,7 @@ export class UserService {
   }
 
   public isTokenExpired(token?: string): boolean {
-    if(!token) token = this.getToken();
+    if(!token) token = this.getAccessToken();
     if(!token) return true;
 
     const date = this.getTokenExpirationDate(token);
@@ -204,7 +253,7 @@ export class UserService {
   }
 
   public isAuthenticated(): boolean {
-    const token = this.getToken();
+    const token = this.getAccessToken();
     return !this.isTokenExpired(token);
   }
 

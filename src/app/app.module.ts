@@ -36,6 +36,7 @@ import { FormService } from './services/form';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSnackBarModule } from '@angular/material/snack-bar'; // new
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { TokenInterceptor } from './services/TokenInterceptor'; ///////////
 import { AuthInterceptor } from './services/auth-request';
 
 import { GlobalErrorHandlerService } from './services/global-error-handler.service';
@@ -45,6 +46,7 @@ import { AngularmaterialModule } from './material/angularmaterial/angularmateria
 import { PositionService } from './admin/position/position.service';
 
 import { MatAutocompleteModule, MatInputModule } from '@angular/material';
+import { AuthService } from './services/auth.service';
 
 
 let schemas: any[] = [];
@@ -88,16 +90,22 @@ schemas.push(CUSTOM_ELEMENTS_SCHEMA);
   ],
   providers: [ 
     UserService,
+    AuthService,
     CustomValidators,
     FormService,
     PositionService, //pagination
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
+      useClass: TokenInterceptor,
       multi: true
     },
-    GlobalErrorHandlerService,
-    { provide: ErrorHandler, useClass: GlobalErrorHandlerService }
+    /*{
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    },*/
+    /*GlobalErrorHandlerService,
+    { provide: ErrorHandler, useClass: GlobalErrorHandlerService }*/
   ],
   bootstrap: [AppComponent],
   schemas: schemas

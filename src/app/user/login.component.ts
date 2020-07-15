@@ -4,6 +4,7 @@ import { UserService } from '../services/user.service';
 import { Router } from '@angular/router';
 import { CustomValidators } from '../services/custom_validators';
 import { FormService } from '../services/form';
+import { AuthService } from '../services/auth.service';
 
 export const AUTH_TOKEN: string = 'jwt_token';
 
@@ -27,6 +28,7 @@ export class LoginComponent implements OnInit {
     public user: any;
 
     constructor(private userService: UserService,
+        private auth: AuthService,
         private fb: FormBuilder,
         public formService: FormService,
         private router: Router) {
@@ -66,7 +68,8 @@ export class LoginComponent implements OnInit {
         requestBody.set('username', f.email);
         requestBody.set('password', f.password);
         requestBody.set('grant_type', 'password');
-        this.userService.login(requestBody);
+        //this.userService.login(requestBody);
+        this.auth.login(requestBody);
     }
     
     refreshToken() {
@@ -74,7 +77,8 @@ export class LoginComponent implements OnInit {
     }
     
     logout() {
-        this.userService.logout();
+        //this.userService.logout();
+        this.auth.logout();
     }
 
     private resetErrors() {

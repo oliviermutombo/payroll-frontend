@@ -11,15 +11,14 @@ export class GlobalErrorHandlerService implements ErrorHandler {
     constructor(private injector: Injector, private userService: UserService) { }    
 
     handleError(error: any) {
-        //alert('1');
         const notifier = this.injector.get(NotificationService); // new
         let router = this.injector.get(Router);
         console.log('URL: ' + router.url);
       
       if (error instanceof HttpErrorResponse) {
-        //alert('2');
+        //alert('### GLOBAL ###\n' + JSON.stringify(error));
+        console.log('### GLOBAL ###\n' + JSON.stringify(error));
         if (error.status === 0) {
-            //alert('2.1');
             if (error.statusText) {
                 if (error.statusText === 'Unknown Error') {
                     notifier.showError('Server not reachable.');
