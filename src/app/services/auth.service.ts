@@ -69,21 +69,11 @@ export class AuthService {
   }
   //
 
-  login__(user: { username: string, password: string }): Observable<boolean> {
-    return this.http.post<any>(`${this.authUrl}/login`, user)
-      .pipe(
-        tap(tokens => this.doLoginUser(user.username, tokens)),
-        mapTo(true),
-        catchError(error => {
-          alert(error.error);
-          return of(false);
-        }));
-  }
   login(requestBody: any){
     this.http.post<any>(this.authUrl, requestBody.toString(), this.httpOptions)
     .pipe(
-      map( tokenResponseObj => {
-        return this.doLoginUser(requestBody['username'], tokenResponseObj);
+      map( tokens => {
+        return this.doLoginUser(requestBody['username'], tokens);
       }),
       mergeMap( username => this.http.get<any>(`${this.userUrl}/username/${username}`)),
       take(1)
@@ -99,17 +89,6 @@ export class AuthService {
     this.currentUserSubject.next(this.userObj);
   }
 
-  logout__() {
-    return this.http.post<any>(`${this.authUrl}/logout`, {
-      'refreshToken': this.getRefreshToken()
-    }).pipe(
-      tap(() => this.doLogoutUser()),
-      mapTo(true),
-      catchError(error => {
-        alert(error.error);
-        return of(false);
-      }));
-  }
   public logout() {//UPDATE TO ALLOW SERVER LOGOUT
     this.userObj = new User();//Do not set to null - rather empty object
 
@@ -127,46 +106,26 @@ export class AuthService {
     return !!this.getJwtToken();
   }
 
-  refreshToken__() {
-    return this.http.post<any>(`${this.authUrl}/refresh`, {
-      'refreshToken': this.getRefreshToken()
-    }).pipe(tap((tokens: Tokens) => {
-      this.storeJwtToken(tokens.jwt);
-    }));
-  }
-  refreshToken_() {
-    return this.http.post<any>(`${this.authUrl}`, {
-      'grant_type': 'refresh_token', 'refresh_token': this.getRefreshToken()
-    }).pipe(tap((tokensObj: any) => {
-      this.storeJwtToken(tokensObj['access_token']);
-    }));
-  }
   refreshToken(){
     let requestBody = new URLSearchParams();
         requestBody.set('grant_type', 'refresh_token');
         requestBody.set('refresh_token', this.getRefreshToken());
 
     return this.http.post<any>(this.authUrl, requestBody.toString(), this.httpOptions)
-    .pipe(tap((tokensObj: any) => {
-      this.storeJwtToken(tokensObj['access_token']);
+    .pipe(tap((tokens: any) => {
+      this.storeJwtToken(tokens['access_token']);
     }));
   }
 
   getJwtToken() {
     return localStorage.getItem(this.JWT_TOKEN);
   }
-  private doLoginUser__(username: string, tokens: Tokens) {
+  private doLoginUser(username: string, tokens: any) {
     this.loggedUser = username;
     this.storeTokens(tokens);
+    return this.setUserData(tokens);
   }
-  private doLoginUser(username: string, tokensObj: {}) {
-    let tokens = new Tokens();
-    tokens.jwt = tokensObj['access_token'];
-    tokens.refreshToken = tokensObj['refresh_token'];
-    this.loggedUser = username;
-    this.storeTokens(tokens);
-    return this.setUserData(tokensObj);
-  }
+  
   private setUserData(tokensObj): string {//OM
 
     if (tokensObj && tokensObj['access_token']) {
@@ -198,8 +157,8 @@ export class AuthService {
   }
 
   private storeTokens(tokens: Tokens) {
-    localStorage.setItem(this.JWT_TOKEN, tokens.jwt);
-    localStorage.setItem(this.REFRESH_TOKEN, tokens.refreshToken);
+    localStorage.setItem(this.JWT_TOKEN, tokens.access_token);
+    localStorage.setItem(this.REFRESH_TOKEN, tokens.refresh_token);
   }
 
   private removeTokens() {

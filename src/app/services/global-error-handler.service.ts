@@ -67,10 +67,15 @@ export class GlobalErrorHandlerService implements ErrorHandler {
         console.error('Backend returned status code: ', error.status);
         console.error('Response body:', error.message);          	  
       } else {
-            //alert('3');
-            //notifier.showError('An error occurred!');
-            notifier.showError('FOR DEBUGGING PURPOSES ONLY - ' + error.message);
-            console.error('An error occurred:', error.message);          
+            if (error.status>=900){
+                console.error(error.message);
+                notifier.showError(error.message);
+            } else {
+                //notifier.showError('An error occurred!');
+                notifier.showError('FOR DEBUGGING PURPOSES ONLY - ' + error.message);
+                console.error(error.message);
+            }
+                      
       }
       //alert('Navigating to error page now');
       //router.navigate(['/error']);

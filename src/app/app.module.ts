@@ -104,8 +104,8 @@ schemas.push(CUSTOM_ELEMENTS_SCHEMA);
       useClass: AuthInterceptor,
       multi: true
     },*/
-    /*GlobalErrorHandlerService,
-    { provide: ErrorHandler, useClass: GlobalErrorHandlerService }*/
+    GlobalErrorHandlerService,
+    { provide: ErrorHandler, useClass: GlobalErrorHandlerService }
   ],
   bootstrap: [AppComponent],
   schemas: schemas
