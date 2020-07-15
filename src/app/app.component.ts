@@ -26,8 +26,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    //this.utilitiesService.setCurrency();
-    //this.utilitiesService.setCurrencySymbol();//temporarily commented while fixing interceptor. put back and do login check
+    if (this.auth.getJwtToken()) this.utilitiesService.setCurrencySymbol();
   }
 
   hasRole(_role) {
