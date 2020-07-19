@@ -113,7 +113,8 @@ export class AuthService {
 
     return this.http.post<any>(this.authUrl, requestBody.toString(), this.httpOptions)
     .pipe(tap((tokens: any) => {
-      this.storeJwtToken(tokens['access_token']);
+      //this.storeJwtToken(tokens['access_token']);
+      this.storeTokens(tokens);
     }));
   }
 

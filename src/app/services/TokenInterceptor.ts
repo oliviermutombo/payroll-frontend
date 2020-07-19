@@ -30,7 +30,7 @@ export class TokenInterceptor implements HttpInterceptor {
           //this.notifier.showError("Your session expired");
           //let cutomError={status: 900, message:"Your session expired!"};
           return throwError({status: 900, message:"Your session expired!"});
-        } else return this.handle401Error(request, next);
+        } else return this.handle401Error(request, next, error);
       } else {
         return throwError(error);
       }
@@ -59,7 +59,7 @@ export class TokenInterceptor implements HttpInterceptor {
   private isRefreshing = false;
   private refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
 
-  private handle401Error(request: HttpRequest<any>, next: HttpHandler) {
+  private handle401Error(request: HttpRequest<any>, next: HttpHandler, error) {//added 3rd param (error)
     if (!this.isRefreshing) {
       this.isRefreshing = true;
       this.refreshTokenSubject.next(null);
@@ -73,6 +73,14 @@ export class TokenInterceptor implements HttpInterceptor {
       );
 
     } else {
+      //custom - no longer needed
+      /*if (!this.auth.getJwtToken()) {// If false means user is not logged in. we may wanna display appropriate error
+        if (error.error.error == "invalid_token"){
+          error.error.error_description = "Error signing you in!";
+        }
+        return throwError(error);
+      }*/
+      //
       return this.refreshTokenSubject.pipe(
         filter(token => token != null),
         take(1),

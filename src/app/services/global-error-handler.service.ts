@@ -28,7 +28,9 @@ export class GlobalErrorHandlerService implements ErrorHandler {
         if (error.error) {
             if (error.status >= 400 && error.status < 500 ) {
                 
-                if (((error.error.error) && (error.error.message === "No message available")) || (error.error.message === "")) {
+                if (error.error.error_description){// when error.error="invalid_grant" or related errors
+                    notifier.showError(error.error.error_description);
+                } else if (((error.error.error) && (error.error.message === "No message available")) || (error.error.message === "")) {
                     //alert('2.2.2');
                     notifier.showError(error.error.error);
                     console.error('An error occurred:', error.error.error);
