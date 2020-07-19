@@ -55,11 +55,39 @@
                         </div>
                     </div>
                 </div>
-                <div>
-                   <input type="submit" class="btn btn-primary btn-sm" value="Save" [disabled]="!rForm.valid">&nbsp;
-                   <input type="button" class="btn btn-primary btn-sm" value="Back" (click)="goBack()"/>&nbsp;
-                   <input *ngIf="updateMode" type="button" class="btn btn-danger btn-sm" value="Delete user acount" (click)="deleteUser(user.id)" [disabled]="!user" />
-                </div>
+                <div *ngIf="updateMode">
+                  <hr>
+                  <span><h4>Account status</h4></span>
+                  <div class="form-row">
+                     <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" formControlName="enabled" id="enabled" />
+                        <label class="custom-control-label" for="enabled">User enabled</label>
+                     </div>
+                  </div>
+                  <div class="form-row">
+                     <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" formControlName="accountNonExpired" id="accountNonExpired" />
+                        <label class="custom-control-label" for="accountNonExpired">Account non expired</label>
+                     </div>
+                  </div>
+                  <div class="form-row">
+                     <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" formControlName="accountNonLocked" id="accountNonLocked" />
+                        <label class="custom-control-label" for="accountNonLocked">Account non locked</label>
+                     </div>
+                  </div>
+                  <div class="form-row">
+                     <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" formControlName="credentialsNonExpired" id="credentialsNonExpired" />
+                        <label class="custom-control-label" for="credentialsNonExpired">Credentials non expired</label>
+                     </div>
+                  </div>
+                  </div><br>
+                  <div>
+                     <input type="submit" class="btn btn-primary btn-sm" value="Save" [disabled]="!rForm.valid">&nbsp;
+                     <input type="button" class="btn btn-primary btn-sm" value="Back" (click)="goBack()"/>&nbsp;
+                     <input *ngIf="updateMode" type="button" class="btn btn-danger btn-sm" value="Delete user acount" (click)="deleteUser(user.id)" [disabled]="!user" />
+                  </div>
              </form>
           </div>
        </div>
