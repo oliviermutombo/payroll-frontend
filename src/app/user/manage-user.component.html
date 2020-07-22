@@ -60,6 +60,33 @@
                   <span><h4>Account status</h4></span>
                   <div class="form-row">
                      <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" formControlName="disabled" id="disabled" />
+                        <label class="custom-control-label" for="disabled">User disabled</label>
+                     </div>
+                  </div>
+                  <div class="form-row">
+                     <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" formControlName="accountExpired" id="accountExpired" />
+                        <label class="custom-control-label" for="accountExpired">Account expired</label>
+                     </div>
+                  </div>
+                  <div class="form-row">
+                     <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" formControlName="accountLocked" id="accountLocked" />
+                        <label class="custom-control-label" for="accountLocked">Account locked</label>
+                     </div>
+                  </div>
+                  <div class="form-row">
+                     <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" formControlName="credentialsExpired" id="credentialsExpired" />
+                        <label class="custom-control-label" for="credentialsExpired">Credentials expired</label>
+                     </div>
+                  </div>
+                  </div><br>
+                  <!--<hr>
+                  <span><h4>Account status</h4></span>
+                  <div class="form-row">
+                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" formControlName="enabled" id="enabled" />
                         <label class="custom-control-label" for="enabled">User enabled</label>
                      </div>
@@ -82,7 +109,7 @@
                         <label class="custom-control-label" for="credentialsNonExpired">Credentials non expired</label>
                      </div>
                   </div>
-                  </div><br>
+                  </div><br>-->
                   <div>
                      <input type="submit" class="btn btn-primary btn-sm" value="Save" [disabled]="!rForm.valid">&nbsp;
                      <input type="button" class="btn btn-primary btn-sm" value="Back" (click)="goBack()"/>&nbsp;

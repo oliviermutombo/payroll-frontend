@@ -1,0 +1,72 @@
+<!--<employee-details></employee-details>-->
+<div class="row">
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+       <div class="card">
+          <div class="card-header">
+             <div>
+                <h3 class="mb-0">Account settings</h3>
+             </div>
+          </div>
+          <div class="card-body">
+            <div class="accrodion-regular">
+                <div id="accordion3">
+                    <div class="card">
+                        <div class="card-header" id="headingSeven">
+                            <h5 class="mb-0">
+                               <button class="btn btn-link" data-toggle="collapse" data-target="#collapseSeven" aria-expanded="true" aria-controls="collapseSeven">
+                                 <span class="fas fa-angle-down mr-3"></span>My roles
+                               </button>
+                              </h5>
+                        </div>
+                        <div id="collapseSeven" class="collapse show" aria-labelledby="headingSeven" data-parent="#accordion3">
+                            <div class="card-body">
+                                <p>{{ getRoles() }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card mb-2">
+                        <div class="card-header" id="headingEight">
+                            <h5 class="mb-0">
+                               <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseEight" aria-expanded="false" aria-controls="collapseEight">
+                                 <span class="fas fa-angle-down mr-3"></span>Change password
+                             </button>       </h5>
+                        </div>
+                        <div id="collapseEight" class="collapse" aria-labelledby="headingEight" data-parent="#accordion3">
+                            <div class="card-body">
+                                <form [formGroup]="PasswordForm" (ngSubmit)="changePassword(PasswordForm.value)">
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                           <label>Current Password</label>
+                                           <input type="password" class="form-control" formControlName="currentPassword" placeholder="Current Password">
+                                           <span class="text-danger" *ngIf="!PasswordForm.controls['currentPassword'].valid && PasswordForm.controls['currentPassword'].touched">{{ formErrors.currentPassword }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                           <label>New Password</label>
+                                           <input type="password" class="form-control" formControlName="newPassword" placeholder="New Password">
+                                           <span class="text-danger" *ngIf="!PasswordForm.controls['newPassword'].valid && PasswordForm.controls['newPassword'].touched">{{ formErrors.newPassword }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                           <label>Confirm New Password</label>
+                                           <input type="password" class="form-control" formControlName="confirmPassword" placeholder="Confirm New Password">
+                                           <span class="text-danger" *ngIf="!PasswordForm.controls['confirmPassword'].valid && PasswordForm.controls['confirmPassword'].touched">{{ formErrors.confirmPassword }}</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                       <input type="submit" class="btn btn-primary btn-sm" value="Update" [disabled]="!PasswordForm.valid">
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+       </div>
+    </div>
+ </div>
+ <!--<employee-list></employee-list>-->
+ 

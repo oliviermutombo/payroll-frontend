@@ -27,6 +27,7 @@ import { PageNotFoundComponent }  from '../services/page-not-found.component'; /
 
 import { AuthGuard } from '../guards';
 import { Role } from '../user/role';
+import { SettingsComponent } from '../user/settings.component';
 
 const routes: Routes = [
   /*{
@@ -116,6 +117,12 @@ const routes: Routes = [
     component: CompanyComponent,
     canActivate: [AuthGuard], 
     data: { roles: [Role.ROLE_EMPLOYEE_ADMIN] }
+  },
+  {
+    path: 'settings',
+    component: SettingsComponent,
+    canActivate: [AuthGuard], 
+    data: { roles: [Role.ROLE_USER] }
   },
   {
     path: 'deduction',

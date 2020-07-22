@@ -47,6 +47,7 @@ import { PositionService } from './admin/position/position.service';
 
 import { MatAutocompleteModule, MatInputModule } from '@angular/material';
 import { AuthService } from './services/auth.service';
+import { SettingsComponent } from './user/settings.component';
 
 
 let schemas: any[] = [];
@@ -74,6 +75,7 @@ schemas.push(CUSTOM_ELEMENTS_SCHEMA);
     CountryComponent,
     CompanyComponent,
     GlobalErrorComponent,
+    SettingsComponent,
     PageNotFoundComponent
   ],
   imports: [

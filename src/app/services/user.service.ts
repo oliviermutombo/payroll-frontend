@@ -315,6 +315,18 @@ export class UserService {
       catchError(this.handleError)*/);
   }
 
+  updatePassword(inputObj: any): Observable<boolean> {//TO-BE-COMPLETED.
+    return this.http.post<any>(`${this.userUrl}/password`, inputObj)
+      .pipe(map((res) => {
+        if (res) {
+          return true;
+        } else {
+          return false;
+        }
+      })/*,
+      catchError(this.handleError)*/);
+  }
+
   deleteUser(id: number): Observable<boolean> {
     return this.http.delete(`${this.userUrl}/${id}`)
       .pipe(map(res => {

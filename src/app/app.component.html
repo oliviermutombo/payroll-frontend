@@ -88,10 +88,12 @@
                                         <!--<h5 class="mb-0 text-white nav-user-name">{{ userService.getUserDisplayName() }}</h5>
                                         <span class="status"></span><span class="ml-2">{{ userService.currentUserValue.roles }}</span>-->
                                         <h5 class="mb-0 text-white nav-user-name">{{ auth.getUserDisplayName() }}</h5>
-                                        <span class="status"></span><span class="ml-2">{{ auth.currentUserValue.roles }}</span>
+                                        <!--<span class="status"></span><span class="ml-2">{{ auth.currentUserValue.roles }}</span>-->
                                     </div>
-                                    <a class="dropdown-item" href="#"><i class="fas fa-user mr-2"></i>Account</a>
-                                    <a class="dropdown-item" href="#"><i class="fas fa-cog mr-2"></i>Setting</a>
+                                    <a class="dropdown-item" [routerLink]="['/settings']"><i class="fas fa-user mr-2"></i>Account</a>
+                                    <a class="dropdown-item" [routerLink]="['/settings']"><i class="fas fa-cog mr-2"></i>Setting</a>
+                                    <!--<a class="dropdown-item" href="#"><i class="fas fa-user mr-2"></i>Account</a>-->
+                                    <!--<a class="dropdown-item" href="#"><i class="fas fa-cog mr-2"></i>Setting</a>-->
                                     <a class="dropdown-item" (click)="logout()"><i class="fas fa-power-off mr-2"></i>Logout</a>
                                 </div>
                             </li>

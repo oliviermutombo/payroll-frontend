@@ -115,10 +115,10 @@ checkEmployee($isChecked): void {
       is_payroll_admin: [null],
       is_employee_admin: [null],
       is_employee: [null],
-      enabled: [null],
-      accountNonExpired: [null],
-      accountNonLocked: [null],
-      credentialsNonExpired: [null]
+      disabled: [null],
+      accountExpired: [null],
+      accountLocked: [null],
+      credentialsExpired: [null]
     });
 
     // on each value change we call the validateForm function
@@ -201,34 +201,34 @@ checkEmployee($isChecked): void {
     }
   }
   /*Not needed
-  checkEnabled($isChecked): void {
+  checkdisabled($isChecked): void {
     if ($isChecked) {
-      this.user.enabled=true;
-    } else this.user.enabled=false;
+      this.user.disabled=true;
+    } else this.user.disabled=false;
   }
-  checkAccountNonExpired($isChecked): void {
+  checkaccountExpired($isChecked): void {
     if ($isChecked) {
-      this.user.accountNonExpired=true;
-    } else this.user.accountNonExpired=false;
+      this.user.accountExpired=true;
+    } else this.user.accountExpired=false;
   }
-  checkAccountNonLocked($isChecked): void {
+  checkaccountLocked($isChecked): void {
     if ($isChecked) {
-      this.user.accountNonLocked=true;
-    } else this.user.accountNonLocked=false;
+      this.user.accountLocked=true;
+    } else this.user.accountLocked=false;
   }
-  checkCredentialsNonExpired($isChecked): void {
+  checkcredentialsExpired($isChecked): void {
     if ($isChecked) {
-      this.user.credentialsNonExpired=true;
-    } else this.user.credentialsNonExpired=false;
+      this.user.credentialsExpired=true;
+    } else this.user.credentialsExpired=false;
   }*/
 
   updateUser(f) {
     this.user.employee = this.utilitiesService.generateQuickIdObject(this.empIdToEdit)
     this.user.role = this.getEditedRoles(f);
-    this.user.enabled = f.enabled;
-    this.user.accountNonExpired = f.accountNonExpired;
-    this.user.accountNonLocked = f.accountNonLocked;
-    this.user.credentialsNonExpired = f.credentialsNonExpired;
+    this.user.enabled = !f.disabled;
+    this.user.accountNonExpired = !f.accountExpired;
+    this.user.accountNonLocked = !f.accountLocked;
+    this.user.credentialsNonExpired = !f.credentialsExpired;
     
     if (this.user.role.length == 0) {
       this.notification.showError('No role(s) selected!');
@@ -266,10 +266,10 @@ checkEmployee($isChecked): void {
           is_payroll_admin: null,
           is_employee_admin: null,
           is_employee: null, // set to true by default.
-          enabled: null,
-          accountNonExpired: null,
-          accountNonLocked: null,
-          credentialsNonExpired: null
+          disabled: null,
+          accountExpired: null,
+          accountLocked: null,
+          credentialsExpired: null
         });
       }
     );
@@ -280,6 +280,7 @@ checkEmployee($isChecked): void {
     this.apiService.getById(globals.USER_ENDPOINT, id).subscribe(
       (res: any) => {
         this.user = res.result;
+        alert("this.user.enabled: " + this.user.enabled + "\n!this.user.enabled: " + !this.user.enabled);
         this.rForm.setValue({
           firstName: this.user.firstName,
           lastName: this.user.lastName,
@@ -288,10 +289,10 @@ checkEmployee($isChecked): void {
           is_payroll_admin: this.hasRole(this.user['roles'], this.stripRole(Role.ROLE_PAYROLL_ADMIN)),
           is_employee_admin: this.hasRole(this.user['roles'], this.stripRole(Role.ROLE_EMPLOYEE_ADMIN)),
           is_employee: this.hasRole(this.user['roles'], this.stripRole(Role.ROLE_EMPLOYEE)),
-          enabled: this.user.enabled,
-          accountNonExpired: this.user.accountNonExpired,
-          accountNonLocked: this.user.accountNonLocked,
-          credentialsNonExpired: this.user.credentialsNonExpired
+          disabled: !this.user.enabled,
+          accountExpired: !this.user.accountNonExpired,
+          accountLocked: !this.user.accountNonLocked,
+          credentialsExpired: !this.user.credentialsNonExpired
         });
       }
     );
