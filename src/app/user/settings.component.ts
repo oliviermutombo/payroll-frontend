@@ -69,10 +69,8 @@ export class SettingsComponent implements OnInit {
             alert(warningMessage);
         } else {
             let requestObj = {};
-            requestObj['username'] = this.auth.currentUserValue.username;
             requestObj['currentPassword'] = f.currentPassword;
             requestObj['newPassword'] = f.newPassword;
-            requestObj['confirmPassword'] = f.confirmPassword;
 
             this.userService.updatePassword(requestObj)
             .subscribe(
@@ -82,6 +80,10 @@ export class SettingsComponent implements OnInit {
             );
         }
         this.PasswordForm.reset();
+    }
+
+    stripRole(role) {
+        return role.replace('ROLE_','');
     }
 
     getRoles() {

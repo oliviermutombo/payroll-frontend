@@ -20,7 +20,11 @@
                         </div>
                         <div id="collapseSeven" class="collapse show" aria-labelledby="headingSeven" data-parent="#accordion3">
                             <div class="card-body">
-                                <p>{{ getRoles() }}</p>
+                                <ul>
+                                    <li *ngFor="let role of getRoles()">
+                                      {{stripRole(role)}}
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                     </div>

@@ -30,7 +30,7 @@ export class ManageUserComponent implements OnInit {
     'email' : '',
     'username' : '',
     'employee': null,
-    'password' : '12345', // Temporary
+    //'password' : '12345', // set in backend.
     'role' : [],
     'enabled': true,
     'accountNonExpired': true,
@@ -280,7 +280,6 @@ checkEmployee($isChecked): void {
     this.apiService.getById(globals.USER_ENDPOINT, id).subscribe(
       (res: any) => {
         this.user = res.result;
-        alert("this.user.enabled: " + this.user.enabled + "\n!this.user.enabled: " + !this.user.enabled);
         this.rForm.setValue({
           firstName: this.user.firstName,
           lastName: this.user.lastName,
