@@ -7,6 +7,9 @@ import { environment } from './../../environments/environment';//OM
 //guard
 import { User } from '../user/user';
 
+import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
+import { PasswordModalComponent } from '../user/password-modal.component';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -25,7 +28,9 @@ export class AuthService {
   public currentUserSubject: BehaviorSubject<User>;//OM-guard
   public currentUser: Observable<User>;//OM
 
-  constructor(private http: HttpClient) {
+  modalOption: NgbModalOptions = {};
+
+  constructor(private http: HttpClient, private modalService: NgbModal) {
     
     //OM
     var apiUsername = environment.apiUsername;
@@ -56,6 +61,7 @@ export class AuthService {
     return false;
   }
   public getUserDisplayName() {
+    //alert('getUserDisplayName - this.currentUserValue\n' + JSON.stringify(this.currentUserValue));
     let displayName = this.currentUserValue.username;
     if ((this.currentUserValue.firstName) && (this.currentUserValue.lastName)) {
       displayName = this.currentUserValue.firstName + ' ' + this.currentUserValue.lastName;
@@ -78,15 +84,35 @@ export class AuthService {
       mergeMap( username => this.http.get<any>(`${this.userUrl}/username/${username}`)),
       take(1)
     ).subscribe( userdetails => {
+      //alert('userdetails:\n' + JSON.stringify(userdetails));
       this.updateUderData(userdetails);
     });
   }
 
   private updateUderData(userData): void {//OM
+    if (userData.result.passwordChangeRequired==true) {
+      setTimeout(() => this.openFormModal());
+      //this.openFormModal();
+    }
+
     this.userObj.firstName = userData.result.firstName;
     this.userObj.lastName = userData.result.lastName;
-    localStorage.setItem('currentUser', JSON.stringify(this.userObj));////////////////////////
+    localStorage.setItem('currentUser', JSON.stringify(this.userObj));
     this.currentUserSubject.next(this.userObj);
+  }
+
+  openFormModal() {
+    this.modalOption.backdrop = 'static';
+    this.modalOption.keyboard = false;
+
+    const modalRef = this.modalService.open(PasswordModalComponent, this.modalOption);
+    modalRef.componentInstance.id = 10; // should be the id
+    
+    modalRef.result.then((result) => {
+      console.log(result);
+    }).catch((error) => {
+      console.log(error);
+    });
   }
 
   public logout() {//UPDATE TO ALLOW SERVER LOGOUT

@@ -49,6 +49,9 @@ import { MatAutocompleteModule, MatInputModule } from '@angular/material';
 import { AuthService } from './services/auth.service';
 import { SettingsComponent } from './user/settings.component';
 
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { PasswordModalComponent } from './user/password-modal.component';
+
 
 let schemas: any[] = [];
 schemas.push(CUSTOM_ELEMENTS_SCHEMA);
@@ -76,6 +79,7 @@ schemas.push(CUSTOM_ELEMENTS_SCHEMA);
     CompanyComponent,
     GlobalErrorComponent,
     SettingsComponent,
+    PasswordModalComponent,
     PageNotFoundComponent
   ],
   imports: [
@@ -88,7 +92,8 @@ schemas.push(CUSTOM_ELEMENTS_SCHEMA);
     AngularmaterialModule, //pagination
     MatAutocompleteModule,
     MatInputModule,
-    AppRoutingModule
+    AppRoutingModule,
+    NgbModule.forRoot()
   ],
   providers: [ 
     UserService,
@@ -110,6 +115,9 @@ schemas.push(CUSTOM_ELEMENTS_SCHEMA);
     { provide: ErrorHandler, useClass: GlobalErrorHandlerService }
   ],
   bootstrap: [AppComponent],
+  entryComponents: [
+    PasswordModalComponent
+  ],
   schemas: schemas
 })
 export class AppModule { }

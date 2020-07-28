@@ -29,6 +29,7 @@ export class AppComponent implements OnInit {
     if (this.auth.getJwtToken()) this.utilitiesService.setCurrencySymbol();
   }
 
+
   hasRole(_role) {
     //return this.userService.hasRole(_role);//Checks roles of current user
     return this.auth.hasRole(_role);
