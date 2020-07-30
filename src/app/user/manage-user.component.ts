@@ -242,6 +242,22 @@ checkEmployee($isChecked): void {
     }
   }
 
+  resetAccountStatusForm() {
+    this.rForm.controls.disabled.reset();
+    this.rForm.controls.accountExpired.reset();
+    this.rForm.controls.accountLocked.reset();
+    this.rForm.controls.credentialsExpired.reset();
+  }
+
+  resetUser(userId) {
+    this.apiService.saveOnly(globals.USER_ENDPOINT+'/reset', this.utilitiesService.generateQuickIdObject(userId)).subscribe(
+      (res) => {
+        this.notification.showSuccess('User password reset!');
+        this.resetAccountStatusForm();
+      }
+    );
+  }
+
   getEditedRoles(f){
     /* role sets for updatemode */
     let rolesArr = [];

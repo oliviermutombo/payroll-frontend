@@ -62,7 +62,7 @@ export class GlobalErrorHandlerService implements ErrorHandler {
                     notifier.showError('FOR DEBUGGING PURPOSES ONLY - 500\n' + statusText + ' - ' + JSON.stringify(error));
                 }
             } else {
-                alert('2.4');
+                //alert('2.4');
                 notifier.showError('FOR DEBUGGING PURPOSES ONLY - ' + JSON.stringify(error.error));
             }
             
