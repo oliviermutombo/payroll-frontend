@@ -6,6 +6,7 @@ import { ApiService } from 'src/app/admin/api.service';
 import { NotificationService } from '../../services/notification.service'; // new
 import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material'; //pagination
 import * as globals from 'src/app/globals';
+import { ConfirmationDialogService } from 'src/app/services/confirmation-dialog/confirmation-dialog.service';
 
 @Component({
   selector: 'app-root', // WHAT MUST THE SELECTOR BE???
@@ -35,7 +36,8 @@ export class SalaryComponent implements OnInit {
 
   constructor(private injector: Injector,
     private apiService: ApiService, 
-    private fb: FormBuilder) {
+    private fb: FormBuilder,
+    private confirmationDialogService: ConfirmationDialogService) {
     this.rForm = fb.group({
         payGrade: [null, Validators.required],
         basicPay: [null, [Validators.required, Validators.pattern('^[0-9]+(?:\.[0-9]+)?$')]]
@@ -159,6 +161,14 @@ export class SalaryComponent implements OnInit {
         }/*,
         (err) => this.error = err*/
       );
+  }
+
+  public openConfirmationDialog(id) {
+    this.confirmationDialogService.confirm('Please confirm...', 'Are you sure you want to delete?')
+    .then((confirmed) => {
+      if (confirmed) this.deleteSalary(id);
+    })
+    .catch(() => console.log('User dismissed the dialog (e.g., by using ESC, clicking the cross icon, or clicking outside the dialog)'));
   }
 
   deleteSalary(id) {

@@ -11,6 +11,7 @@ import { NotificationService } from '../services/notification.service';
 import { Role } from '../user/role';
 import { UtilitiesService } from '../services/utilities.service';
 import * as globals from 'src/app/globals';
+import { ConfirmationDialogService } from '../services/confirmation-dialog/confirmation-dialog.service';
 
 @Component({
   templateUrl: './manage-user.component.html'
@@ -105,6 +106,7 @@ checkEmployee($isChecked): void {
               private location: Location,
               private notification: NotificationService,
               private utilitiesService: UtilitiesService,
+              private confirmationDialogService: ConfirmationDialogService,
               public formService: FormService) { // TRY PRIVATE
 
     this.rForm = fb.group({
@@ -200,27 +202,6 @@ checkEmployee($isChecked): void {
       this.notifier.showError('This employee is inactive!');
     }
   }
-  /*Not needed
-  checkdisabled($isChecked): void {
-    if ($isChecked) {
-      this.user.disabled=true;
-    } else this.user.disabled=false;
-  }
-  checkaccountExpired($isChecked): void {
-    if ($isChecked) {
-      this.user.accountExpired=true;
-    } else this.user.accountExpired=false;
-  }
-  checkaccountLocked($isChecked): void {
-    if ($isChecked) {
-      this.user.accountLocked=true;
-    } else this.user.accountLocked=false;
-  }
-  checkcredentialsExpired($isChecked): void {
-    if ($isChecked) {
-      this.user.credentialsExpired=true;
-    } else this.user.credentialsExpired=false;
-  }*/
 
   updateUser(f) {
     this.user.employee = this.utilitiesService.generateQuickIdObject(this.empIdToEdit)
@@ -320,6 +301,14 @@ checkEmployee($isChecked): void {
     }
     //return JSON.stringify(s);
     return false;
+  }
+
+  public openConfirmationDialog(id) {
+    this.confirmationDialogService.confirm('Please confirm...', 'Are you sure you want to delete?')
+    .then((confirmed) => {
+      if (confirmed) this.deleteUser(id);
+    })
+    .catch(() => console.log('User dismissed the dialog (e.g., by using ESC, clicking the cross icon, or clicking outside the dialog)'));
   }
 
   deleteUser(id) {

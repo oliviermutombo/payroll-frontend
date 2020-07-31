@@ -6,6 +6,7 @@ import { Salary } from '../salary/salary';
 import { ApiService } from 'src/app/admin/api.service';
 import { UtilitiesService } from '../../services/utilities.service';
 import * as globals from 'src/app/globals';
+import { ConfirmationDialogService } from 'src/app/services/confirmation-dialog/confirmation-dialog.service';
 
 @Component({
   selector: 'app-employee-details',
@@ -35,6 +36,7 @@ export class EmployeeDetailsComponent implements OnInit{
       private route: ActivatedRoute,
       private apiService: ApiService,
       private utilitiesService: UtilitiesService,
+      private confirmationDialogService: ConfirmationDialogService,
       private location: Location
     ) {}
 
@@ -73,6 +75,14 @@ export class EmployeeDetailsComponent implements OnInit{
       );
       alert ('returned this.salary ' + id + JSON.stringify(this.salary));
       return this.salary;
+    }
+
+    public openConfirmationDialog(id) {
+      this.confirmationDialogService.confirm('Please confirm...', 'Are you sure you want to delete?')
+      .then((confirmed) => {
+        if (confirmed) this.deleteEmployee(id);
+      })
+      .catch(() => console.log('User dismissed the dialog (e.g., by using ESC, clicking the cross icon, or clicking outside the dialog)'));
     }
 
     deleteEmployee(id) {

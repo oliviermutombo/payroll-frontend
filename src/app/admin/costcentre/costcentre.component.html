@@ -57,7 +57,7 @@
                                     <th mat-header-cell *matHeaderCellDef mat-sort-header>Manage</th>
                                     <td mat-cell *matCellDef="let cos">
                                         <button class="btn btn-primary btn-xs" (click)="costcentreEdit(cos.id)" >Update</button>&nbsp;
-                                        <button class="btn btn-danger btn-xs" (click)="deleteCostcentre(cos.id)" >Remove</button>
+                                        <button class="btn btn-danger btn-xs" (click)="openConfirmationDialog(cos.id)" >Remove</button>
                                     </td>
                                 </ng-container>
                                 <tr mat-header-row *matHeaderRowDef="displayedColumns" class="mat-table-header-row"></tr>

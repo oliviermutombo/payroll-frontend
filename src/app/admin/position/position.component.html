@@ -37,7 +37,7 @@
                                     <th mat-header-cell *matHeaderCellDef mat-sort-header>Manage</th>
                                     <td mat-cell *matCellDef="let pos">
                                         <button class="btn btn-primary btn-xs" (click)="positionEdit(pos.id)" >Update</button>&nbsp;
-                                        <button class="btn btn-danger btn-xs" (click)="deletePosition(pos.id)" >Remove</button>
+                                        <button class="btn btn-danger btn-xs" (click)="openConfirmationDialog(pos.id)" >Remove</button>
                                     </td>
                                 </ng-container>
                                 <tr mat-header-row *matHeaderRowDef="displayedColumns" class="mat-table-header-row"></tr>

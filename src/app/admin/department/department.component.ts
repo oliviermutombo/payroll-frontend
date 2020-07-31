@@ -15,6 +15,7 @@ import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material'; /
 import { Employee } from '../employee/employee';
 import { UtilitiesService } from '../../services/utilities.service';
 import * as globals from 'src/app/globals';
+import { ConfirmationDialogService } from 'src/app/services/confirmation-dialog/confirmation-dialog.service';
 
 @Component({
   selector: 'app-department', // WHAT MUST THE SELECTOR BE???
@@ -64,6 +65,7 @@ export class DepartmentComponent implements OnInit {
               private apiService: ApiService,
               private utilitiesService: UtilitiesService,
               private fb: FormBuilder,
+              private confirmationDialogService: ConfirmationDialogService,
               public formService: FormService) {
 
     this.rForm = fb.group({
@@ -250,6 +252,14 @@ export class DepartmentComponent implements OnInit {
           this.rForm.reset();
         }
       );
+  }
+
+  public openConfirmationDialog(id) {
+    this.confirmationDialogService.confirm('Please confirm...', 'Are you sure you want to delete?')
+    .then((confirmed) => {
+      if (confirmed) this.deleteDepartment(id);
+    })
+    .catch(() => console.log('User dismissed the dialog (e.g., by using ESC, clicking the cross icon, or clicking outside the dialog)'));
   }
 
   deleteDepartment(id) {

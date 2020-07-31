@@ -7,6 +7,7 @@ import { NotificationService } from '../../services/notification.service';
 import { CustomValidators } from '../../services/custom_validators';
 import { FormService } from '../../services/form';
 import * as globals from 'src/app/globals';
+import { ConfirmationDialogService } from 'src/app/services/confirmation-dialog/confirmation-dialog.service';
 
 @Component({
   selector: 'app-position',
@@ -44,7 +45,8 @@ export class PositionComponent implements OnInit {
   constructor(private injector: Injector,
     private apiService: ApiService,
     private fb: FormBuilder,
-    public formService: FormService) {
+    public formService: FormService,
+    private confirmationDialogService: ConfirmationDialogService) {
 
     this.rForm = fb.group({
       name: [null, [Validators.required, Validators.minLength(1), Validators.maxLength(50), CustomValidators.validateCharacters]],
@@ -153,6 +155,14 @@ export class PositionComponent implements OnInit {
           this.rForm.reset();
         }
       );
+  }
+
+  public openConfirmationDialog(id) {
+    this.confirmationDialogService.confirm('Please confirm...', 'Are you sure you want to delete?')
+    .then((confirmed) => {
+      if (confirmed) this.deletePosition(id);
+    })
+    .catch(() => console.log('User dismissed the dialog (e.g., by using ESC, clicking the cross icon, or clicking outside the dialog)'));
   }
 
   deletePosition(id) {

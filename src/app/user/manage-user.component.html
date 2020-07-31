@@ -113,7 +113,7 @@
                   <div>
                      <input type="submit" class="btn btn-primary btn-sm" value="Save" [disabled]="!rForm.valid">&nbsp;
                      <input *ngIf="updateMode" type="button" class="btn btn-success btn-sm" value="Reset user password" (click)="resetUser(user.id)" [disabled]="!user" />&nbsp;
-                     <input *ngIf="updateMode" type="button" class="btn btn-danger btn-sm" value="Delete user acount" (click)="deleteUser(user.id)" [disabled]="!user" />&nbsp;
+                     <input *ngIf="updateMode" type="button" class="btn btn-danger btn-sm" value="Delete user acount" (click)="openConfirmationDialog(user.id)" [disabled]="!user" />&nbsp;
                      <input type="button" class="btn btn-primary btn-sm" value="Back" (click)="goBack()"/>&nbsp;
                   </div>
              </form>

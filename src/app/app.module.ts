@@ -51,6 +51,8 @@ import { SettingsComponent } from './user/settings.component';
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { PasswordModalComponent } from './user/password-modal.component';
+import { ConfirmationDialogComponent } from './services/confirmation-dialog/confirmation-dialog.component';
+import { ConfirmationDialogService } from './services/confirmation-dialog/confirmation-dialog.service';
 
 
 let schemas: any[] = [];
@@ -80,7 +82,8 @@ schemas.push(CUSTOM_ELEMENTS_SCHEMA);
     GlobalErrorComponent,
     SettingsComponent,
     PasswordModalComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
+    ConfirmationDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -101,6 +104,7 @@ schemas.push(CUSTOM_ELEMENTS_SCHEMA);
     CustomValidators,
     FormService,
     PositionService, //pagination
+    ConfirmationDialogService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
@@ -116,7 +120,8 @@ schemas.push(CUSTOM_ELEMENTS_SCHEMA);
   ],
   bootstrap: [AppComponent],
   entryComponents: [
-    PasswordModalComponent
+    PasswordModalComponent,
+    ConfirmationDialogComponent
   ],
   schemas: schemas
 })

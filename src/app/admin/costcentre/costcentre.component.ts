@@ -14,6 +14,7 @@ import { MatAutocompleteTrigger } from '@angular/material';
 import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material'; //pagination
 import { ApiService } from 'src/app/admin/api.service';
 import * as globals from 'src/app/globals';
+import { ConfirmationDialogService } from 'src/app/services/confirmation-dialog/confirmation-dialog.service';
 
 @Component({
   selector: 'app-costcentre',
@@ -56,7 +57,8 @@ export class CostcentreComponent implements OnInit {
               private dataService: DataService,
               private utilitiesService: UtilitiesService,
               private fb: FormBuilder,
-              public formService: FormService) {
+              public formService: FormService,
+              private confirmationDialogService: ConfirmationDialogService) {
                 
     this.rForm = fb.group({
       name: [null, [Validators.required, Validators.minLength(1), Validators.maxLength(50), CustomValidators.validateCharacters]],
@@ -194,6 +196,14 @@ export class CostcentreComponent implements OnInit {
           this.rForm.reset();
         }
       );
+  }
+
+  public openConfirmationDialog(id) {
+    this.confirmationDialogService.confirm('Please confirm...', 'Are you sure you want to delete?')
+    .then((confirmed) => {
+      if (confirmed) this.deleteCostcentre(id);
+    })
+    .catch(() => console.log('User dismissed the dialog (e.g., by using ESC, clicking the cross icon, or clicking outside the dialog)'));
   }
 
   deleteCostcentre(id) {
