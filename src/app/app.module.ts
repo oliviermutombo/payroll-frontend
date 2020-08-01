@@ -97,7 +97,7 @@ schemas.push(CUSTOM_ELEMENTS_SCHEMA);
     MatAutocompleteModule,
     MatInputModule,
     AppRoutingModule,
-    NgbModule.forRoot()
+    NgbModule
   ],
   providers: [ 
     UserService,

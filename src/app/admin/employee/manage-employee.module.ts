@@ -26,7 +26,7 @@ schemas.push(CUSTOM_ELEMENTS_SCHEMA);
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    NgbModule.forRoot() // New
+    NgbModule // New
   ],
   providers: [ CustomValidators, FormService ],
   bootstrap: [ManageEmployeeComponent],
