@@ -55,6 +55,13 @@ import { PasswordModalComponent } from './user/password-modal.component';
 import { ConfirmationDialogComponent } from './services/confirmation-dialog/confirmation-dialog.component';
 import { ConfirmationDialogService } from './services/confirmation-dialog/confirmation-dialog.service';
 
+// for HttpClient import:
+import { LoadingBarHttpClientModule } from '@ngx-loading-bar/http-client';
+// for Router import:
+import { LoadingBarRouterModule } from '@ngx-loading-bar/router';
+// for Core import:
+import { LoadingBarModule } from '@ngx-loading-bar/core';
+
 
 let schemas: any[] = [];
 schemas.push(CUSTOM_ELEMENTS_SCHEMA);
@@ -97,7 +104,13 @@ schemas.push(CUSTOM_ELEMENTS_SCHEMA);
     MatAutocompleteModule,
     MatInputModule,
     AppRoutingModule,
-    NgbModule
+    NgbModule,
+    // for HttpClient use:
+    LoadingBarHttpClientModule,
+    // for Router use:
+    LoadingBarRouterModule,
+    // for Core use:
+    LoadingBarModule
   ],
   providers: [ 
     UserService,
