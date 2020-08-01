@@ -10,8 +10,10 @@ import { NotificationService } from '../../services/notification.service';
 import { Observable } from 'rxjs';
 import { startWith, map, switchMap } from 'rxjs/operators';/////////////////////////////////
 import { Subscription } from 'rxjs';
-import { MatAutocompleteTrigger } from '@angular/material';
-import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material'; //pagination
+import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table'; //pagination
 import { ApiService } from 'src/app/admin/api.service';
 import * as globals from 'src/app/globals';
 import { ConfirmationDialogService } from 'src/app/services/confirmation-dialog/confirmation-dialog.service';

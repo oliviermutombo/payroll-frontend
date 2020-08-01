@@ -4,7 +4,9 @@ import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
 import { Salary } from './salary';
 import { ApiService } from 'src/app/admin/api.service';
 import { NotificationService } from '../../services/notification.service'; // new
-import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material'; //pagination
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table'; //pagination
 import * as globals from 'src/app/globals';
 import { ConfirmationDialogService } from 'src/app/services/confirmation-dialog/confirmation-dialog.service';
 

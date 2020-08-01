@@ -2,7 +2,9 @@ import { Component, OnInit, Injector, ViewChild } from '@angular/core';
 import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
 import { Position } from './position';
 import { ApiService } from 'src/app/admin/api.service';
-import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material'; //pagination
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table'; //pagination
 import { NotificationService } from '../../services/notification.service';
 import { CustomValidators } from '../../services/custom_validators';
 import { FormService } from '../../services/form';

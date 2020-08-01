@@ -8,7 +8,9 @@ import { FormService } from '../../services/form';
 import { Department } from '../department/department'; // For dropdown
 import { Position } from '../position/position'; // For dropdown
 import { UtilitiesService } from '../../services/utilities.service';
-import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import * as globals from 'src/app/globals';
 
 @Component({

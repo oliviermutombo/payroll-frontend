@@ -9,8 +9,10 @@ import { Costcentre } from '../costcentre/costcentre'; // For dropdown
 import { Observable } from 'rxjs';//////////////////////////////////////////////////
 import { filter, startWith, map, switchMap } from 'rxjs/operators';/////////////////////////////////
 import { Subscription } from 'rxjs';
-import { MatAutocompleteTrigger } from '@angular/material';//.................................
-import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material'; //pagination
+import { MatAutocompleteTrigger } from '@angular/material/autocomplete';//.................................
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table'; //pagination
 import { Employee } from '../employee/employee';
 import { Company } from './company';
 import { Country } from '../countries/country';

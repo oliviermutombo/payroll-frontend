@@ -2,8 +2,10 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Employee } from '../admin/employee/employee';
 import { ApiService } from 'src/app/admin/api.service';
 import { UtilitiesService } from '../services/utilities.service';
-import { MatAutocompleteTrigger } from '@angular/material';
-import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material';
+import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { Subscription } from 'rxjs';
 import * as globals from 'src/app/globals';
 

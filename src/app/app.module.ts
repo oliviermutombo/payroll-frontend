@@ -45,7 +45,8 @@ import { GlobalErrorHandlerService } from './services/global-error-handler.servi
 import { AngularmaterialModule } from './material/angularmaterial/angularmaterial.module';
 import { PositionService } from './admin/position/position.service';
 
-import { MatAutocompleteModule, MatInputModule } from '@angular/material';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatInputModule } from '@angular/material/input';
 import { AuthService } from './services/auth.service';
 import { SettingsComponent } from './user/settings.component';
 

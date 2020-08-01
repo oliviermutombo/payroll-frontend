@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild, QueryList, ViewChildren, Injector} from '@angular/core';
-import { MatAutocompleteTrigger } from '@angular/material';
-import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material'; //REMOVE
+import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table'; //REMOVE
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
