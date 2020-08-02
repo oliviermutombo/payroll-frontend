@@ -27,9 +27,6 @@ export class EmployeeListComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  error = '';
-  success = '';
-
   // Create de default constructor if possible.
   //employee = new Employee('', '', '', '', '', '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', '');
   employee = new Employee();
@@ -110,10 +107,5 @@ export class EmployeeListComponent implements OnInit {
   
   displayFn(employee?: Employee): string | undefined {
     return employee ? employee.firstName + ' ' + employee.lastName : undefined;
-  }
-
-  private resetErrors() {
-    this.success = '';
-    this.error   = '';
   }
 }

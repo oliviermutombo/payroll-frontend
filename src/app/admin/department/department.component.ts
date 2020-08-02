@@ -28,8 +28,6 @@ import { ConfirmationDialogService } from 'src/app/services/confirmation-dialog/
 export class DepartmentComponent implements OnInit {
   title = 'payroll-system';
   departments: MatTableDataSource<Department>;
-  error = '';
-  success = '';
   //costcentres: Costcentre[]; // For dropdown
   allCostcentres: Observable<Costcentre[]>;
   filteredCostcentres: Observable<Costcentre[]>;
@@ -153,7 +151,6 @@ export class DepartmentComponent implements OnInit {
   }
 
   addDepartment(f) {
-    this.resetErrors();
     let department = new Department();
     department.name = f.name;
     if (f.costcentre) {
@@ -178,7 +175,6 @@ export class DepartmentComponent implements OnInit {
             this.departments.data = res;
           }
           // Inform the user
-          this.success = 'Created successfully';
           this.notifier.showSaved();
 
           // Reset the form
@@ -228,7 +224,6 @@ export class DepartmentComponent implements OnInit {
   }*/
 
   updateDepartment(f) {
-    this.resetErrors();
     this.department.name = f.name;
    if (f.costcentre) {
       this.department.costcentre = {}
@@ -247,7 +242,6 @@ export class DepartmentComponent implements OnInit {
           if (this.showList) {
             this.departments.data = res;
           }
-          this.success = 'Updated successfully';
           this.department = new Department();
           this.notifier.showSaved();
           this.updateMode = false;
@@ -265,24 +259,17 @@ export class DepartmentComponent implements OnInit {
   }
 
   deleteDepartment(id) {
-    this.resetErrors();
     this.apiService.delete(globals.DEPARTMENT_ENDPOINT, id, this.departments.data)
       .subscribe(
         (res: Department[]) => {
           if (this.showList) {
             this.departments.data = res;
           }
-          this.success = 'Deleted successfully';
           this.notifier.showDeleted();
           this.updateMode = false;
           this.rForm.reset();
         }
       );
-  }
-
-  private resetErrors() {
-    this.success = '';
-    this.error   = '';
   }
 
   ngAfterViewInit() {

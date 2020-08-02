@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Injector } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { Employee } from './employee';
@@ -7,6 +7,7 @@ import { ApiService } from 'src/app/admin/api.service';
 import { UtilitiesService } from '../../services/utilities.service';
 import * as globals from 'src/app/globals';
 import { ConfirmationDialogService } from 'src/app/services/confirmation-dialog/confirmation-dialog.service';
+import { NotificationService } from 'src/app/services/notification.service';
 
 @Component({
   selector: 'app-employee-details',
@@ -19,26 +20,22 @@ import { ConfirmationDialogService } from 'src/app/services/confirmation-dialog/
   `*/
 })
 export class EmployeeDetailsComponent implements OnInit{
-    //@Input('betizparam') labetise : string; // New
-
-    //DO A REST FOR THESE (MISSING)
-    error = '';
-    success = '';
 
     employee: Employee;
     salary: Salary;
 
     encryptedEmpId = '';
 
-    // employee: {};
-
     constructor(
+      private injector: Injector,
       private route: ActivatedRoute,
       private apiService: ApiService,
-      private utilitiesService: UtilitiesService,
+      public utilitiesService: UtilitiesService,
       private confirmationDialogService: ConfirmationDialogService,
       private location: Location
     ) {}
+
+    notifier = this.injector.get(NotificationService);
 
     ngOnInit(): void {
       this.getEmployee();
@@ -73,7 +70,6 @@ export class EmployeeDetailsComponent implements OnInit{
           this.error = err;
         }*/
       );
-      alert ('returned this.salary ' + id + JSON.stringify(this.salary));
       return this.salary;
     }
 
@@ -86,20 +82,14 @@ export class EmployeeDetailsComponent implements OnInit{
     }
 
     deleteEmployee(id) {
-      this.resetErrors();
       this.employee = null;
       //this.employeeService.delete(id)
       this.apiService.deleteOnly(globals.EMPLOYEE_ENDPOINT, id)
         .subscribe(
           (res: boolean) => {
-            this.success = 'Deleted successfully';
+            this.notifier.showDeleted();
           }/*,
           (err) => this.error = err*/
         );
-    }
-
-    private resetErrors() {
-      this.success = '';
-      this.error   = '';
     }
 }

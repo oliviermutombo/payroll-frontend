@@ -28,9 +28,6 @@ export class PositionComponent implements OnInit {
   //
 
   title = 'payroll-system Positions';
-  //positions: Position[];
-  error = '';
-  success = '';
 
   position = new Position('', 0);
 
@@ -106,8 +103,6 @@ export class PositionComponent implements OnInit {
   }
 
   addPosition(f) {
-    this.resetErrors();
-
     let position = new Position();
     position.name = f.name;
 
@@ -120,7 +115,6 @@ export class PositionComponent implements OnInit {
             this.positions.data = res; // Implement a list refresh rather
           }
           // Inform the user
-          this.success = 'Created successfully';
           this.notifier.showSaved();
           // Reset the form
           this.rForm.reset();
@@ -142,7 +136,6 @@ export class PositionComponent implements OnInit {
   }
 
   updatePosition(f) {
-    this.resetErrors();
     this.position.name = f.name;
     this.apiService.update(globals.POSITION_ENDPOINT, this.position, this.positions.data)
       .subscribe(
@@ -150,7 +143,6 @@ export class PositionComponent implements OnInit {
           if (this.showList) {
             this.positions.data = res; // Implement a list refresh rather
           }
-          this.success = 'Updated successfully';
           this.position = new Position();
           this.notifier.showSaved();
           this.updateMode = false;
@@ -168,23 +160,16 @@ export class PositionComponent implements OnInit {
   }
 
   deletePosition(id) {
-    this.resetErrors();
     this.apiService.delete(globals.POSITION_ENDPOINT, id, this.positions.data)
       .subscribe(
         (res: Position[]) => {
           if (this.showList) {
             this.positions.data = res; // Impelement a list refresh rather
           }
-          this.success = 'Deleted successfully';
           this.notifier.showDeleted();
           this.updateMode = false;
           this.rForm.reset();
         }
       );
-  }
-
-  private resetErrors() {
-    this.success = '';
-    this.error   = '';
   }
 }

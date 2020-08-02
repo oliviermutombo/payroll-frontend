@@ -27,8 +27,6 @@ import { ConfirmationDialogService } from 'src/app/services/confirmation-dialog/
 export class CostcentreComponent implements OnInit {
   title = 'payroll-system';
   costcentres: MatTableDataSource<Costcentre>;
-  error = '';
-  success = '';
 
   costcentre = new Costcentre('', '');
   allEmployees: Observable<Employee[]>;
@@ -130,7 +128,6 @@ export class CostcentreComponent implements OnInit {
   }
 
   addCostcentre(f) {
-    this.resetErrors();
     let costcentre = new Costcentre();
     costcentre.name = f.name;
     costcentre.description = f.description;
@@ -150,7 +147,6 @@ export class CostcentreComponent implements OnInit {
             this.costcentres.data = res; // Impelement a list refresh rather
           }
           // Inform the user
-          this.success = 'Created successfully';
           this.notifier.showSaved();
 
           // Reset the form
@@ -175,7 +171,6 @@ export class CostcentreComponent implements OnInit {
   }
 
   updateCostcentre(f) {
-    this.resetErrors();
     this.costcentre.name = f.name;
     this.costcentre.description = f.description;
     if (f.owner) { //Only populating relevant fields (which will be used to update view list and save api call cost)
@@ -191,7 +186,6 @@ export class CostcentreComponent implements OnInit {
           if (this.showList) {
             this.costcentres.data = res;
           }
-          this.success = 'Updated successfully';
           this.costcentre = new Costcentre();
           this.notifier.showSaved();
           this.updateMode = false;
@@ -209,14 +203,12 @@ export class CostcentreComponent implements OnInit {
   }
 
   deleteCostcentre(id) {
-    this.resetErrors();
     this.apiService.delete(globals.COSTCENTRE_ENDPOINT, id, this.costcentres.data)
       .subscribe(
         (res: Costcentre[]) => {
           if (this.showList) {
             this.costcentres.data = res; // Impelement a list refresh rather
           }
-          this.success = 'Deleted successfully';
           this.notifier.showDeleted();
           this.updateMode = false;
           this.rForm.reset();
@@ -272,10 +264,5 @@ export class CostcentreComponent implements OnInit {
 
   displayFn(employee?: Employee): string | undefined {
     return employee ? employee.firstName + ' ' + employee.lastName : undefined;
-  }
-
-  private resetErrors() {
-    this.success = '';
-    this.error   = '';
   }
 }

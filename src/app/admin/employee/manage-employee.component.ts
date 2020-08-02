@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, QueryList, ViewChildren} from '@angular/core';
+import { Component, OnInit, ViewChild, QueryList, ViewChildren, Injector} from '@angular/core';
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -19,6 +19,7 @@ import { Subscription } from 'rxjs';
 import * as globals from 'src/app/globals';
 import { Country } from '../countries/country';
 import { map, startWith, switchMap } from 'rxjs/operators';
+import { NotificationService } from 'src/app/services/notification.service';
 
 @Component({
   //selector: 'app-root', // WHAT MUST THE SELECTOR BE???
@@ -49,9 +50,6 @@ export class ManageEmployeeComponent implements OnInit {
   titles: [];
 
   //</Dropdown_Stuff>
-
-  error = '';
-  success = '';
 
   //employee = new Employee('', '', '', '', '', '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', '');
   employee = new Employee();
@@ -133,7 +131,8 @@ export class ManageEmployeeComponent implements OnInit {
   @ViewChildren(MatAutocompleteTrigger) triggerCollection:  QueryList<MatAutocompleteTrigger>;
   subscription: Subscription;
 
-  constructor(private apiService: ApiService,
+  constructor(private injector: Injector,
+              private apiService: ApiService,
               private fb: FormBuilder,
               private route: ActivatedRoute,
               private location: Location,
@@ -184,6 +183,8 @@ export class ManageEmployeeComponent implements OnInit {
       this.formErrors = this.formService.validateForm(this.rForm, this.formErrors, true);
     });
   }
+
+  notifier = this.injector.get(NotificationService);
 
   ngOnInit() {
     //<Dropdown_Stuff>
@@ -251,20 +252,17 @@ export class ManageEmployeeComponent implements OnInit {
   }
 
   getEmployee(id): void {
-    //this.employeeService.getEmployee(id).subscribe(
     this.apiService.getById(globals.EMPLOYEE_ENDPOINT, id).subscribe(
       (res: Employee) => {
         this.employee = res;
       },
       (err) => {
-        alert('error: ' + JSON.stringify(err));
-        this.error = err;
+        this.notifier.showError("Could not retrieve employee!");
       }
     );
   }
 
   addEmployee(f) {
-    this.resetErrors();
 
     this.employee.empCode = Math.floor(Math.random() * 10001); // Temp random
     this.employee.firstName = f.firstName;
@@ -335,14 +333,13 @@ export class ManageEmployeeComponent implements OnInit {
       .subscribe(
         (res: boolean) => {
           if (res) {
-            this.success = 'Created successfully';
+            this.notifier.showSaved();
           } else {
-            this.error = 'An error occured';
+            this.notifier.showGenericError();
           }
-          // Reset the form
           this.rForm.reset();
         },
-        (err) => this.error = err
+        (err) => this.notifier.showGenericError()
       );
       window.scroll(0, 0);
   }
@@ -391,14 +388,12 @@ export class ManageEmployeeComponent implements OnInit {
         });
       },
       (err) => {
-        alert('error: ' + JSON.stringify(err));
-        this.error = err;
+        this.notifier.showGenericError();
       }
     );
   }
 
   updateEmployee(f) {
-    this.resetErrors();
     this.employee.firstName = f.firstName;
     this.employee.middleName = f.middleName;
     this.employee.lastName = f.lastName;
@@ -473,29 +468,21 @@ export class ManageEmployeeComponent implements OnInit {
     this.apiService.updateOnly(globals.EMPLOYEE_ENDPOINT, this.employee)
       .subscribe(
         (res) => {
-          this.success = 'Updated successfully';
+          this.notifier.showSaved();
         },
-        (err) => this.error = err
+        (err) => this.notifier.showGenericError()
       );
     window.scroll(0, 0);
   }
 
   deleteEmployee(id) {
-    this.resetErrors();
-    //this.employeeService.delete(id)
     this.apiService.deleteOnly(globals.EMPLOYEE_ENDPOINT, id)
       .subscribe(
         (res: boolean) => {
-          // this.employees = res;
-          this.success = 'Deleted successfully';
+          this.notifier.showDeleted();
         },
-        (err) => this.error = err
+        (err) => this.notifier.showGenericError()
       );
-  }
-
-  private resetErrors() {
-    this.success = '';
-    this.error   = '';
   }
 
   //<Dropdown_Stuff>

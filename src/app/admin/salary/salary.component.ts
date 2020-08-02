@@ -23,8 +23,6 @@ export class SalaryComponent implements OnInit {
   displayedColumns: string[] = ['payGrade', 'basicPay', 'manage'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  error = '';
-  success = '';
 
   salary = new Salary('', 0);
 
@@ -101,7 +99,6 @@ export class SalaryComponent implements OnInit {
   }
 
   addSalary(f) {
-    this.resetErrors();
 
     let salary = new Salary();//Very important - otherwise, if say a salary profile was active for update. it will use it.
     salary.payGrade = f.payGrade;
@@ -116,7 +113,6 @@ export class SalaryComponent implements OnInit {
             this.salaries.data = res;
           }
           // Inform the user
-          this.success = 'Created successfully'; // to be decomissioned
           this.notifier.showSaved();
 
           // Reset the form
@@ -145,7 +141,6 @@ export class SalaryComponent implements OnInit {
   }
 
   updateSalary(f) {
-    this.resetErrors();
     this.salary.payGrade = f.payGrade;
     this.salary.basicPay = f.basicPay;
     this.apiService.update(globals.SALARY_ENDPOINT, this.salary, this.salaries.data)
@@ -154,7 +149,6 @@ export class SalaryComponent implements OnInit {
           if (this.showList) {
             this.salaries.data = res;
           }
-          this.success = 'Updated successfully'; // to be decomissioned
           // Inform the user
           this.notifier.showSaved();
           this.salary = new Salary(); //reset object after update.
@@ -174,14 +168,12 @@ export class SalaryComponent implements OnInit {
   }
 
   deleteSalary(id) {
-    this.resetErrors();
     this.apiService.delete(globals.SALARY_ENDPOINT, id, this.salaries.data)
       .subscribe(
         (res: Salary[]) => {
           if (this.showList) {
             this.salaries.data = res;
           }
-          this.success = 'Deleted successfully'; // to be decomissioned
           // Inform the user
           this.notifier.showDeleted();
 
@@ -190,10 +182,5 @@ export class SalaryComponent implements OnInit {
         }/*,
         (err) => this.error = err*/
       );
-  }
-
-  private resetErrors() { // to be decomissioned
-    this.success = '';
-    this.error   = '';
   }
 }

@@ -24,9 +24,6 @@ export class UserListComponent implements OnInit {
   @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
   subscription: Subscription;
 
-  error = '';
-  success = '';
-
   // Create de default constructor if possible.
   employee : any;//new Employee('', '', '', '', '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', '');
 

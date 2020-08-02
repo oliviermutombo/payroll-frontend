@@ -17,9 +17,6 @@ export class LoginComponent implements OnInit {
 
     title = 'Login';
 
-    error = '';
-    success = '';
-
     rForm: FormGroup;
     post: any;
     email = '';
@@ -47,28 +44,11 @@ export class LoginComponent implements OnInit {
         };
     }
 
-    /*login(f) {
-        this.resetErrors();
-        //this.userService.login({'email': f.email, 'password': f.password});
-        let submittedUser = {'email': f.email, 'password': f.password};
-        this.userService.login(submittedUser).subscribe(
-            (res: any) => {
-                
-            }//,
-            //(err) => {
-            //    alert ('Ereur yangoyo: ' + JSON.stringify(err));
-            //    this.error = err;
-            //}
-        );
-    } v0 */
-
     login(f) {
-        this.resetErrors();
         let requestBody = new URLSearchParams();
         requestBody.set('username', f.email);
         requestBody.set('password', f.password);
         requestBody.set('grant_type', 'password');
-        //this.userService.login(requestBody);
         this.auth.login(requestBody);
     }
     
@@ -79,10 +59,5 @@ export class LoginComponent implements OnInit {
     logout() {
         //this.userService.logout();
         this.auth.logout();
-    }
-
-    private resetErrors() {
-        this.success = '';
-        this.error   = '';
     }
 }
