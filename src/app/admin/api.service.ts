@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 
 import { Observable, throwError } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, share, shareReplay } from 'rxjs/operators';
 import { environment } from './../../environments/environment';
 
 @Injectable({
@@ -23,7 +23,7 @@ export class ApiService {
         return this.http.get<any[]>(`${this.baseUrl + entityEndpoint}/`).pipe(
             map((res) => {
                 return res;
-        }));
+        }),shareReplay(1)); //Added ",shareReplay(1)" mostly to optimise dropdowns which kept making API calls on each click, keystroke, option selection. Should this cause undesired behaviour, then rather implement at the component level calling this function e.g. "this.allEmployees = this.apiService.getAll(globals.EMPLOYEE_ENDPOINT).pipe(shareReplay(1));"
     }
 
     /**
