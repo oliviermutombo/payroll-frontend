@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpErrorResponse} from '@angular/common/http';
-import * as jwt_decode from 'jwt-decode';
+//import * as jwt_decode from 'jwt-decode';
 import { Observable, BehaviorSubject, Subject, ReplaySubject, from, of } from 'rxjs';
 import { map, mergeMap, take, switchMap } from 'rxjs/operators';
 import { environment } from './../../environments/environment';
@@ -233,7 +233,7 @@ export class UserService {
     return localStorage.getItem(REFRESH_TOKEN);
   }
 
-  private getTokenExpirationDate(token: string): Date { // Kinda duplicate
+  /*private getTokenExpirationDate(token: string): Date { // Kinda duplicate
     const decoded = jwt_decode(token);
 
     if (decoded['exp'] === undefined) return null;
@@ -241,9 +241,9 @@ export class UserService {
     const date = new Date(0); 
     date.setUTCSeconds(decoded['exp']);
     return date;
-  }
+  }*/
 
-  public isTokenExpired(token?: string): boolean {
+  /*public isTokenExpired(token?: string): boolean {
     if(!token) token = this.getAccessToken();
     if(!token) return true;
 
@@ -255,7 +255,7 @@ export class UserService {
   public isAuthenticated(): boolean {
     const token = this.getAccessToken();
     return !this.isTokenExpired(token);
-  }
+  }*/
 
   create(newuser: any): Observable<boolean> {
     return this.http.post<any>(`${this.userUrl}/`, newuser)
