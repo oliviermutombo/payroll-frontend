@@ -42,6 +42,7 @@ export class ManageEmployeeComponent implements OnInit {
   filteredPositions: Observable<Position[]>;
   countries: Observable<Country[]>;
   filteredCountries: Observable<Country[]>;
+  filteredNationalities: Observable<Country[]>;
   allEmployees: Observable<Employee[]>;
   filteredEmployees: Observable<Employee[]>;
 
@@ -208,6 +209,11 @@ export class ManageEmployeeComponent implements OnInit {
     );
     this.getCountries();
     this.filteredCountries = this.thecountry.valueChanges
+    .pipe(
+      startWith(''),
+      switchMap(value => this.filterCountries(value))
+    );
+    this.filteredNationalities = this.thenationality.valueChanges
     .pipe(
       startWith(''),
       switchMap(value => this.filterCountries(value))
@@ -502,6 +508,12 @@ export class ManageEmployeeComponent implements OnInit {
   getEmployees(): void {
     this.allEmployees = this.apiService.getAll(globals.EMPLOYEE_ENDPOINT);
   }
+  /*getEmployees(): void {
+    this.allEmployees = Observable.of(_);
+    this.apiService.getAll(globals.EMPLOYEE_ENDPOINT).subscribe(_ => {
+    this.allEmployees = Observable.of(_);
+    })
+  }*/
   getEmployeeTypes(): void {
     this.apiService.getAll(globals.EMPLOYEE_TYPE_ENDPOINT).subscribe(
       (res: []) => {
@@ -655,6 +667,17 @@ export class ManageEmployeeComponent implements OnInit {
       return this.countries;
     }
   }
+  /*private filterNationalities(value: string | Country) {
+    let filterValue = '';
+    if (value) {
+      filterValue = typeof value === 'string' ? value.toLowerCase() : value.name.toLowerCase();
+      return this.countries.pipe(
+        map(countries => countries.filter(country => country.name.toLowerCase().includes(filterValue)))
+      );
+    } else {
+      return this.countries;
+    }
+  }*/
   displayCountryFn(country?: Country): string | undefined {
     return country ? country.name : undefined;
   }
@@ -685,6 +708,9 @@ export class ManageEmployeeComponent implements OnInit {
   }
   get thecountry() {
     return this.rForm.get('country');
+  }
+  get thenationality() {
+    return this.rForm.get('nationality');
   }
   get theManager() {
     return this.rForm.get('manager');
