@@ -12,7 +12,7 @@ import { environment } from './../../../environments/environment';
   export class PayslipService {
 
     baseUrl = environment.apiUrl;
-    payslipUrl = this.baseUrl + '/payslip';
+    payslipUrl = this.baseUrl + '/employee/payslip';
 
     payslip = {};
 

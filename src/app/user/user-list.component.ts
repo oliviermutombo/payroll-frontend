@@ -1,10 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Employee } from '../admin/employee/employee';
-import { EmployeeService } from '../admin/employee.service';
+import { ApiService } from 'src/app/admin/api.service';
 import { UtilitiesService } from '../services/utilities.service';
-import { MatAutocompleteTrigger } from '@angular/material';
-import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material';
+import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { Subscription } from 'rxjs';
+import * as globals from 'src/app/globals';
 
 @Component({
   selector: 'app-root',
@@ -21,15 +24,12 @@ export class UserListComponent implements OnInit {
   @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
   subscription: Subscription;
 
-  error = '';
-  success = '';
-
   // Create de default constructor if possible.
   employee : any;//new Employee('', '', '', '', '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', '');
 
   updateMode = false;
 
-  constructor(private employeeService: EmployeeService,
+  constructor(private apiService: ApiService,
               private utilitiesService: UtilitiesService) {
   }
 
@@ -38,7 +38,8 @@ export class UserListComponent implements OnInit {
   }
 
   getEmployees(): any {
-    this.employeeService.getAll().subscribe(
+    //this.employeeService.getAll().subscribe(
+    this.apiService.getAll(globals.EMPLOYEE_USER_ENDPOINT).subscribe(
       (res: Employee[]) => {
         this.employees = new MatTableDataSource(res);
         this.employees.paginator = this.paginator;
@@ -47,8 +48,9 @@ export class UserListComponent implements OnInit {
     );
   }
 
-  getEmployee(id): void {
-    this.employeeService.getEmployee(id).subscribe(
+  getEmployee(id): void {//WHERE IS THIS USED? IF NOWHERE, DELETE.
+    //this.employeeService.getEmployee(id).subscribe(
+    this.apiService.getById(globals.EMPLOYEE_ENDPOINT, id).subscribe(
       (res: Employee) => {
         this.employee = res;
       }

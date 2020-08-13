@@ -23,6 +23,7 @@ import { ManageUserComponent } from  './user/manage-user.component';
 
 //emp
 import { PayslipComponent } from './employee/payslip/payslip.component';
+import { PersonalDetailsComponent } from './employee/details/personal-details.component';
 
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { GlobalErrorComponent }  from './services/global-error.component';
@@ -35,6 +36,7 @@ import { FormService } from './services/form';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSnackBarModule } from '@angular/material/snack-bar'; // new
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { TokenInterceptor } from './services/TokenInterceptor'; ///////////
 import { AuthInterceptor } from './services/auth-request';
 
 import { GlobalErrorHandlerService } from './services/global-error-handler.service';
@@ -43,7 +45,22 @@ import { GlobalErrorHandlerService } from './services/global-error-handler.servi
 import { AngularmaterialModule } from './material/angularmaterial/angularmaterial.module';
 import { PositionService } from './admin/position/position.service';
 
-import { MatAutocompleteModule, MatInputModule } from '@angular/material';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatInputModule } from '@angular/material/input';
+import { AuthService } from './services/auth.service';
+import { SettingsComponent } from './user/settings.component';
+
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { PasswordModalComponent } from './user/password-modal.component';
+import { ConfirmationDialogComponent } from './services/confirmation-dialog/confirmation-dialog.component';
+import { ConfirmationDialogService } from './services/confirmation-dialog/confirmation-dialog.service';
+
+// for HttpClient import:
+import { LoadingBarHttpClientModule } from '@ngx-loading-bar/http-client';
+// for Router import:
+import { LoadingBarRouterModule } from '@ngx-loading-bar/router';
+// for Core import:
+import { LoadingBarModule } from '@ngx-loading-bar/core';
 
 
 let schemas: any[] = [];
@@ -65,12 +82,16 @@ schemas.push(CUSTOM_ELEMENTS_SCHEMA);
     PayrollPeriodComponent,
     PayrollComponent,
     PayslipComponent,
+    PersonalDetailsComponent,
     UserListComponent,
     ManageUserComponent,
     CountryComponent,
     CompanyComponent,
     GlobalErrorComponent,
-    PageNotFoundComponent
+    SettingsComponent,
+    PasswordModalComponent,
+    PageNotFoundComponent,
+    ConfirmationDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -82,22 +103,40 @@ schemas.push(CUSTOM_ELEMENTS_SCHEMA);
     AngularmaterialModule, //pagination
     MatAutocompleteModule,
     MatInputModule,
-    AppRoutingModule
+    AppRoutingModule,
+    NgbModule,
+    // for HttpClient use:
+    LoadingBarHttpClientModule,
+    // for Router use:
+    LoadingBarRouterModule,
+    // for Core use:
+    LoadingBarModule
   ],
   providers: [ 
     UserService,
+    AuthService,
     CustomValidators,
     FormService,
     PositionService, //pagination
+    ConfirmationDialogService,
     {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TokenInterceptor,
+      multi: true
+    },
+    /*{
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true
-    },
+    },*/
     GlobalErrorHandlerService,
     { provide: ErrorHandler, useClass: GlobalErrorHandlerService }
   ],
   bootstrap: [AppComponent],
+  entryComponents: [
+    PasswordModalComponent,
+    ConfirmationDialogComponent
+  ],
   schemas: schemas
 })
 export class AppModule { }

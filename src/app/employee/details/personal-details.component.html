@@ -1,0 +1,277 @@
+<!--<employee-details></employee-details>-->
+<div class="row">
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+       <div class="card">
+          <div class="card-header">
+             <div>
+                <h3 class="mb-0">Personal details</h3>
+             </div>
+          </div>
+          <div class="card-body">
+             <form [formGroup]="rForm" (ngSubmit)="saveDetails(rForm.value)">
+                <div><span style="color: red;">Only contact details can be updated.<br><br></span></div>
+                <div><input type="checkbox" formControlName="active"><span> Active</span></div>
+                <span style="text-align: center;"><h4>Personal details</h4></span>
+                <div class="form-row">
+                   <div class="form-group col-md-4">
+                      <label>Gender</label>
+                      <select class="form-control" formControlName="gender">
+                         <option value=null disabled selected hidden>Choose</option>
+                         <option [ngValue]="g.id" *ngFor="let g of genders">  
+                            {{g['value']}}
+                         </option>
+                      </select>
+                   </div>
+                   <div class="form-group col-md-4">
+                      <label>Title</label>
+                      <select class="form-control" formControlName="title">
+                         <option value=null disabled selected hidden>Choose</option>
+                         <option [ngValue]="t.id" *ngFor="let t of titles">  
+                            {{t['name']}}
+                         </option>
+                      </select>
+                   </div>
+                </div>
+                <div class="form-row">
+                   <div class="form-group col-md-4">
+                      <label>First Name*</label>
+                      <input type="text" class="form-control" formControlName="firstName" placeholder="First Name">
+                      <span class="text-danger" *ngIf="!rForm.controls['firstName'].valid && rForm.controls['firstName'].touched">{{ formErrors.firstName }}</span>
+                   </div>
+                   <div class="form-group col-md-4">
+                      <label>Middle Name</label>
+                      <input type="text" class="form-control" formControlName="middleName" placeholder="Middle Name">
+                      <span class="text-danger" *ngIf="!rForm.controls['middleName'].valid && rForm.controls['middleName'].touched">{{ formErrors.middleName }}</span>
+                   </div>
+                   <div class="form-group col-md-4">
+                      <label>Surname*</label>
+                      <input type="text" class="form-control" formControlName="lastName" placeholder="Surname">
+                      <span class="text-danger" *ngIf="!rForm.controls['lastName'].valid && rForm.controls['lastName'].touched">{{ formErrors.lastName }}</span>
+                   </div>
+                </div>
+                <div class="form-row">
+                   <div class="form-group col-md-4">
+                      <label>Date of birth*</label>
+                      <input type="date" class="form-control" formControlName="dob">
+                      <span class="text-danger" *ngIf="!rForm.controls['dob'].valid && rForm.controls['dob'].touched">{{ formErrors.dob }}</span>
+                   </div>
+                   <div class="form-group col-md-4">
+                      <label>ID Number</label>
+                      <input type="text" class="form-control" formControlName="idNumber" placeholder="ID Number">
+                      <span class="text-danger" *ngIf="!rForm.controls['idNumber'].valid && rForm.controls['idNumber'].touched">{{ formErrors.idNumber }}</span>
+                   </div>
+                   <div class="form-group col-md-4">
+                      <label>Passport Number</label>
+                      <input type="text" class="form-control" formControlName="passportNumber" placeholder="If applicable">
+                      <span class="text-danger" *ngIf="!rForm.controls['passportNumber'].valid && rForm.controls['passportNumber'].touched">{{ formErrors.passportNumber }}</span>
+                   </div>
+                </div>
+                <div class="form-row">
+                   <div class="form-group col-md-4">
+                      <label>Nationality</label>
+                      <mat-form-field>
+                         <input type="text" placeholder="Choose" matInput formControlName="nationality" [matAutocomplete]="nationalityAuto">
+                         <mat-autocomplete #nationalityAuto="matAutocomplete" [displayWith]="displayCountryFn">
+                           <mat-option *ngFor="let country of filteredCountries | async" [value]="country">
+                            {{country.name}}
+                           </mat-option>
+                         </mat-autocomplete>
+                      </mat-form-field>
+                      <span class="text-danger" *ngIf="!rForm.controls['nationality'].valid && rForm.controls['nationality'].touched">{{ formErrors.nationality }}</span>
+                   </div>
+                   <div class="form-group col-md-4"><label>Marital Status</label>
+                      <select class="form-control" formControlName="maritalStatus">
+                         <option value=null disabled selected hidden>Choose</option>
+                         <option value=false>Unmarried</option>
+                         <option value=true>Married</option>
+                         <option value=null>Not Specified</option>
+                      </select>
+                      <span class="text-danger" *ngIf="!rForm.controls['maritalStatus'].valid && rForm.controls['maritalStatus'].touched">{{ formErrors.maritalStatus }}</span>
+                   </div>
+                   <div class="form-group col-md-4">
+                      <label>Personal Email address</label>
+                      <input type="email" class="form-control" formControlName="personalEmail" placeholder="email@example.com">
+                      <span class="text-danger" *ngIf="!rForm.controls['personalEmail'].valid && rForm.controls['personalEmail'].touched">{{ formErrors.personalEmail }}</span>
+                   </div>
+                </div>
+                <span style="text-align: center;"><h4>Contact details</h4></span>
+                <div class="form-group">
+                   <label>Address 1</label>
+                   <input type="text" class="form-control" formControlName="address1" placeholder="Line 1">
+                   <span class="text-danger" *ngIf="!rForm.controls['address1'].valid && rForm.controls['address1'].touched">{{ formErrors.address1 }}</span>
+                </div>
+                <div class="form-row">
+                   <div class="form-group col-md-8">
+                      <label>Address 2</label>
+                      <input type="text" class="form-control" formControlName="address2" placeholder="Line 2">
+                      <span class="text-danger" *ngIf="!rForm.controls['address2'].valid && rForm.controls['address2'].touched">{{ formErrors.address2 }}</span>
+                   </div>
+                   <div class="form-group col-md-4">
+                      <label>Postal code</label>
+                      <input type="text" class="form-control" formControlName="postalCode" placeholder="or zip code">
+                      <span class="text-danger" *ngIf="!rForm.controls['postalCode'].valid && rForm.controls['postalCode'].touched">{{ formErrors.postalCode }}</span>
+                   </div>
+                </div>
+                <div class="form-row">
+                   <div class="form-group col-md-4">
+                      <label>Country</label>
+                      <!--<input type="text" class="form-control" formControlName="country">-->
+                      <mat-form-field>
+                         <input type="text" placeholder="Choose" matInput formControlName="country" [matAutocomplete]="CountryAuto">
+                         <mat-autocomplete #CountryAuto="matAutocomplete" [displayWith]="displayCountryFn">
+                           <mat-option *ngFor="let country of filteredCountries | async" [value]="country">
+                            {{country.name}}
+                           </mat-option>
+                         </mat-autocomplete>
+                      </mat-form-field>
+                      <span class="text-danger" *ngIf="!rForm.controls['country'].valid && rForm.controls['country'].touched">{{ formErrors.country }}</span>
+                   </div>
+                   <div class="form-group col-md-4">
+                      <label>Home number</label>
+                      <input type="text" class="form-control" formControlName="homeNumber" placeholder="Home number">
+                      <span class="text-danger" *ngIf="!rForm.controls['homeNumber'].valid && rForm.controls['homeNumber'].touched">{{ formErrors.homeNumber }}</span>
+                   </div>
+                   <div class="form-group col-md-4">
+                      <label>Cell number</label>
+                      <input type="text" class="form-control" formControlName="cellNumber" placeholder="Cell number">
+                      <span class="text-danger" *ngIf="!rForm.controls['cellNumber'].valid && rForm.controls['cellNumber'].touched">{{ formErrors.cellNumber }}</span>
+                   </div>
+                </div>
+                <span style="text-align: center;"><h4>Employee details</h4></span>
+                <div class="form-row">
+                   <div class="form-group col-md-4">
+                      <label>Employee Type</label>
+                      <select class="form-control" formControlName="employeeType">
+                         <option value=null disabled selected hidden>Choose</option>
+                         <option [ngValue]="eT.id" *ngFor="let eT of employeeTypes">  
+                            {{eT['value']}}
+                         </option>
+                      </select>
+                   </div>
+                   <div class="form-group col-md-4">
+                      <label>Company Email address*</label>
+                      <input type="email" class="form-control" formControlName="emailAddress" placeholder="Used to sign-in">
+                      <span class="text-danger" *ngIf="!rForm.controls['emailAddress'].valid && rForm.controls['emailAddress'].touched">{{ formErrors.emailAddress }}</span>
+                   </div>
+                   <div class="form-group col-md-4">
+                      <label>Extension number</label>
+                      <input type="text" class="form-control" formControlName="extension" placeholder="Extension number">
+                      <span class="text-danger" *ngIf="!rForm.controls['extension'].valid && rForm.controls['extension'].touched">{{ formErrors.extension }}</span>
+                   </div>
+                </div>
+                <div class="form-row">
+                   <div class="form-group col-md-4">
+                      <label>Department*</label>
+                      <mat-form-field>
+                         <input type="text" placeholder="Choose" matInput formControlName="department" [matAutocomplete]="departmentAuto">
+                         <mat-autocomplete #departmentAuto="matAutocomplete" [displayWith]="displayDepartmentFn">
+                           <mat-option *ngFor="let department of filteredDepartments | async" [value]="department">
+                            {{department.name}}
+                           </mat-option>
+                         </mat-autocomplete>
+                      </mat-form-field>
+                      <span class="text-danger" *ngIf="!rForm.controls['department'].valid && rForm.controls['department'].touched">{{ formErrors.department }}</span>
+                   </div>
+                   <div class="form-group col-md-4">
+                      <label>Position*</label>
+                      <mat-form-field>
+                         <input type="text" placeholder="Choose" matInput formControlName="position" [matAutocomplete]="positionAuto">
+                         <mat-autocomplete #positionAuto="matAutocomplete" [displayWith]="displayPositionFn">
+                           <mat-option *ngFor="let position of filteredPositions | async" [value]="position">
+                            {{position.name}}
+                           </mat-option>
+                         </mat-autocomplete>
+                      </mat-form-field>
+                      <span class="text-danger" *ngIf="!rForm.controls['position'].valid && rForm.controls['position'].touched">{{ formErrors.position }}</span>
+                   </div>
+                   <div class="form-group col-md-4">
+                      <label>Manager</label>
+                      <!--<select class="form-control" formControlName="manager">
+                         <option value=null disabled selected hidden>Choose Manager</option>
+                         <option>placeholder</option>
+                      </select>-->
+                      <mat-form-field>
+                         <input type="text" placeholder="Choose" matInput formControlName="manager" [matAutocomplete]="managerAuto">
+                         <mat-autocomplete #managerAuto="matAutocomplete" [displayWith]="displayManagerFn">
+                           <mat-option *ngFor="let employee of filteredEmployees | async" [value]="employee">
+                             {{employee.firstName}} {{employee.lastName}}  [{{employee.empCode}}]
+                           </mat-option>
+                         </mat-autocomplete>
+                     </mat-form-field>
+                     <span class="text-danger" *ngIf="!rForm.controls['manager'].valid && rForm.controls['manager'].touched">{{ formErrors.manager }}</span>
+                   </div>
+                </div>
+                <div class="form-row">
+                   <div class="form-group col-md-4">
+                      <label>Pay grade*</label>
+                      <mat-form-field>
+                         <input type="text" placeholder="Choose" matInput formControlName="payGrade" [matAutocomplete]="payGradeAuto">
+                         <mat-autocomplete #payGradeAuto="matAutocomplete" [displayWith]="displaySalaryFn">
+                            <mat-option *ngFor="let payGrade of filteredSalaries | async" [value]="payGrade">
+                               {{payGrade.payGrade}} (Basic pay: R{{payGrade.basicPay}})
+                            </mat-option>
+                         </mat-autocomplete>
+                      </mat-form-field>
+                      <span class="text-danger" *ngIf="!rForm.controls['payGrade'].valid && rForm.controls['payGrade'].touched">{{ formErrors.payGrade }}</span>
+                   </div>
+                   <div class="form-group col-md-4">
+                      <label>Basic pay</label>
+                      <input type="text" class="form-control" formControlName="basicPay" placeholder="Overrides Pay grade amount">
+                      <span class="text-danger" *ngIf="!rForm.controls['basicPay'].valid && rForm.controls['basicPay'].touched">{{ formErrors.basicPay }}</span>
+                   </div>
+                   <div class="form-group col-md-4">
+                      <label>Hourly Rate</label>
+                      <input type="text" class="form-control" formControlName="hourlyRate" placeholder="Overrides Pay grade amount">
+                      <span class="text-danger" *ngIf="!rForm.controls['hourlyRate'].valid && rForm.controls['hourlyRate'].touched">{{ formErrors.hourlyRate }}</span>
+                   </div>
+                </div>
+                <div class="form-row">
+                   <div class="form-group col-md-4">
+                      <label>Tax number</label>
+                      <input type="text" class="form-control" formControlName="taxNumber" placeholder="Tax number">
+                      <span class="text-danger" *ngIf="!rForm.controls['taxNumber'].valid && rForm.controls['taxNumber'].touched">{{ formErrors.taxNumber }}</span>
+                   </div>
+                   <div class="form-group col-md-4">
+                      <label>Hire date*</label>
+                      <input type="date" class="form-control" formControlName="hireDate">
+                      <span class="text-danger" *ngIf="!rForm.controls['hireDate'].valid && rForm.controls['hireDate'].touched">{{ formErrors.hireDate }}</span>
+                   </div>
+                   <div class="form-group col-md-4">
+                      <label>Leave date</label>
+                      <input type="date" class="form-control" formControlName="leaveDate">
+                      <span class="text-danger" *ngIf="!rForm.controls['leaveDate'].valid && rForm.controls['leaveDate'].touched">{{ formErrors.leaveDate }}</span>
+                   </div>
+                </div>
+                <span style="text-align: center;"><h4>Banking details</h4></span>
+                <div class="form-row">
+                   <div class="form-group col-md-4">
+                      <label>Bank name</label>
+                      <input type="text" class="form-control" formControlName="bankName" placeholder="Name of bank">
+                      <span class="text-danger" *ngIf="!rForm.controls['bankName'].valid && rForm.controls['bankName'].touched">{{ formErrors.bankName }}</span>
+                   </div>
+                   <div class="form-group col-md-4">
+                      <label>Bank account</label>
+                      <input type="text" class="form-control" formControlName="bankAccount" placeholder="Bank account">
+                      <span class="text-danger" *ngIf="!rForm.controls['bankAccount'].valid && rForm.controls['bankAccount'].touched">{{ formErrors.bankAccount }}</span>
+                   </div>
+                   <div class="form-group col-md-2">
+                      <label>Branch code</label>
+                      <input type="text" class="form-control" formControlName="bankBranch" placeholder="Branch code">
+                      <span class="text-danger" *ngIf="!rForm.controls['bankBranch'].valid && rForm.controls['bankBranch'].touched">{{ formErrors.bankBranch }}</span>
+                   </div>
+                   <div class="form-group col-md-2">
+                      <label>Swift code</label>
+                      <input type="text" class="form-control" formControlName="bankSwift" placeholder="If applicable">
+                      <span class="text-danger" *ngIf="!rForm.controls['bankSwift'].valid && rForm.controls['bankSwift'].touched">{{ formErrors.bankSwift }}</span>
+                   </div>
+                </div>
+                <div>
+                   <input type="submit" class="btn btn-primary btn-sm" value="Save" [disabled]="!rForm.valid">&nbsp;
+                </div>
+             </form>
+          </div>
+       </div>
+    </div>
+ </div>
+ <!--<employee-list></employee-list>-->
+ 

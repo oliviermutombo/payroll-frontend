@@ -17,6 +17,7 @@ import { CountryComponent } from '../admin/countries/country.component';
 import { UserListComponent } from '../user/user-list.component';
 import { ManageUserComponent } from '../user/manage-user.component';
 import { CompanyComponent } from '../admin/company/company.component';
+import { PersonalDetailsComponent } from '../employee/details/personal-details.component';
 
 //emp
 import { PayslipComponent } from '../employee/payslip/payslip.component';
@@ -26,6 +27,7 @@ import { PageNotFoundComponent }  from '../services/page-not-found.component'; /
 
 import { AuthGuard } from '../guards';
 import { Role } from '../user/role';
+import { SettingsComponent } from '../user/settings.component';
 
 const routes: Routes = [
   /*{
@@ -117,6 +119,12 @@ const routes: Routes = [
     data: { roles: [Role.ROLE_EMPLOYEE_ADMIN] }
   },
   {
+    path: 'settings',
+    component: SettingsComponent,
+    canActivate: [AuthGuard], 
+    data: { roles: [Role.ROLE_USER] }
+  },
+  {
     path: 'deduction',
     component: DeductionComponent,
     canActivate: [AuthGuard], 
@@ -141,8 +149,14 @@ const routes: Routes = [
     data: { roles: [Role.ROLE_EMPLOYEE] }
   },
   {
-    path: 'payslip/:id',
+    path: 'employee/payslip/:id',
     component: PayslipComponent,
+    canActivate: [AuthGuard], 
+    data: { roles: [Role.ROLE_EMPLOYEE] }
+  },
+  {
+    path: 'employee/self',
+    component: PersonalDetailsComponent,
     canActivate: [AuthGuard], 
     data: { roles: [Role.ROLE_EMPLOYEE] }
   },

@@ -1,9 +1,11 @@
 
 <html>
-<div *ngIf="!userService.getToken()">
+<!--<div *ngIf="!userService.getAccessToken()">-->
+<div *ngIf="!auth.getJwtToken()">
     <app-login></app-login>
 </div>
-<div *ngIf="userService.getToken()">
+<!--<div *ngIf="userService.getAccessToken()">-->
+<div *ngIf="auth.getJwtToken()">
     <head lang="en">
         <meta charset="UTF-8">
         <title>HR Payroll System</title>
@@ -83,13 +85,15 @@
                                 <a class="nav-link nav-user-img" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="assets/images/avatar-user.png" alt="" class="user-avatar-md rounded-circle"></a>
                                 <div class="dropdown-menu dropdown-menu-right nav-user-dropdown" aria-labelledby="navbarDropdownMenuLink2">
                                     <div class="nav-user-info">
-                                        <!--<h5 class="mb-0 text-white nav-user-name">{{ userService.currentUserValue.name }}</h5>
-                                        <span class="status"></span><span class="ml-2">{{ userService.currentUserValue.role }}</span> v0 -->
-                                        <h5 class="mb-0 text-white nav-user-name">{{ userService.getUserDisplayName() }}</h5>
-                                        <span class="status"></span><span class="ml-2">{{ userService.currentUserValue.roles }}</span>
+                                        <!--<h5 class="mb-0 text-white nav-user-name">{{ userService.getUserDisplayName() }}</h5>
+                                        <span class="status"></span><span class="ml-2">{{ userService.currentUserValue.roles }}</span>-->
+                                        <h5 class="mb-0 text-white nav-user-name">{{ auth.getUserDisplayName() }}</h5>
+                                        <!--<span class="status"></span><span class="ml-2">{{ auth.currentUserValue.roles }}</span>-->
                                     </div>
-                                    <a class="dropdown-item" href="#"><i class="fas fa-user mr-2"></i>Account</a>
-                                    <a class="dropdown-item" href="#"><i class="fas fa-cog mr-2"></i>Setting</a>
+                                    <a class="dropdown-item" [routerLink]="['/settings']"><i class="fas fa-user mr-2"></i>Account</a>
+                                    <a class="dropdown-item" [routerLink]="['/settings']"><i class="fas fa-cog mr-2"></i>Setting</a>
+                                    <!--<a class="dropdown-item" href="#"><i class="fas fa-user mr-2"></i>Account</a>-->
+                                    <!--<a class="dropdown-item" href="#"><i class="fas fa-cog mr-2"></i>Setting</a>-->
                                     <a class="dropdown-item" (click)="logout()"><i class="fas fa-power-off mr-2"></i>Logout</a>
                                 </div>
                             </li>
@@ -111,69 +115,69 @@
                                 </li>
                                 <li class="nav-item " *ngIf="hasRole('ROLE_ADMIN')">
                                     <a class="nav-link active" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-1" aria-controls="submenu-1"><i class="fa fa-fw fa-unlock-alt"></i>System administration<span class="badge badge-success">6</span></a>
-                                    <div id="submenu-1" class="collapse submenu">
+                                    <div id="submenu-1" class="collapse submenu" [routerLinkActive]="'in'">
                                         <ul class="nav flex-column">
-                                            <li class="nav-item">
-                                                <a class="nav-link" href="/user_list">Manage user accounts</a>
+                                            <li class="nav-item" [routerLinkActive]="'active'">
+                                                <a class="nav-link" [routerLink]="['/user_list']">Manage user accounts</a>
                                             </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" href="/employee_list">View employees</a>
+                                            <li class="nav-item" [routerLinkActive]="'active'">
+                                                <a class="nav-link" [routerLink]="['/employee_list']">View employees</a>
                                             </li>
                                         </ul>
                                     </div>
                                 </li>
                                 <li class="nav-item " *ngIf="hasRole('ROLE_EMPLOYEE_ADMIN')">
                                     <a class="nav-link active" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-2" aria-controls="submenu-2"><i class="fa fa-fw fa-unlock-alt"></i>Employees administration<span class="badge badge-success">6</span></a>
-                                    <div id="submenu-2" class="collapse submenu">
+                                    <div id="submenu-2" class="collapse submenu" [routerLinkActive]="'in'">
                                         <ul class="nav flex-column">
-                                            <li class="nav-item">
-                                                <a class="nav-link" href="/manage_employee">Add employee</a>
+                                            <li class="nav-item" [routerLinkActive]="'active'">
+                                                <a class="nav-link" [routerLink]="['/manage_employee']">Add employee</a>
                                             </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" href="/employee_list">View employees</a>
+                                            <li class="nav-item" [routerLinkActive]="'active'">
+                                                <a class="nav-link" [routerLink]="['/employee_list']">View employees</a>
                                             </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" href="/department">Departments</a>
+                                            <li class="nav-item" [routerLinkActive]="'active'">
+                                                <a class="nav-link" [routerLink]="['/department']">Departments</a>
                                             </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" href="/position">Positions</a>
+                                            <li class="nav-item" [routerLinkActive]="'active'">
+                                                <a class="nav-link" [routerLink]="['/position']">Positions</a>
                                             </li>
                                         </ul>
                                     </div>
                                 </li>
                                 <li class="nav-item " *ngIf="hasRole('ROLE_PAYROLL_ADMIN')">
                                     <a class="nav-link active" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-3" aria-controls="submenu-3"><i class="fa fa-fw fa-unlock-alt"></i>Payroll Administration<span class="badge badge-success">6</span></a>
-                                    <div id="submenu-3" class="collapse submenu">
+                                    <div id="submenu-3" class="collapse submenu" [routerLinkActive]="'in'">
                                         <ul class="nav flex-column">
-                                            <li class="nav-item">
-                                                <a class="nav-link" href="/salary">Pay grades</a>
+                                            <li class="nav-item" [routerLinkActive]="'active'">
+                                                <a class="nav-link" [routerLink]="['/salary']">Pay grades</a>
                                             </li>
                                             <li class="nav-item">
-                                                <a class="nav-link" href="/costcentre">Cost centres</a>
+                                                <a class="nav-link" [routerLink]="['/costcentre']">Cost centres</a>
                                             </li>
                                             <li class="nav-item">
-                                                <a class="nav-link" href="/deduction">Deductions</a>
+                                                <a class="nav-link" [routerLink]="['/deduction']">Deductions [TO DO]</a>
                                             </li>
                                             <li class="nav-item">
-                                                <a class="nav-link" href="/payrollperiod">Payroll periods</a>
+                                                <a class="nav-link" [routerLink]="['/payrollperiod']">Payroll periods [TO DO]</a>
                                             </li>
                                             <li class="nav-item">
-                                                <a class="nav-link" href="/payroll">Run payroll</a>
+                                                <a class="nav-link" [routerLink]="['/payroll']">Run payroll [TO DO]</a>
                                             </li>
                                         </ul>
                                     </div>
                                 </li>
                                 <li class="nav-item" *ngIf="hasRole('ROLE_EMPLOYEE')">
                                     <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-4" aria-controls="submenu-4"><i class="fa fa-fw fa-user"></i>Employee tools</a>
-                                    <div id="submenu-4" class="collapse submenu">
+                                    <div id="submenu-4" class="collapse submenu" [routerLinkActive]="'in'">
                                         <ul class="nav flex-column">
-                                            <li class="nav-item">
-                                                <a class="nav-link" href="/payslip">View payslips</a>
+                                            <li class="nav-item" [routerLinkActive]="'active'">
+                                                <a class="nav-link" [routerLink]="['/employee/payslip']">View payslips</a>
+                                            </li>
+                                            <li class="nav-item" [routerLinkActive]="'active'">
+                                                <a class="nav-link" [routerLink]="['/employee/self']">Update personal details</a>
                                             </li>
                                             <!--<li class="nav-item">
-                                                <a class="nav-link" href="#">Update personal details</a>
-                                            </li>
-                                            <li class="nav-item">
                                                 <a class="nav-link" href="#">Leave balance</a>
                                             </li>
                                             <li class="nav-item">
@@ -184,13 +188,13 @@
                                 </li>
                                 <li class="nav-item " *ngIf="hasRole('ROLE_ADMIN')">
                                     <a class="nav-link active" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-4" aria-controls="submenu-4"><i class="fa fa-fw fa-unlock-alt"></i>System settings<span class="badge badge-success">6</span></a>
-                                    <div id="submenu-4" class="collapse submenu">
+                                    <div id="submenu-4" class="collapse submenu" [routerLinkActive]="'in'">
                                         <ul class="nav flex-column">
-                                            <li class="nav-item">
-                                                <a class="nav-link" href="/company_details">Company details</a>
+                                            <li class="nav-item" [routerLinkActive]="'active'">
+                                                <a class="nav-link" [routerLink]="['/company_details']">Company details</a>
                                             </li>
                                             <li class="nav-item">
-                                                <a class="nav-link" href="/countries">Manage countries</a>
+                                                <a class="nav-link" [routerLink]="['/countries']">Manage countries</a>
                                             </li>
                                         </ul>
                                     </div>
@@ -222,6 +226,7 @@
             <div class="dashboard-wrapper">
                 <div class="dashboard-ecommerce">
                     <div class="container-fluid dashboard-content "> <!--angular view-->
+                        <ngx-loading-bar color="#7a80b4" height="4px" [includeSpinner] = "false"></ngx-loading-bar>
                         <router-outlet></router-outlet>
                     </div>
                 </div>

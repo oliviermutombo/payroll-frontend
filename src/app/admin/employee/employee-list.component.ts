@@ -2,15 +2,15 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
 import { Employee } from './employee';
 import { Salary} from '../salary/salary'; // For dropdown
-import { EmployeeService } from '../employee.service';
 import { ApiService } from 'src/app/admin/api.service';
 import { CustomValidators } from '../../services/custom_validators';
 import { FormService } from '../../services/form';
-import { DataService } from '../data.service';
 import { Department } from '../department/department'; // For dropdown
 import { Position } from '../position/position'; // For dropdown
 import { UtilitiesService } from '../../services/utilities.service';
-import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import * as globals from 'src/app/globals';
 
 @Component({
@@ -27,18 +27,14 @@ export class EmployeeListComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  error = '';
-  success = '';
-
   // Create de default constructor if possible.
-  employee = new Employee('', '', '', '', '', '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', '');
+  //employee = new Employee('', '', '', '', '', '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', '');
+  employee = new Employee();
 
   updateMode = false;
 
-  constructor(private employeeService: EmployeeService,
-              private apiService: ApiService,
-              private utilitiesService: UtilitiesService,
-              private dataService: DataService) {
+  constructor(private apiService: ApiService,
+              private utilitiesService: UtilitiesService) {
 
   }
 
@@ -111,10 +107,5 @@ export class EmployeeListComponent implements OnInit {
   
   displayFn(employee?: Employee): string | undefined {
     return employee ? employee.firstName + ' ' + employee.lastName : undefined;
-  }
-
-  private resetErrors() {
-    this.success = '';
-    this.error   = '';
   }
 }

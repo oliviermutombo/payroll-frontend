@@ -1,8 +1,6 @@
 <div class="row">
     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
         <div class="card">
-            <div class="alert" *ngIf="error">{{error}}</div>
-            <div class="alert" *ngIf="success">{{success}}</div>
             <div class="card-header">
                 <form [formGroup]="rForm" (ngSubmit)="!updateMode ? addSalary(rForm.value) : updateSalary(rForm.value)">
                     <div>
@@ -24,53 +22,35 @@
                     <input type="checkbox" class="custom-control-input" id="show-list" (change) ="showHideList($event.target.checked)" />
                     <label class="custom-control-label" for="show-list">Show available grades</label>
                 </div>
-            </div>
-            <div class="card-body" *ngIf="showList">
-                <!--<div class="table-responsive" *ngIf="salaries?.length > 0">-->
-                <div class="table-responsive">
-                    <mat-form-field>
-                        <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
-                    </mat-form-field>
-                    <div class="mat-elevation-z8">
-                        <table mat-table [dataSource]="salaries" matSort class="mat-table">
-                            <ng-container matColumnDef="payGrade">
-                                <th mat-header-cell *matHeaderCellDef mat-sort-header>Pay Grade</th>
-                                <td mat-cell *matCellDef="let sal"> {{sal.payGrade}} </td>
-                            </ng-container>
-                            <ng-container matColumnDef="basicPay">
-                                <th mat-header-cell *matHeaderCellDef mat-sort-header>Basic Pay</th>
-                                <td mat-cell *matCellDef="let sal"> {{sal.basicPay}} </td>
-                            </ng-container>
-                            <ng-container matColumnDef="manage">
-                                <th mat-header-cell *matHeaderCellDef mat-sort-header>Manage</th>
-                                <td mat-cell *matCellDef="let sal">
-                                    <button class="btn btn-primary btn-xs" (click)="salaryEdit(sal.id)" >Update</button>&nbsp;
-                                    <button class="btn btn-danger btn-xs" (click)="deleteSalary(sal.id)" >Remove</button>
-                                </td>
-                            </ng-container>
-                            <tr mat-header-row *matHeaderRowDef="displayedColumns" class="mat-table-header-row"></tr>
-                            <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="mat-table-row"></tr>
-                        </table>
-                        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+                <div *ngIf="showList">
+                    <div class="table-responsive">
+                        <mat-form-field>
+                            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+                        </mat-form-field>
+                        <div class="mat-elevation-z8">
+                            <table mat-table [dataSource]="salaries" matSort class="mat-table">
+                                <ng-container matColumnDef="payGrade">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Pay Grade</th>
+                                    <td mat-cell *matCellDef="let sal"> {{sal.payGrade}} </td>
+                                </ng-container>
+                                <ng-container matColumnDef="basicPay">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Basic Pay</th>
+                                    <td mat-cell *matCellDef="let sal"> {{sal.basicPay}} </td>
+                                </ng-container>
+                                <ng-container matColumnDef="manage">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Manage</th>
+                                    <td mat-cell *matCellDef="let sal">
+                                        <button class="btn btn-primary btn-xs" (click)="salaryEdit(sal.id)" >Update</button>&nbsp;
+                                        <button class="btn btn-danger btn-xs" (click)="openConfirmationDialog(sal.id)" >Remove</button>
+                                    </td>
+                                </ng-container>
+                                <tr mat-header-row *matHeaderRowDef="displayedColumns" class="mat-table-header-row"></tr>
+                                <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="mat-table-row"></tr>
+                            </table>
+                            <mat-paginator [pageSizeOptions]="[20, 50, 75, 100]"></mat-paginator>
+                        </div>
                     </div>
-                    <!--<span>
-                        <table class="table table-striped table-bordered second" style="width:100%">
-                            <tr>
-                                <th>Pay grade</th>
-                                <th>Basic pay</th>
-                                <th>Update</th>
-                                <th>Delete</th>
-                            </tr>
-                            <tr *ngFor="let s of salaries">
-                                <td>{{s.payGrade}}</td>
-                                <td>{{s.basicPay}}</td>
-                                <td><button class="btn btn-primary btn-xs" (click)="salaryEdit(s.id)" >Update</button></td>
-                                <td><button class="btn btn-danger btn-xs" (click)="deleteSalary(s.id)" >Delete</button></td>
-                            </tr>
-                        </table>
-                    </span>-->
                 </div>
-                <!--<div class="alert" *ngIf="salaries?.length <= 0">Nothing to show</div>-->
             </div>
         </div>
     </div>

@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild, Injector } from '@angular/core';
 import { Country } from './country';
-import { MatTableDataSource, MatPaginator, MatSort } from '@angular/material';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CustomValidators } from '../../services/custom_validators';
 import { ApiService } from 'src/app/admin/api.service';

@@ -3,14 +3,15 @@ import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
 import { Employee } from '../admin/employee/employee';
-import { EmployeeService } from '../admin/employee.service';
+import { ApiService } from 'src/app/admin/api.service';
 import { UserService } from '../services/user.service'
 import { CustomValidators } from '../services/custom_validators';
 import { FormService } from '../services/form';
-import { DataService } from '../admin/data.service';
 import { NotificationService } from '../services/notification.service';
 import { Role } from '../user/role';
 import { UtilitiesService } from '../services/utilities.service';
+import * as globals from 'src/app/globals';
+import { ConfirmationDialogService } from '../services/confirmation-dialog/confirmation-dialog.service';
 
 @Component({
   templateUrl: './manage-user.component.html'
@@ -30,8 +31,12 @@ export class ManageUserComponent implements OnInit {
     'email' : '',
     'username' : '',
     'employee': null,
-    'password' : '12345', // Temporary
-    'role' : []
+    //'password' : '12345', // set in backend.
+    'role' : [],
+    'enabled': true,
+    'accountNonExpired': true,
+    'accountNonLocked': true,
+    'credentialsNonExpired': true
   };
 
   empIdToEdit = 0;//////////////////////////////////
@@ -94,14 +99,14 @@ checkEmployee($isChecked): void {
 }
 
   constructor(private injector: Injector,
-              private employeeService: EmployeeService,
+              private apiService: ApiService,
               private userService: UserService,
-              private dataService: DataService,
               private fb: FormBuilder,
               private route: ActivatedRoute,
               private location: Location,
               private notification: NotificationService,
               private utilitiesService: UtilitiesService,
+              private confirmationDialogService: ConfirmationDialogService,
               public formService: FormService) { // TRY PRIVATE
 
     this.rForm = fb.group({
@@ -111,7 +116,11 @@ checkEmployee($isChecked): void {
       is_system_admin: [null],
       is_payroll_admin: [null],
       is_employee_admin: [null],
-      is_employee: [null]
+      is_employee: [null],
+      disabled: [null],
+      accountExpired: [null],
+      accountLocked: [null],
+      credentialsExpired: [null]
     });
 
     // on each value change we call the validateForm function
@@ -160,7 +169,8 @@ checkEmployee($isChecked): void {
   }
 
   getEmployee(id): void {
-    this.employeeService.getEmployee(id).subscribe(
+    //this.employeeService.getEmployee(id).subscribe(
+    this.apiService.getById(globals.EMPLOYEE_ENDPOINT, id).subscribe(
       (res: Employee) => {
         this.employee = res;
       }
@@ -168,30 +178,38 @@ checkEmployee($isChecked): void {
   }
 
   addUser(f) {
-    this.user.firstName = f.firstName;
-    this.user.lastName = f.lastName;
-    this.user.email = f.emailAddress;
-    this.user.username = f.emailAddress;
-    this.user.employee = this.utilitiesService.generateQuickIdObject(this.employee.id);
-    if (this.user.role.length == 0) {
-        this.notification.showError('No role(s) selected!');
-    } else {
-      this.userService.create(this.user)
-        .subscribe(
-          (res: any) => {
-            if (res) {
-              this.notification.showSaved();
+    if (this.employee.active){
+      this.user.firstName = f.firstName;
+      this.user.lastName = f.lastName;
+      this.user.email = f.emailAddress;
+      this.user.username = f.emailAddress;
+      this.user.employee = this.utilitiesService.generateQuickIdObject(this.employee.id);
+      if (this.user.role.length == 0) {
+          this.notification.showError('No role(s) selected!');
+      } else {
+        this.userService.create(this.user)
+          .subscribe(
+            (res: any) => {
+              if (res) {
+                this.notification.showSaved();
+              }
+              // Reset the form
+              this.rForm.reset();
             }
-            // Reset the form
-            this.rForm.reset();
-          }
-        );
+          );
+      }
+    } else {
+      this.notifier.showError('This employee is inactive!');
     }
   }
 
   updateUser(f) {
     this.user.employee = this.utilitiesService.generateQuickIdObject(this.empIdToEdit)
     this.user.role = this.getEditedRoles(f);
+    this.user.enabled = !f.disabled;
+    this.user.accountNonExpired = !f.accountExpired;
+    this.user.accountNonLocked = !f.accountLocked;
+    this.user.credentialsNonExpired = !f.credentialsExpired;
     
     if (this.user.role.length == 0) {
       this.notification.showError('No role(s) selected!');
@@ -205,6 +223,22 @@ checkEmployee($isChecked): void {
     }
   }
 
+  resetAccountStatusForm() {
+    this.rForm.controls.disabled.reset();
+    this.rForm.controls.accountExpired.reset();
+    this.rForm.controls.accountLocked.reset();
+    this.rForm.controls.credentialsExpired.reset();
+  }
+
+  resetUser(userId) {
+    this.apiService.saveOnly(globals.USER_ENDPOINT+'/reset', this.utilitiesService.generateQuickIdObject(userId)).subscribe(
+      (res) => {
+        this.notification.showSuccess('User password reset!');
+        this.resetAccountStatusForm();
+      }
+    );
+  }
+
   getEditedRoles(f){
     /* role sets for updatemode */
     let rolesArr = [];
@@ -216,7 +250,8 @@ checkEmployee($isChecked): void {
   }
 
   populateForm(id){
-    this.employeeService.getEmployee(id).subscribe(
+    //this.employeeService.getEmployee(id).subscribe(
+    this.apiService.getById(globals.EMPLOYEE_ENDPOINT, id).subscribe(
       (res: any) => {
         //alert('populateForm(id)\n' + JSON.stringify(res));
         this.employee = res;
@@ -227,14 +262,19 @@ checkEmployee($isChecked): void {
           is_system_admin: null,
           is_payroll_admin: null,
           is_employee_admin: null,
-          is_employee: null // set to true by default.
+          is_employee: null, // set to true by default.
+          disabled: null,
+          accountExpired: null,
+          accountLocked: null,
+          credentialsExpired: null
         });
       }
     );
   }
 
   populateFormToEdit(id){
-    this.userService.getUser(id).subscribe(
+    //this.userService.getUser(id).subscribe(
+    this.apiService.getById(globals.USER_ENDPOINT, id).subscribe(
       (res: any) => {
         this.user = res.result;
         this.rForm.setValue({
@@ -244,7 +284,11 @@ checkEmployee($isChecked): void {
           is_system_admin: this.hasRole(this.user['roles'], this.stripRole(Role.ROLE_ADMIN)),
           is_payroll_admin: this.hasRole(this.user['roles'], this.stripRole(Role.ROLE_PAYROLL_ADMIN)),
           is_employee_admin: this.hasRole(this.user['roles'], this.stripRole(Role.ROLE_EMPLOYEE_ADMIN)),
-          is_employee: this.hasRole(this.user['roles'], this.stripRole(Role.ROLE_EMPLOYEE))
+          is_employee: this.hasRole(this.user['roles'], this.stripRole(Role.ROLE_EMPLOYEE)),
+          disabled: !this.user.enabled,
+          accountExpired: !this.user.accountNonExpired,
+          accountLocked: !this.user.accountNonLocked,
+          credentialsExpired: !this.user.credentialsNonExpired
         });
       }
     );
@@ -259,6 +303,14 @@ checkEmployee($isChecked): void {
     return false;
   }
 
+  public openConfirmationDialog(id) {
+    this.confirmationDialogService.confirm('Please confirm...', 'Are you sure you want to delete?')
+    .then((confirmed) => {
+      if (confirmed) this.deleteUser(id);
+    })
+    .catch(() => console.log('User dismissed the dialog (e.g., by using ESC, clicking the cross icon, or clicking outside the dialog)'));
+  }
+
   deleteUser(id) {
     this.userService.deleteUser(id)
       .subscribe(
@@ -266,6 +318,16 @@ checkEmployee($isChecked): void {
           this.notification.showDeleted();
         }
       );
+      /*this.apiService.deleteOnly(globals.USER_ENDPOINT, id)
+      .subscribe(
+        (res: boolean) => {
+          if (res) {
+            this.notification.showDeleted();
+          } else {
+            this.notifier.showGenericError();
+           }
+        }
+      );*/
     this.user = null;
     this.rForm.reset();
   }

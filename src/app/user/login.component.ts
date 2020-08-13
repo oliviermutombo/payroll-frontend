@@ -4,6 +4,7 @@ import { UserService } from '../services/user.service';
 import { Router } from '@angular/router';
 import { CustomValidators } from '../services/custom_validators';
 import { FormService } from '../services/form';
+import { AuthService } from '../services/auth.service';
 
 export const AUTH_TOKEN: string = 'jwt_token';
 
@@ -16,9 +17,6 @@ export class LoginComponent implements OnInit {
 
     title = 'Login';
 
-    error = '';
-    success = '';
-
     rForm: FormGroup;
     post: any;
     email = '';
@@ -27,6 +25,7 @@ export class LoginComponent implements OnInit {
     public user: any;
 
     constructor(private userService: UserService,
+        private auth: AuthService,
         private fb: FormBuilder,
         public formService: FormService,
         private router: Router) {
@@ -45,28 +44,12 @@ export class LoginComponent implements OnInit {
         };
     }
 
-    /*login(f) {
-        this.resetErrors();
-        //this.userService.login({'email': f.email, 'password': f.password});
-        let submittedUser = {'email': f.email, 'password': f.password};
-        this.userService.login(submittedUser).subscribe(
-            (res: any) => {
-                
-            }//,
-            //(err) => {
-            //    alert ('Ereur yangoyo: ' + JSON.stringify(err));
-            //    this.error = err;
-            //}
-        );
-    } v0 */
-
     login(f) {
-        this.resetErrors();
         let requestBody = new URLSearchParams();
         requestBody.set('username', f.email);
         requestBody.set('password', f.password);
         requestBody.set('grant_type', 'password');
-        this.userService.login(requestBody);
+        this.auth.login(requestBody);
     }
     
     refreshToken() {
@@ -74,11 +57,7 @@ export class LoginComponent implements OnInit {
     }
     
     logout() {
-        this.userService.logout();
-    }
-
-    private resetErrors() {
-        this.success = '';
-        this.error   = '';
+        //this.userService.logout();
+        this.auth.logout();
     }
 }

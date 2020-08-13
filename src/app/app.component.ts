@@ -1,12 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from './admin/data.service';
 import { UserService } from './services/user.service';
-import { CostcentreService } from './admin/costcentre/costcentre.service';
-import { DepartmentService } from './admin/department/department.service';
-import { PositionService } from './admin/position/position.service';
-import { EmployeeService } from './admin/employee.service';
 
 import { Router } from '@angular/router';
+import { UtilitiesService } from './services/utilities.service';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -20,25 +18,26 @@ export class AppComponent implements OnInit {
   success = '';
 
   constructor(private userService: UserService,
-              private costcentreService: CostcentreService,
-              private departmentService: DepartmentService,
-              private positionService: PositionService,
-              private employeeService: EmployeeService,
+              public auth: AuthService,
+              private utilitiesService: UtilitiesService,
               private router: Router) {
     
               //this.userService.hasRole('');
   }
 
   ngOnInit() {
-    //alert('########### APP.COMP... INIT');
+    if (this.auth.getJwtToken()) this.utilitiesService.setCurrencySymbol();
   }
 
+
   hasRole(_role) {
-    return this.userService.hasRole(_role);//Checks roles of current user
+    //return this.userService.hasRole(_role);//Checks roles of current user
+    return this.auth.hasRole(_role);
   }
   
   logout() {
-    this.userService.logout();
+    //this.userService.logout();
+    this.auth.logout();
   }
 
 }

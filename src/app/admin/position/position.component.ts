@@ -1,13 +1,15 @@
 import { Component, OnInit, Injector, ViewChild } from '@angular/core';
 import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
 import { Position } from './position';
-import { PositionService } from './position.service';
 import { ApiService } from 'src/app/admin/api.service';
-import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material'; //pagination
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table'; //pagination
 import { NotificationService } from '../../services/notification.service';
 import { CustomValidators } from '../../services/custom_validators';
 import { FormService } from '../../services/form';
 import * as globals from 'src/app/globals';
+import { ConfirmationDialogService } from 'src/app/services/confirmation-dialog/confirmation-dialog.service';
 
 @Component({
   selector: 'app-position',
@@ -26,9 +28,6 @@ export class PositionComponent implements OnInit {
   //
 
   title = 'payroll-system Positions';
-  //positions: Position[];
-  error = '';
-  success = '';
 
   position = new Position('', 0);
 
@@ -43,10 +42,10 @@ export class PositionComponent implements OnInit {
   };
 
   constructor(private injector: Injector,
-    private positionService: PositionService,
     private apiService: ApiService,
     private fb: FormBuilder,
-    public formService: FormService) {
+    public formService: FormService,
+    private confirmationDialogService: ConfirmationDialogService) {
 
     this.rForm = fb.group({
       name: [null, [Validators.required, Validators.minLength(1), Validators.maxLength(50), CustomValidators.validateCharacters]],
@@ -104,8 +103,6 @@ export class PositionComponent implements OnInit {
   }
 
   addPosition(f) {
-    this.resetErrors();
-
     let position = new Position();
     position.name = f.name;
 
@@ -118,7 +115,6 @@ export class PositionComponent implements OnInit {
             this.positions.data = res; // Implement a list refresh rather
           }
           // Inform the user
-          this.success = 'Created successfully';
           this.notifier.showSaved();
           // Reset the form
           this.rForm.reset();
@@ -140,7 +136,6 @@ export class PositionComponent implements OnInit {
   }
 
   updatePosition(f) {
-    this.resetErrors();
     this.position.name = f.name;
     this.apiService.update(globals.POSITION_ENDPOINT, this.position, this.positions.data)
       .subscribe(
@@ -148,7 +143,6 @@ export class PositionComponent implements OnInit {
           if (this.showList) {
             this.positions.data = res; // Implement a list refresh rather
           }
-          this.success = 'Updated successfully';
           this.position = new Position();
           this.notifier.showSaved();
           this.updateMode = false;
@@ -157,24 +151,25 @@ export class PositionComponent implements OnInit {
       );
   }
 
+  public openConfirmationDialog(id) {
+    this.confirmationDialogService.confirm('Please confirm...', 'Are you sure you want to delete?')
+    .then((confirmed) => {
+      if (confirmed) this.deletePosition(id);
+    })
+    .catch(() => console.log('User dismissed the dialog (e.g., by using ESC, clicking the cross icon, or clicking outside the dialog)'));
+  }
+
   deletePosition(id) {
-    this.resetErrors();
     this.apiService.delete(globals.POSITION_ENDPOINT, id, this.positions.data)
       .subscribe(
         (res: Position[]) => {
           if (this.showList) {
             this.positions.data = res; // Impelement a list refresh rather
           }
-          this.success = 'Deleted successfully';
           this.notifier.showDeleted();
           this.updateMode = false;
           this.rForm.reset();
         }
       );
-  }
-
-  private resetErrors() {
-    this.success = '';
-    this.error   = '';
   }
 }

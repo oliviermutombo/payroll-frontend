@@ -1,7 +1,6 @@
-import { Component, OnInit, Injector, ViewChild } from '@angular/core';
+import { Component, OnInit, Injector, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
 import { Department } from './department';
-import { DepartmentService } from './department.service';
 import { CustomValidators } from '../../services/custom_validators';
 import { FormService } from '../../services/form';
 import { DataService } from '../data.service';
@@ -11,10 +10,14 @@ import { Costcentre } from '../costcentre/costcentre'; // For dropdown
 import { Observable } from 'rxjs';//////////////////////////////////////////////////
 import { filter, startWith, map, switchMap } from 'rxjs/operators';/////////////////////////////////
 import { Subscription } from 'rxjs';
-import { MatAutocompleteTrigger } from '@angular/material';//.................................
-import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material'; //pagination
+import { MatAutocompleteTrigger } from '@angular/material/autocomplete';//.................................
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table'; //pagination
 import { Employee } from '../employee/employee';
+import { UtilitiesService } from '../../services/utilities.service';
 import * as globals from 'src/app/globals';
+import { ConfirmationDialogService } from 'src/app/services/confirmation-dialog/confirmation-dialog.service';
 
 @Component({
   selector: 'app-department', // WHAT MUST THE SELECTOR BE???
@@ -25,8 +28,6 @@ import * as globals from 'src/app/globals';
 export class DepartmentComponent implements OnInit {
   title = 'payroll-system';
   departments: MatTableDataSource<Department>;
-  error = '';
-  success = '';
   //costcentres: Costcentre[]; // For dropdown
   allCostcentres: Observable<Costcentre[]>;
   filteredCostcentres: Observable<Costcentre[]>;
@@ -55,15 +56,16 @@ export class DepartmentComponent implements OnInit {
     hod: ''
   };
 
-  @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
+  @ViewChildren(MatAutocompleteTrigger) triggerCollection: QueryList<MatAutocompleteTrigger>;
 
   subscription: Subscription;
 
   constructor(private injector: Injector,
-              private departmentService: DepartmentService,
               private dataService: DataService,
               private apiService: ApiService,
+              private utilitiesService: UtilitiesService,
               private fb: FormBuilder,
+              private confirmationDialogService: ConfirmationDialogService,
               public formService: FormService) {
 
     this.rForm = fb.group({
@@ -101,7 +103,8 @@ export class DepartmentComponent implements OnInit {
     }
   }
   getEmployees(): void {
-    this.allEmployees = this.dataService.getAllEmployees();
+    //this.allEmployees = this.dataService.getAllEmployees();
+    this.allEmployees = this.apiService.getAll(globals.EMPLOYEE_ENDPOINT);
   }
 
   showHideList($isChecked): void {
@@ -125,7 +128,8 @@ export class DepartmentComponent implements OnInit {
   }
   
   getCostcentres(): void {
-    this.allCostcentres = this.dataService.getAllCostcentres();
+    //this.allCostcentres = this.dataService.getAllCostcentres();
+    this.allCostcentres = this.apiService.getAll(globals.COSTCENTRE_ENDPOINT);
   }
 
   getDepartments(): void {
@@ -147,7 +151,6 @@ export class DepartmentComponent implements OnInit {
   }
 
   addDepartment(f) {
-    this.resetErrors();
     let department = new Department();
     department.name = f.name;
     if (f.costcentre) {
@@ -172,7 +175,6 @@ export class DepartmentComponent implements OnInit {
             this.departments.data = res;
           }
           // Inform the user
-          this.success = 'Created successfully';
           this.notifier.showSaved();
 
           // Reset the form
@@ -222,7 +224,6 @@ export class DepartmentComponent implements OnInit {
   }*/
 
   updateDepartment(f) {
-    this.resetErrors();
     this.department.name = f.name;
    if (f.costcentre) {
       this.department.costcentre = {}
@@ -241,7 +242,6 @@ export class DepartmentComponent implements OnInit {
           if (this.showList) {
             this.departments.data = res;
           }
-          this.success = 'Updated successfully';
           this.department = new Department();
           this.notifier.showSaved();
           this.updateMode = false;
@@ -250,25 +250,26 @@ export class DepartmentComponent implements OnInit {
       );
   }
 
+  public openConfirmationDialog(id) {
+    this.confirmationDialogService.confirm('Please confirm...', 'Are you sure you want to delete?')
+    .then((confirmed) => {
+      if (confirmed) this.deleteDepartment(id);
+    })
+    .catch(() => console.log('User dismissed the dialog (e.g., by using ESC, clicking the cross icon, or clicking outside the dialog)'));
+  }
+
   deleteDepartment(id) {
-    this.resetErrors();
     this.apiService.delete(globals.DEPARTMENT_ENDPOINT, id, this.departments.data)
       .subscribe(
         (res: Department[]) => {
           if (this.showList) {
             this.departments.data = res;
           }
-          this.success = 'Deleted successfully';
           this.notifier.showDeleted();
           this.updateMode = false;
           this.rForm.reset();
         }
       );
-  }
-
-  private resetErrors() {
-    this.success = '';
-    this.error   = '';
   }
 
   ngAfterViewInit() {
@@ -286,12 +287,21 @@ export class DepartmentComponent implements OnInit {
       this.subscription.unsubscribe();
     }
 
-    this.subscription = this.trigger.panelClosingActions
+    this.subscription = this.triggerCollection.toArray()[0].panelClosingActions
       .subscribe(e => {
         if (!e || !e.source) {
-          console.log(this.trigger)
-          console.log(e)
-          this.rForm.controls.costcentre.setValue(null);
+          if (!this.utilitiesService.isObject(this.rForm.getRawValue().costcentre))
+            this.rForm.controls.costcentre.setValue(null);
+        }
+      },
+      err => this._subscribeToClosingActions(),
+      () => this._subscribeToClosingActions());
+
+      this.subscription = this.triggerCollection.toArray()[1].panelClosingActions
+      .subscribe(e => {
+        if (!e || !e.source) {
+          if (!this.utilitiesService.isObject(this.rForm.getRawValue().hod))
+            this.rForm.controls.hod.setValue(null);
         }
       },
       err => this._subscribeToClosingActions(),

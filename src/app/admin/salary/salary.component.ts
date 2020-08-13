@@ -2,11 +2,13 @@ import { Component, OnInit, Injector, ViewChild } from '@angular/core';
 import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
 
 import { Salary } from './salary';
-import { EmployeeService } from '../employee.service';
 import { ApiService } from 'src/app/admin/api.service';
 import { NotificationService } from '../../services/notification.service'; // new
-import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material'; //pagination
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table'; //pagination
 import * as globals from 'src/app/globals';
+import { ConfirmationDialogService } from 'src/app/services/confirmation-dialog/confirmation-dialog.service';
 
 @Component({
   selector: 'app-root', // WHAT MUST THE SELECTOR BE???
@@ -21,8 +23,6 @@ export class SalaryComponent implements OnInit {
   displayedColumns: string[] = ['payGrade', 'basicPay', 'manage'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  error = '';
-  success = '';
 
   salary = new Salary('', 0);
 
@@ -36,7 +36,8 @@ export class SalaryComponent implements OnInit {
 
   constructor(private injector: Injector,
     private apiService: ApiService, 
-    private fb: FormBuilder) {
+    private fb: FormBuilder,
+    private confirmationDialogService: ConfirmationDialogService) {
     this.rForm = fb.group({
         payGrade: [null, Validators.required],
         basicPay: [null, [Validators.required, Validators.pattern('^[0-9]+(?:\.[0-9]+)?$')]]
@@ -98,7 +99,6 @@ export class SalaryComponent implements OnInit {
   }
 
   addSalary(f) {
-    this.resetErrors();
 
     let salary = new Salary();//Very important - otherwise, if say a salary profile was active for update. it will use it.
     salary.payGrade = f.payGrade;
@@ -113,7 +113,6 @@ export class SalaryComponent implements OnInit {
             this.salaries.data = res;
           }
           // Inform the user
-          this.success = 'Created successfully'; // to be decomissioned
           this.notifier.showSaved();
 
           // Reset the form
@@ -142,7 +141,6 @@ export class SalaryComponent implements OnInit {
   }
 
   updateSalary(f) {
-    this.resetErrors();
     this.salary.payGrade = f.payGrade;
     this.salary.basicPay = f.basicPay;
     this.apiService.update(globals.SALARY_ENDPOINT, this.salary, this.salaries.data)
@@ -151,7 +149,6 @@ export class SalaryComponent implements OnInit {
           if (this.showList) {
             this.salaries.data = res;
           }
-          this.success = 'Updated successfully'; // to be decomissioned
           // Inform the user
           this.notifier.showSaved();
           this.salary = new Salary(); //reset object after update.
@@ -162,15 +159,21 @@ export class SalaryComponent implements OnInit {
       );
   }
 
+  public openConfirmationDialog(id) {
+    this.confirmationDialogService.confirm('Please confirm...', 'Are you sure you want to delete?')
+    .then((confirmed) => {
+      if (confirmed) this.deleteSalary(id);
+    })
+    .catch(() => console.log('User dismissed the dialog (e.g., by using ESC, clicking the cross icon, or clicking outside the dialog)'));
+  }
+
   deleteSalary(id) {
-    this.resetErrors();
     this.apiService.delete(globals.SALARY_ENDPOINT, id, this.salaries.data)
       .subscribe(
         (res: Salary[]) => {
           if (this.showList) {
             this.salaries.data = res;
           }
-          this.success = 'Deleted successfully'; // to be decomissioned
           // Inform the user
           this.notifier.showDeleted();
 
@@ -179,10 +182,5 @@ export class SalaryComponent implements OnInit {
         }/*,
         (err) => this.error = err*/
       );
-  }
-
-  private resetErrors() { // to be decomissioned
-    this.success = '';
-    this.error   = '';
   }
 }

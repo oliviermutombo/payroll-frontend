@@ -5,14 +5,18 @@ import { Employee } from '../employee/employee';
 import { DataService } from '../data.service';
 import { CustomValidators } from '../../services/custom_validators';
 import { FormService } from '../../services/form';
+import { UtilitiesService } from '../../services/utilities.service';
 import { NotificationService } from '../../services/notification.service';
 import { Observable } from 'rxjs';
 import { startWith, map, switchMap } from 'rxjs/operators';/////////////////////////////////
 import { Subscription } from 'rxjs';
-import { MatAutocompleteTrigger } from '@angular/material';
-import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material'; //pagination
+import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table'; //pagination
 import { ApiService } from 'src/app/admin/api.service';
 import * as globals from 'src/app/globals';
+import { ConfirmationDialogService } from 'src/app/services/confirmation-dialog/confirmation-dialog.service';
 
 @Component({
   selector: 'app-costcentre',
@@ -23,14 +27,12 @@ import * as globals from 'src/app/globals';
 export class CostcentreComponent implements OnInit {
   title = 'payroll-system';
   costcentres: MatTableDataSource<Costcentre>;
-  error = '';
-  success = '';
 
   costcentre = new Costcentre('', '');
   allEmployees: Observable<Employee[]>;
   filteredEmployees: Observable<Employee[]>;
 
-  displayedColumns: string[] = ['name', 'owner', 'manageColumn'];
+  displayedColumns: string[] = ['name', 'description', 'owner', 'manageColumn'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
@@ -41,21 +43,26 @@ export class CostcentreComponent implements OnInit {
   updateMode = false;
   post: any;
   name = '';
+  description = '';
   owner = '';
 
   public formErrors = {
     name: '',
+    description: '',
     owner: '',
   };
 
   constructor(private injector: Injector,
               private apiService: ApiService,
               private dataService: DataService,
+              private utilitiesService: UtilitiesService,
               private fb: FormBuilder,
-              public formService: FormService) {
+              public formService: FormService,
+              private confirmationDialogService: ConfirmationDialogService) {
                 
     this.rForm = fb.group({
       name: [null, [Validators.required, Validators.minLength(1), Validators.maxLength(50), CustomValidators.validateCharacters]],
+      description : [null, [Validators.minLength(1), Validators.maxLength(50), CustomValidators.validateCharacters]],
       owner: [null]
     });
 
@@ -121,9 +128,9 @@ export class CostcentreComponent implements OnInit {
   }
 
   addCostcentre(f) {
-    this.resetErrors();
     let costcentre = new Costcentre();
     costcentre.name = f.name;
+    costcentre.description = f.description;
     if (f.owner) { //Only populating relevant fields (which will be used to update view list and save api call cost)
       costcentre.owner = {};
       costcentre.owner.id = f.owner.id;
@@ -140,7 +147,6 @@ export class CostcentreComponent implements OnInit {
             this.costcentres.data = res; // Impelement a list refresh rather
           }
           // Inform the user
-          this.success = 'Created successfully';
           this.notifier.showSaved();
 
           // Reset the form
@@ -155,6 +161,7 @@ export class CostcentreComponent implements OnInit {
         this.costcentre = res;
         this.rForm.setValue({
           name: this.costcentre.name,
+          description: this.costcentre.description,
           owner: (this.costcentre.owner != null) ? this.costcentre.owner : null//"this.costcentre.owner",
         });
       }
@@ -164,8 +171,8 @@ export class CostcentreComponent implements OnInit {
   }
 
   updateCostcentre(f) {
-    this.resetErrors();
     this.costcentre.name = f.name;
+    this.costcentre.description = f.description;
     if (f.owner) { //Only populating relevant fields (which will be used to update view list and save api call cost)
       this.costcentre.owner = {};
       this.costcentre.owner.id = f.owner.id;
@@ -179,7 +186,6 @@ export class CostcentreComponent implements OnInit {
           if (this.showList) {
             this.costcentres.data = res;
           }
-          this.success = 'Updated successfully';
           this.costcentre = new Costcentre();
           this.notifier.showSaved();
           this.updateMode = false;
@@ -188,15 +194,21 @@ export class CostcentreComponent implements OnInit {
       );
   }
 
+  public openConfirmationDialog(id) {
+    this.confirmationDialogService.confirm('Please confirm...', 'Are you sure you want to delete?')
+    .then((confirmed) => {
+      if (confirmed) this.deleteCostcentre(id);
+    })
+    .catch(() => console.log('User dismissed the dialog (e.g., by using ESC, clicking the cross icon, or clicking outside the dialog)'));
+  }
+
   deleteCostcentre(id) {
-    this.resetErrors();
     this.apiService.delete(globals.COSTCENTRE_ENDPOINT, id, this.costcentres.data)
       .subscribe(
         (res: Costcentre[]) => {
           if (this.showList) {
             this.costcentres.data = res; // Impelement a list refresh rather
           }
-          this.success = 'Deleted successfully';
           this.notifier.showDeleted();
           this.updateMode = false;
           this.rForm.reset();
@@ -224,7 +236,9 @@ export class CostcentreComponent implements OnInit {
         if (!e || !e.source) {
           console.log(this.trigger)
           console.log(e)
-          this.rForm.controls.owner.setValue(null);
+          if (!this.utilitiesService.isObject(this.rForm.getRawValue().owner)) {
+            this.rForm.controls.owner.setValue(null);
+          }
         }
       },
       err => this._subscribeToClosingActions(),
@@ -250,10 +264,5 @@ export class CostcentreComponent implements OnInit {
 
   displayFn(employee?: Employee): string | undefined {
     return employee ? employee.firstName + ' ' + employee.lastName : undefined;
-  }
-
-  private resetErrors() {
-    this.success = '';
-    this.error   = '';
   }
 }
