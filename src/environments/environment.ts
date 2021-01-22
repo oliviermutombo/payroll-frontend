@@ -6,9 +6,9 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8080',
+  apiUrl: 'https://payrollapplication.herokuapp.com',
   apiVersion: '/api/v1',
-  baseUrl: 'http://localhost:8080/api/v1',
+  baseUrl: 'https://payrollapplication.herokuapp.com/api/v1',
   apiUsername: 'payroll-client',
   apiPassword: 'payroll-secret'
 };
