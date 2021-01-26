@@ -4,7 +4,6 @@ import { NgModule, ErrorHandler, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
-import { UserService } from './services/user.service';
 import { LoginComponent } from './user/login.component';
 import { SalaryComponent } from './admin/salary/salary.component';
 import { CostcentreComponent } from './admin/costcentre/costcentre.component';
@@ -112,8 +111,7 @@ schemas.push(CUSTOM_ELEMENTS_SCHEMA);
     // for Core use:
     LoadingBarModule
   ],
-  providers: [ 
-    UserService,
+  providers: [
     AuthService,
     CustomValidators,
     FormService,
