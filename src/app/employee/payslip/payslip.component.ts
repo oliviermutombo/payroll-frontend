@@ -8,7 +8,7 @@ import { PayrollPeriod } from '../../admin/payrollPeriod/payrollPeriod';
 import { DeductionService } from '../../admin/deduction/deduction.service';
 import { Deduction } from '../../admin/deduction/deduction';
 
-import { UserService } from '../../services/user.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
     templateUrl: './payslip.component.html'
@@ -19,7 +19,7 @@ import { UserService } from '../../services/user.service';
         private route: ActivatedRoute,
         private payslipService: PayslipService,
         private dataService: DataService,
-        private userService: UserService,
+        private authService: AuthService,
         private deductionService: DeductionService,
         private fb: FormBuilder,
         private location: Location
@@ -39,14 +39,12 @@ import { UserService } from '../../services/user.service';
     ngOnInit(): void {
         this.getPayrollPeriods();
         
-        let empid = this.userService.currentUserValue.employeeid;
+        let empid = this.authService.currentUserValue.employeeid;
         if (empid) {
         this.getDeductions(empid);
         } else {
             alert('This user is not an employee');
         }
-        //alert(JSON.stringify(this.userService.currentUserValue));
-        //this.getPayslip();
     }
 
     idOrPassport(): {} {
