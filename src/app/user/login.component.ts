@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
-import { UserService } from '../services/user.service';
 import { Router } from '@angular/router';
 import { CustomValidators } from '../services/custom_validators';
 import { FormService } from '../services/form';
@@ -24,8 +23,7 @@ export class LoginComponent implements OnInit {
 
     public user: any;
 
-    constructor(private userService: UserService,
-        private auth: AuthService,
+    constructor(private auth: AuthService,
         private fb: FormBuilder,
         public formService: FormService,
         private router: Router) {
@@ -52,12 +50,12 @@ export class LoginComponent implements OnInit {
         this.auth.login(requestBody);
     }
     
+    /*CHECK IF THIS GETS USED - CHECK DATE: 2021-01-27 (feedback: Logic moved to AUTH)
     refreshToken() {
         this.userService.refreshToken();
-    }
+    }*/
     
     logout() {
-        //this.userService.logout();
         this.auth.logout();
     }
 }

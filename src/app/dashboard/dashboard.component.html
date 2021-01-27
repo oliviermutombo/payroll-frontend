@@ -10,11 +10,11 @@
                 </div>
                 <div>
                     <ul>
-                        <li>
-                            <a class="nav-link" href="/user_list">Manage user accounts</a>
+                        <li class="nav-item" [routerLinkActive]="'active'">
+                            <a class="nav-link" [routerLink]="['/user_list']">Manage user accounts</a>
                         </li>
-                        <li>
-                            <a class="nav-link" href="/employee_list">View employees</a>
+                        <li class="nav-item" [routerLinkActive]="'active'">
+                            <a class="nav-link" [routerLink]="['/employee_list']">View employees</a>
                         </li>
                     </ul>
                 </div>
@@ -30,17 +30,17 @@
                 </div>
                 <div>
                     <ul>
-                        <li>
-                            <a class="nav-link" href="/manage_employee">Add employee</a>
+                        <li class="nav-item" [routerLinkActive]="'active'">
+                            <a class="nav-link" [routerLink]="['/manage_employee']">Add employee</a>
                         </li>
-                        <li>
-                            <a class="nav-link" href="/employee_list">View employees</a>
+                        <li class="nav-item" [routerLinkActive]="'active'">
+                            <a class="nav-link" [routerLink]="['/employee_list']">View employees</a>
                         </li>
-                        <li>
-                            <a class="nav-link" href="/department">Manage departments</a>
+                        <li class="nav-item" [routerLinkActive]="'active'">
+                            <a class="nav-link" [routerLink]="['/department']">Departments</a>
                         </li>
-                        <li>
-                            <a class="nav-link" href="/position">Manage positions</a>
+                        <li class="nav-item" [routerLinkActive]="'active'">
+                            <a class="nav-link" [routerLink]="['/position']">Positions</a>
                         </li>
                     </ul>
                 </div>
@@ -56,20 +56,20 @@
                 </div>
                 <div>
                     <ul>
-                        <li>
-                            <a class="nav-link" href="/salary">Manage pay grades</a>
+                        <li class="nav-item" [routerLinkActive]="'active'">
+                            <a class="nav-link" [routerLink]="['/salary']">Pay grades</a>
                         </li>
-                        <li>
-                            <a class="nav-link" href="/costcentre">Manage cost centres</a>
+                        <li class="nav-item">
+                            <a class="nav-link" [routerLink]="['/costcentre']">Cost centres</a>
                         </li>
-                        <li>
-                            <a class="nav-link" href="/deduction">Manage deductions [TO DO]</a>
+                        <li class="nav-item">
+                            <a class="nav-link" [routerLink]="['/deduction']">Deductions [TO DO]</a>
                         </li>
-                        <li>
-                            <a class="nav-link" href="/payrollperiod">Manage payroll periods [TO DO]</a>
+                        <li class="nav-item">
+                            <a class="nav-link" [routerLink]="['/payrollperiod']">Payroll periods [TO DO]</a>
                         </li>
-                        <li>
-                            <a class="nav-link" href="/payroll">Run payroll [TO DO]</a>
+                        <li class="nav-item">
+                            <a class="nav-link" [routerLink]="['/payroll']">Run payroll [TO DO]</a>
                         </li>
                     </ul>
                 </div>
@@ -86,7 +86,7 @@
                 <div>
                     <ul>
                         <li>
-                            <a class="nav-link" href="/employee/payslip">View payslips</a>
+                            <a class="nav-link" href="/employee/payslip">View payslips [TO DO]</a>
                         </li>
                         <li>
                             <a class="nav-link" href="/employee/self">Update personal details</a>

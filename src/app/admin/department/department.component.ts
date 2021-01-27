@@ -224,19 +224,21 @@ export class DepartmentComponent implements OnInit {
   }*/
 
   updateDepartment(f) {
-    this.department.name = f.name;
-   if (f.costcentre) {
-      this.department.costcentre = {}
-      this.department.costcentre.id = f.costcentre.id;
-      this.department.costcentre.name = f.costcentre.name;
+    let updatedDepartment = new Department();
+    updatedDepartment.id = this.department.id;
+    updatedDepartment.name = f.name;
+    if (f.costcentre) {
+      updatedDepartment.costcentre = {}
+      updatedDepartment.costcentre.id = f.costcentre.id;
+      updatedDepartment.costcentre.name = f.costcentre.name;
     }
     if (f.hod) {
-      this.department.hod = {};
-      this.department.hod.id = f.hod.id;
-      this.department.hod.firstName = f.hod.firstName;
-      this.department.hod.lastName = f.hod.lastName;
+      updatedDepartment.hod = {};
+      updatedDepartment.hod.id = f.hod.id;
+      updatedDepartment.hod.firstName = f.hod.firstName;
+      updatedDepartment.hod.lastName = f.hod.lastName;
     }
-    this.apiService.update(globals.DEPARTMENT_ENDPOINT, this.department, this.departments.data)
+    this.apiService.update(globals.DEPARTMENT_ENDPOINT, updatedDepartment, this.departments.data)
       .subscribe(
         (res) => {
           if (this.showList) {

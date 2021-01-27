@@ -3,12 +3,11 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 
 import { NotificationService } from '../services/notification.service'; // new
-import { UserService } from '../services/user.service'; // new
 
 @Injectable()
 export class GlobalErrorHandlerService implements ErrorHandler {
 
-    constructor(private injector: Injector, private userService: UserService) { }    
+    constructor(private injector: Injector) { }    
 
     handleError(error: any) {
         const notifier = this.injector.get(NotificationService); // new

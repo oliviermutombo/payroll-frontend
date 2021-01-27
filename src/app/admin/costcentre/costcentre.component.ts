@@ -171,16 +171,17 @@ export class CostcentreComponent implements OnInit {
   }
 
   updateCostcentre(f) {
-    this.costcentre.name = f.name;
-    this.costcentre.description = f.description;
+    let updatedCostcentre = new Costcentre();
+    updatedCostcentre.id = this.costcentre.id;
+    updatedCostcentre.name = f.name;
+    updatedCostcentre.description = f.description;
     if (f.owner) { //Only populating relevant fields (which will be used to update view list and save api call cost)
-      this.costcentre.owner = {};
-      this.costcentre.owner.id = f.owner.id;
-      this.costcentre.owner.firstName = f.owner.firstName;
-      this.costcentre.owner.lastName = f.owner.lastName;
+      updatedCostcentre.owner = {};
+      updatedCostcentre.owner.id = f.owner.id;
+      updatedCostcentre.owner.firstName = f.owner.firstName;
+      updatedCostcentre.owner.lastName = f.owner.lastName;
     }
-
-    this.apiService.update(globals.COSTCENTRE_ENDPOINT, this.costcentre, this.costcentres.data)
+    this.apiService.update(globals.COSTCENTRE_ENDPOINT, updatedCostcentre, this.costcentres.data)
       .subscribe(
         (res) => {
           if (this.showList) {
