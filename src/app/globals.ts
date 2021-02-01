@@ -12,3 +12,4 @@ export const POSITION_ENDPOINT: string = '/positions';
 export const SALARY_ENDPOINT = '/salaries';
 export const TITLES_ENDPOINT: string = '/titles';
 export const USER_ENDPOINT = '/users';
+export const DATA_LOADER_ENDPOINT = '/dataloader';

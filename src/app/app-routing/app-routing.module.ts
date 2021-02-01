@@ -18,6 +18,7 @@ import { UserListComponent } from '../user/user-list.component';
 import { ManageUserComponent } from '../user/manage-user.component';
 import { CompanyComponent } from '../admin/company/company.component';
 import { PersonalDetailsComponent } from '../employee/details/personal-details.component';
+import { ConfigComponent } from '../admin/config/config.component';
 
 //emp
 import { PayslipComponent } from '../employee/payslip/payslip.component';
@@ -123,6 +124,12 @@ const routes: Routes = [
     component: SettingsComponent,
     canActivate: [AuthGuard], 
     data: { roles: [Role.ROLE_USER] }
+  },
+  {
+    path: 'config',
+    component: ConfigComponent,
+    canActivate: [AuthGuard], 
+    data: { roles: [Role.ROLE_ADMIN] }
   },
   {
     path: 'deduction',

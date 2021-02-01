@@ -19,6 +19,7 @@ import { CountryComponent } from './admin/countries/country.component';
 import { CompanyComponent } from './admin/company/company.component';
 import { UserListComponent } from './user/user-list.component';
 import { ManageUserComponent } from  './user/manage-user.component';
+import { ConfigComponent } from './admin/config/config.component';
 
 //emp
 import { PayslipComponent } from './employee/payslip/payslip.component';
@@ -90,7 +91,8 @@ schemas.push(CUSTOM_ELEMENTS_SCHEMA);
     SettingsComponent,
     PasswordModalComponent,
     PageNotFoundComponent,
-    ConfirmationDialogComponent
+    ConfirmationDialogComponent,
+    ConfigComponent
   ],
   imports: [
     BrowserModule,
